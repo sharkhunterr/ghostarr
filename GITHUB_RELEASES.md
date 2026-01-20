@@ -61,6 +61,12 @@
 - Cancel button to abort generation in progress
 - Loading indicator on execute button during initialization
 
+### Template Preview Thumbnails
+- Template cards now display a **live HTML preview thumbnail**
+- Dynamic scaling to fill card width using ResizeObserver
+- Click on card or "Preview" button to open full preview
+- Loading spinner while fetching template preview
+
 ### New Dependencies
 - Added `@radix-ui/react-collapsible` for expandable UI sections
 - New `Collapsible` UI component
