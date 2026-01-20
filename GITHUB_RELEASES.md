@@ -4,6 +4,62 @@
 
 ---
 
+# v0.3.0
+
+**Title:** `v0.3.0 - Statistics Evolution & History Improvements`
+
+**Release Notes (copier ci-dessous):**
+
+---
+
+## What's New in v0.3.0
+
+### Statistics Evolution
+
+#### Individual Ranking Evolution
+- Statistics now show **individual evolution** (up/down/new/stable) for each movie, show, and user
+- Compares current vs previous period rankings to display actual position changes
+- Displays evolution badges with position changes (e.g., "+2", "-1", "NEW")
+- Uses Tautulli `get_history` API with date filters for accurate historical data
+- Fixed issue where all items showed "stable" regardless of actual ranking changes
+
+#### Statistics Comparison Enabled by Default
+- "Include comparison" is now **enabled by default** in:
+  - Manual generation form
+  - Schedule form
+  - Backend generation schema
+
+### History Page Improvements
+
+#### Generation Config Display
+- New **collapsible "Generation Config" section** in history progress modal
+- View all generation parameters used for each newsletter:
+  - Publication mode (draft, site, email, site+email)
+  - Active sources (Tautulli, Romm, Komga, Audiobookshelf, Tunarr)
+  - Tautulli settings (days, max items, featured item)
+  - Statistics settings (days, comparison enabled)
+  - Maintenance settings
+  - Max total items limit
+
+### Database & Performance
+
+#### SQLite Concurrency Improvements
+- Enabled **WAL (Write-Ahead Logging)** mode for better database concurrency
+- Added 30-second timeout for SQLite connections
+- Added connection pool settings for better resource management
+- Fixed "database is locked" error during newsletter generation
+
+#### Log Handler Optimization
+- Batch log writes in `DatabaseLogHandler` to reduce database contention
+- Added queue size limits to prevent memory issues
+- Improved flush interval handling
+
+### New Dependencies
+- Added `@radix-ui/react-collapsible` for expandable UI sections
+- New `Collapsible` UI component
+
+---
+
 # v0.2.0
 
 **Title:** `v0.2.0 - UI Redesign & Bug Fixes`
