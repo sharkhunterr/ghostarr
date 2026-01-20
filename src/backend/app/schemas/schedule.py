@@ -100,6 +100,26 @@ class ScheduleResponse(ScheduleBase):
     created_at: datetime
     updated_at: datetime
 
+    @field_validator("last_run_status", mode="before")
+    @classmethod
+    def validate_run_status(cls, v):
+        """Convert string status to enum if needed (for backward compatibility)."""
+        if v is None:
+            return v
+        if isinstance(v, RunStatus):
+            return v
+        if isinstance(v, str):
+            # Try to match by value
+            for status in RunStatus:
+                if status.value == v.lower():
+                    return status
+            # Try to match by name
+            try:
+                return RunStatus[v.upper()]
+            except KeyError:
+                pass
+        return v
+
     class Config:
         from_attributes = True
 
