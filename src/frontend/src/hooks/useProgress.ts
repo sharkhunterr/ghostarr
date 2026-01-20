@@ -76,8 +76,12 @@ export function useProgress(options: UseProgressOptions = {}) {
     [addNotification]
   );
 
-  // Connect to SSE when there's an active generation
-  const { connected, disconnect } = useSSE(activeGenerationId, {
+  // Get current generation state to determine if we should connect
+  const currentGeneration = activeGenerationId ? generations[activeGenerationId] : null;
+  const shouldConnect = activeGenerationId && !currentGeneration?.isComplete && !currentGeneration?.isCancelled;
+
+  // Connect to SSE only when there's an active, incomplete generation
+  const { connected, disconnect } = useSSE(shouldConnect ? activeGenerationId : null, {
     onEvent: handleSSEEvent,
     onError: handleSSEError,
   });

@@ -265,3 +265,7 @@ class GhostIntegration(BaseIntegration[GhostNewsletter]):
         except Exception as e:
             logger.error(f"Failed to delete Ghost post: {e}")
             return False
+
+
+# Global instance
+ghost_client = GhostIntegration()

@@ -173,7 +173,7 @@ export interface LogFilter {
 
 // SSE Progress Events
 export interface ProgressEvent {
-  type: "step_start" | "step_complete" | "step_error" | "generation_complete" | "generation_cancelled";
+  type: "generation_started" | "step_start" | "step_complete" | "step_skipped" | "step_error" | "generation_complete" | "generation_cancelled";
   step: string;
   progress: number;
   message: string;

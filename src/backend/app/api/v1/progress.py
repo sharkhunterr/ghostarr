@@ -1,6 +1,7 @@
 """SSE progress streaming endpoint."""
 
 import asyncio
+import json
 from datetime import datetime
 
 from fastapi import APIRouter
@@ -30,9 +31,10 @@ async def stream_progress(generation_id: str):
 
         try:
             async for event in event_manager.subscribe(generation_id):
+                # Send JSON data directly - sse_starlette handles the SSE format
                 yield {
                     "event": event.type,
-                    "data": event.to_sse().strip(),
+                    "data": json.dumps(event.to_dict()),
                 }
 
                 # Check if we need to send a heartbeat

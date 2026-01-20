@@ -46,7 +46,48 @@ class TemplateService:
             self._env.filters["number_format"] = self._filter_number_format
             self._env.filters["zfill"] = self._filter_zfill
 
+            # Add global functions available in templates
+            self._env.globals["len"] = len
+            self._env.globals["range"] = range
+            self._env.globals["str"] = str
+            self._env.globals["int"] = int
+            self._env.globals["min"] = min
+            self._env.globals["max"] = max
+            self._env.globals["abs"] = abs
+            self._env.globals["round"] = round
+            self._env.globals["sorted"] = sorted
+            self._env.globals["enumerate"] = enumerate
+            self._env.globals["zip"] = zip
+            self._env.globals["list"] = list
+            self._env.globals["dict"] = dict
+            self._env.globals["bool"] = bool
+            self._env.globals["float"] = float
+
+            # Also expose filters as callable functions for templates using func(val) syntax
+            self._env.globals["format_duration"] = self._filter_format_duration
+            self._env.globals["format_date"] = self._filter_format_date
+            self._env.globals["format_time"] = self._filter_format_time
+            self._env.globals["truncate_text"] = self._filter_truncate_text
+            self._env.globals["number_format"] = self._filter_number_format
+            self._env.globals["zfill"] = self._filter_zfill
+            self._env.globals["format_cast_list"] = self._format_cast_list
+
         return self._env
+
+    @staticmethod
+    def _format_cast_list(cast: list | None, limit: int = 3) -> str:
+        """Format a cast list to a comma-separated string."""
+        if not cast:
+            return ""
+        if isinstance(cast, list):
+            names = []
+            for member in cast[:limit]:
+                if isinstance(member, dict):
+                    names.append(member.get("name", str(member)))
+                else:
+                    names.append(str(member))
+            return ", ".join(names)
+        return str(cast)
 
     @staticmethod
     def _filter_format_date(value: datetime | str, format: str = "%d %B %Y") -> str:
@@ -137,6 +178,8 @@ class TemplateService:
             template = env.get_template(template_path)
 
             # Add date helpers to context
+            # now is a function for templates using {{ now().strftime(...) }}
+            context["now"] = datetime.now
             now = datetime.now()
             context["date"] = {
                 "now": now,

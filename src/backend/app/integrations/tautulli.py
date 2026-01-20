@@ -101,21 +101,36 @@ class TautulliIntegration(BaseIntegration[MediaItem]):
             recently_added = data.get("recently_added", [])
 
             for item in recently_added:
-                added_at = item.get("added_at", 0)
+                added_at_raw = item.get("added_at", 0)
+                # Convert to int if it's a string
+                try:
+                    added_at = int(added_at_raw) if added_at_raw else 0
+                except (ValueError, TypeError):
+                    added_at = 0
+
                 if added_at < since_timestamp:
                     continue
 
+                # Parse optional integer fields safely
+                def safe_int(val: Any) -> int | None:
+                    if val is None or val == "":
+                        return None
+                    try:
+                        return int(val)
+                    except (ValueError, TypeError):
+                        return None
+
                 media_item = MediaItem(
                     title=item.get("title", "Unknown"),
-                    year=item.get("year"),
+                    year=safe_int(item.get("year")),
                     media_type="episode" if item.get("media_type") == "episode" else "movie",
                     rating_key=str(item.get("rating_key", "")),
                     thumb=item.get("thumb"),
                     art=item.get("art"),
                     added_at=datetime.fromtimestamp(added_at) if added_at else None,
                     grandparent_title=item.get("grandparent_title"),
-                    parent_media_index=item.get("parent_media_index"),
-                    media_index=item.get("media_index"),
+                    parent_media_index=safe_int(item.get("parent_media_index")),
+                    media_index=safe_int(item.get("media_index")),
                 )
                 items.append(media_item)
 

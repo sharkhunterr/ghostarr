@@ -74,6 +74,18 @@ class ProgressTracker:
                     )
                 )
 
+    async def broadcast_started(self) -> None:
+        """Broadcast generation started event with enabled steps."""
+        steps_data = [
+            {"step": step.step, "message": step.message}
+            for step in self.steps
+        ]
+        await event_manager.generation_started(
+            generation_id=self.generation_id,
+            steps=steps_data,
+        )
+        logger.info(f"Generation {self.generation_id}: Started with {len(self.steps)} steps")
+
     def _calculate_progress(self) -> int:
         """Calculate overall progress percentage."""
         if self._total_weight == 0:
@@ -163,7 +175,7 @@ class ProgressTracker:
         )
 
     async def skip_step(self, step_id: str, message: str = "Skipped") -> None:
-        """Mark a step as skipped."""
+        """Mark a step as skipped and broadcast event."""
         if self.is_cancelled:
             return
 
@@ -178,6 +190,14 @@ class ProgressTracker:
         self._completed_weight += self._get_step_weight(step_id)
 
         logger.info(f"Generation {self.generation_id}: Skipped step {step_id}")
+
+        # Broadcast skip event
+        await event_manager.step_skipped(
+            generation_id=self.generation_id,
+            step=step_id,
+            progress=self._calculate_progress(),
+            message=message,
+        )
 
     async def fail_step(self, step_id: str, error: str) -> None:
         """Mark a step as failed and broadcast event."""

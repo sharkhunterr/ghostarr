@@ -16,6 +16,22 @@ interface ServiceCardProps {
   isSaving: boolean;
 }
 
+const URL_PLACEHOLDERS: Record<string, string> = {
+  tautulli: "http://192.168.1.x:8181",
+  tmdb: "https://api.themoviedb.org",
+  ghost: "https://votre-site.ghost.io",
+  romm: "http://192.168.1.x:8080",
+  komga: "http://192.168.1.x:25600",
+  audiobookshelf: "http://192.168.1.x:13378",
+  tunarr: "http://192.168.1.x:8000",
+};
+
+const URL_HELP: Record<string, string> = {
+  tautulli: "URL de base sans /api/v2",
+  ghost: "URL de base sans /ghost/api/admin",
+  tmdb: "Laissez vide pour utiliser l'API par défaut",
+};
+
 export function ServiceCard({
   service,
   name,
@@ -108,9 +124,12 @@ export function ServiceCard({
             type="url"
             value={url}
             onChange={(e) => handleUrlChange(e.target.value)}
-            placeholder="http://localhost:8181"
+            placeholder={URL_PLACEHOLDERS[service] || "http://localhost:8080"}
             className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
           />
+          {URL_HELP[service] && (
+            <p className="mt-1 text-xs text-muted-foreground">{URL_HELP[service]}</p>
+          )}
         </div>
 
         <div>

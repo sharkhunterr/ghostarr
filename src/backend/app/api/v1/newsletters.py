@@ -4,7 +4,7 @@ import asyncio
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_db
+from app.database import get_db, AsyncSessionLocal
 from app.models.history import History, GenerationType, GenerationStatus
 from app.models.template import Template
 from app.schemas.generation import (
@@ -41,11 +41,37 @@ async def generate_newsletter(
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
 
-    # Create generator and start generation
+    # Create generator and history entry
     generator = NewsletterGenerator(db, request.config)
+    history = await generator.create_history_entry(generation_type=GenerationType.MANUAL)
 
-    # Run generation (this will create history entry and stream progress)
-    history = await generator.generate(generation_type=GenerationType.MANUAL)
+    # Get generation_id and config before the session closes
+    generation_id = generator.generation_id
+    config = request.config
+
+    # Run generation in background task with a new session
+    async def run_generation():
+        # Longer delay to allow SSE connection to establish
+        # Client needs time to: receive response -> update state -> create EventSource -> connect
+        await asyncio.sleep(1.5)
+        try:
+            async with AsyncSessionLocal() as new_db:
+                bg_generator = NewsletterGenerator(new_db, config)
+                bg_generator.generation_id = generation_id
+                # Reload the history from the new session
+                bg_generator.history = await new_db.get(History, generation_id)
+                # Re-initialize tracker
+                enabled_steps = bg_generator._get_enabled_steps()
+                from app.services.progress_tracker import ProgressTracker
+                from app.services.newsletter_generator import _active_generations
+                bg_generator.tracker = ProgressTracker(generation_id, enabled_steps)
+                _active_generations[generation_id] = bg_generator.tracker
+
+                await bg_generator.run_pipeline()
+        except Exception as e:
+            logger.error(f"Background generation failed: {e}")
+
+    asyncio.create_task(run_generation())
 
     return HistoryResponse.model_validate(history)
 

@@ -64,18 +64,25 @@ class NewsletterGenerator:
         self.tv_programs: list[dict[str, Any]] = []
         self.statistics: dict[str, Any] = {}
 
-    async def generate(
+        # Service URLs (populated during fetch)
+        self._tautulli_url: str = ""
+
+    async def create_history_entry(
         self,
         generation_type: GenerationType = GenerationType.MANUAL,
         schedule_id: str | None = None,
     ) -> History:
-        """Execute the full generation pipeline."""
+        """Create the history entry and initialize tracker. Returns immediately."""
         # Determine enabled steps based on config
         enabled_steps = self._get_enabled_steps()
 
         # Create progress tracker
         self.tracker = ProgressTracker(self.generation_id, enabled_steps)
         _active_generations[self.generation_id] = self.tracker
+
+        # Store for later use
+        self._generation_type = generation_type
+        self._schedule_id = schedule_id
 
         # Create history entry
         self.history = History(
@@ -90,7 +97,35 @@ class NewsletterGenerator:
         self.db.add(self.history)
         await self.db.commit()
 
+        return self.history
+
+    async def run_pipeline(self) -> History:
+        """Execute the pipeline steps. Call after create_history_entry."""
         try:
+            return await self._execute_pipeline()
+        except Exception as e:
+            logger.error(f"Pipeline execution failed: {e}")
+            if self.history:
+                self.history.status = GenerationStatus.FAILED
+                self.history.error_message = str(e)
+                await self.db.commit()
+            raise
+
+    async def generate(
+        self,
+        generation_type: GenerationType = GenerationType.MANUAL,
+        schedule_id: str | None = None,
+    ) -> History:
+        """Execute the full generation pipeline (legacy method)."""
+        await self.create_history_entry(generation_type, schedule_id)
+        return await self.run_pipeline()
+
+    async def _execute_pipeline(self) -> History:
+        """Internal method to execute all pipeline steps."""
+        try:
+            # Broadcast generation started with enabled steps
+            await self.tracker.broadcast_started()
+
             # Execute pipeline steps with cancellation checks
             await self._fetch_tautulli()
             if self._is_cancelled():
@@ -230,6 +265,9 @@ class NewsletterGenerator:
             if not url or not api_key:
                 await self.tracker.skip_step("fetch_tautulli", "Not configured")
                 return
+
+            # Store URL for image proxy
+            self._tautulli_url = url.rstrip("/")
 
             integration = TautulliIntegration(url=url, api_key=api_key)
             items = await integration.fetch_data(
@@ -490,6 +528,79 @@ class NewsletterGenerator:
             logger.error(f"Statistics fetch failed: {e}")
             await self.tracker.complete_step("fetch_statistics", "Fetch failed, continuing", 0)
 
+    def _build_plex_image_url(self, thumb_path: str | None) -> str:
+        """Build a full Plex image URL from a relative thumb path via Tautulli proxy."""
+        if not thumb_path or not self._tautulli_url:
+            return ""
+        # If it's already a full URL, return as-is
+        if thumb_path.startswith("http"):
+            return thumb_path
+        # Build Plex image URL using Tautulli proxy
+        # thumb_path looks like /library/metadata/867753/thumb/1768900434
+        from urllib.parse import quote
+        return f"{self._tautulli_url}/pms_image_proxy?img={quote(thumb_path)}&width=300&height=450&fallback=poster"
+
+    def _normalize_movie(self, movie: dict[str, Any]) -> dict[str, Any]:
+        """Normalize movie data for template compatibility."""
+        # Build poster URL - prefer TMDB, fallback to Plex via Tautulli
+        poster_url = movie.get("poster_url")
+        if not poster_url:
+            poster_url = self._build_plex_image_url(movie.get("thumb"))
+
+        return {
+            **movie,
+            # Map runtime to duration (in minutes, convert to seconds for format_duration)
+            "duration": (movie.get("runtime") or 0) * 60,
+            # Map overview to summary
+            "summary": movie.get("overview") or movie.get("summary") or "",
+            # Poster URL (TMDB or Plex via Tautulli)
+            "poster_url": poster_url,
+            # Map vote_average to rating
+            "rating": movie.get("vote_average") or movie.get("rating"),
+            # Ensure genres is a list
+            "genres": movie.get("genres") or [],
+            # Ensure other fields exist with defaults
+            "tagline": movie.get("tagline") or "",
+            "director": movie.get("director") or "",
+            "cast": movie.get("cast") or [],
+            "content_rating": movie.get("content_rating") or "",
+            "year": movie.get("year") or "",
+        }
+
+    def _normalize_episode(self, episode: dict[str, Any]) -> dict[str, Any]:
+        """Normalize episode data for template compatibility."""
+        # Build poster URL - prefer TMDB, fallback to Plex via Tautulli
+        poster_url = episode.get("show_poster_url") or episode.get("poster_url")
+        if not poster_url:
+            poster_url = self._build_plex_image_url(episode.get("thumb"))
+
+        return {
+            **episode,
+            # Map season/episode numbers
+            "season_number": episode.get("parent_media_index") or episode.get("season_number") or 0,
+            "episode_number": episode.get("media_index") or episode.get("episode_number") or 0,
+            # Poster URL (TMDB or Plex via Tautulli)
+            "poster_url": poster_url,
+            # Map genres from show
+            "genres": episode.get("show_genres") or episode.get("genres") or [],
+            # Map summary
+            "summary": episode.get("show_overview") or episode.get("overview") or episode.get("summary") or "",
+            # Map rating
+            "rating": episode.get("show_vote_average") or episode.get("vote_average") or episode.get("rating"),
+            "content_rating": episode.get("content_rating") or "",
+            "year": episode.get("year") or "",
+        }
+
+    def _group_episodes_by_show(self, episodes: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+        """Group episodes by show name."""
+        grouped: dict[str, list[dict[str, Any]]] = {}
+        for episode in episodes:
+            show_name = episode.get("grandparent_title") or episode.get("title") or "Unknown"
+            if show_name not in grouped:
+                grouped[show_name] = []
+            grouped[show_name].append(episode)
+        return grouped
+
     async def _render_template(self) -> str:
         """Render the newsletter template."""
         await self.tracker.start_step("render_template", "Rendering newsletter...")
@@ -500,16 +611,50 @@ class NewsletterGenerator:
             if not template:
                 raise GenerationError("render_template", "Template not found")
 
+            # Normalize movies and series for template compatibility
+            normalized_movies = [self._normalize_movie(m) for m in self.movies]
+            normalized_series = [self._normalize_episode(e) for e in self.series]
+
+            logger.info(f"Context preparation: {len(self.movies)} raw movies, {len(normalized_movies)} normalized movies")
+            logger.info(f"Context preparation: {len(self.series)} raw series, {len(normalized_series)} normalized series")
+
+            # Group episodes by show
+            shows_grouped = self._group_episodes_by_show(normalized_series)
+
+            # Prepare featured movie (first movie with good data)
+            featured_movie = None
+            show_featured_movie = False
+            if normalized_movies:
+                featured_movie = normalized_movies[0]
+                show_featured_movie = bool(featured_movie.get("poster_url"))
+
+            # Prepare real_stats from statistics
+            real_stats = None
+            if self.statistics:
+                real_stats = {
+                    "total_plays": self.statistics.get("total_plays", 0),
+                    "total_watch_time": self.statistics.get("total_duration", 0),
+                    "total_viewers": self.statistics.get("unique_users", 0),
+                }
+
             # Build context
             context = {
                 "title": template_service.render_title(self.config.title),
-                "movies": self.movies,
-                "series": self.series,
+                # New normalized data
+                "movies": normalized_movies,
+                "shows": normalized_series,
+                "shows_grouped": shows_grouped,
+                "featured_movie": featured_movie,
+                "show_featured_movie": show_featured_movie,
+                "real_stats": real_stats,
+                # Original data (for templates that use these names)
+                "series": normalized_series,
+                "statistics": self.statistics if self.config.statistics.enabled else None,
+                # Other data
                 "games": self.games,
                 "books": self.books,
                 "audiobooks": self.audiobooks,
                 "tv_programs": self.tv_programs,
-                "statistics": self.statistics if self.config.statistics.enabled else None,
                 "maintenance": self.config.maintenance.model_dump() if self.config.maintenance.enabled else None,
                 "config": {
                     "tunarr_display_format": self.config.tunarr.display_format,

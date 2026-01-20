@@ -115,6 +115,19 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
     let error = generation.error;
 
     switch (event.type) {
+      case 'generation_started': {
+        // Initialize steps from the backend's enabled steps list
+        const stepsData = event.data?.steps as Array<{ step: string; message: string }> | undefined;
+        if (stepsData && Array.isArray(stepsData)) {
+          updatedSteps = stepsData.map((s) => ({
+            step: s.step,
+            status: 'pending' as ProgressStepStatus,
+            message: s.message,
+          }));
+        }
+        break;
+      }
+
       case 'step_start':
         updatedSteps = updateStep(updatedSteps, event.step, {
           status: 'running',
@@ -130,6 +143,14 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
           message: event.message,
           completed_at: event.timestamp,
           items_count: event.data?.items_count as number | undefined,
+        });
+        break;
+
+      case 'step_skipped':
+        updatedSteps = updateStep(updatedSteps, event.step, {
+          status: 'skipped',
+          message: event.message,
+          completed_at: event.timestamp,
         });
         break;
 
