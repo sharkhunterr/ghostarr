@@ -13,7 +13,7 @@ from app import __version__
 from app.api.v1.router import api_router
 from app.config import settings
 from app.core.exceptions import GhostarrException, NotFoundError
-from app.core.logging import get_logger, set_correlation_id, setup_logging
+from app.core.logging import get_logger, set_correlation_id, setup_logging, start_db_logging, stop_db_logging
 from app.database import async_engine, Base
 from app.schemas.common import ErrorResponse, HealthResponse
 
@@ -43,6 +43,10 @@ async def lifespan(app: FastAPI):
             await conn.run_sync(Base.metadata.create_all)
         logger.info("Database tables created (development mode)")
 
+    # Start database logging handler
+    start_db_logging()
+    logger.info("Database log handler started")
+
     # Initialize and start scheduler
     init_scheduler()
     await start_scheduler()
@@ -56,6 +60,9 @@ async def lifespan(app: FastAPI):
     # Stop scheduler
     await stop_scheduler()
     logger.info("Scheduler stopped")
+
+    # Stop database logging handler
+    stop_db_logging()
 
     await async_engine.dispose()
 
