@@ -2,6 +2,7 @@
 
 import hashlib
 import hmac
+import json
 import time
 from datetime import datetime
 from typing import Any
@@ -150,6 +151,24 @@ class GhostIntegration(BaseIntegration[GhostNewsletter]):
             logger.error(f"Failed to fetch Ghost newsletters: {e}")
             return []
 
+    def _html_to_mobiledoc(self, html: str) -> str:
+        """Convert HTML to Ghost MobileDoc format.
+
+        Ghost uses MobileDoc as its internal format. We wrap the entire HTML
+        in a single HTML card within the MobileDoc structure.
+        """
+        mobiledoc = {
+            "version": "0.3.1",
+            "atoms": [],
+            "cards": [["html", {"html": html}]],
+            "markups": [],
+            "sections": [
+                [1, "p", [[0, [], 0, ""]]],
+                [10, 0],
+            ],
+        }
+        return json.dumps(mobiledoc)
+
     async def create_post(
         self,
         title: str,
@@ -163,9 +182,12 @@ class GhostIntegration(BaseIntegration[GhostNewsletter]):
             return None
 
         try:
+            # Convert HTML to MobileDoc format (Ghost's internal format)
+            mobiledoc = self._html_to_mobiledoc(html)
+
             post_data: dict[str, Any] = {
                 "title": title,
-                "html": html,
+                "mobiledoc": mobiledoc,
                 "status": status,
             }
 
@@ -174,11 +196,16 @@ class GhostIntegration(BaseIntegration[GhostNewsletter]):
                 post_data["newsletter_id"] = newsletter_id
                 post_data["email_segment"] = "all"
 
+            logger.info(f"Creating Ghost post with data: title={post_data.get('title')}, status={post_data.get('status')}, mobiledoc_length={len(mobiledoc)}")
+            logger.debug(f"Post data keys: {list(post_data.keys())}")
+
             response = await self._request(
                 "POST",
                 "/ghost/api/admin/posts/",
                 json={"posts": [post_data]},
             )
+
+            logger.info(f"Ghost response: post created successfully")
 
             posts = response.get("posts", [])
             if posts:

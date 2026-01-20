@@ -1,20 +1,19 @@
 /**
- * Dashboard page - main page for manual newsletter generation.
+ * Manual Generation page - for generating newsletters on demand.
  */
 
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  ManualGeneration,
+  ManualGeneration as ManualGenerationForm,
   ProgressCard,
   PreviewModal,
-  AutomaticGeneration,
 } from '@/components/dashboard';
 import { useProgress } from '@/hooks/useProgress';
 import { usePreviewNewsletter } from '@/api/newsletters';
 import type { GenerationConfig, PreviewResponse } from '@/types';
 
-export default function Dashboard() {
+export default function ManualGeneration() {
   const { t } = useTranslation();
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewData, setPreviewData] = useState<PreviewResponse | null>(null);
@@ -62,21 +61,15 @@ export default function Dashboard() {
   );
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {t('dashboard.title')}
-          </h1>
-          <p className="text-muted-foreground">
-            {t('dashboard.subtitle')}
-          </p>
-        </div>
-      </div>
+    <div className="space-y-6">
+      {/* Page description */}
+      <p className="text-muted-foreground text-sm">
+        {t('manualGeneration.subtitle')}
+      </p>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-2">
         {/* Manual Generation Form */}
-        <ManualGeneration
+        <ManualGenerationForm
           onGenerate={handleGenerate}
           onPreview={handlePreview}
           isGenerating={isGenerating}
@@ -93,18 +86,17 @@ export default function Dashboard() {
               isCancelling={isCancelling}
             />
           ) : (
-            <div className="rounded-lg border bg-card p-8 text-center text-muted-foreground">
-              <p>{t('dashboard.noActiveGeneration')}</p>
-              <p className="text-sm mt-2">
-                {t('dashboard.noActiveGenerationHint')}
-              </p>
+            <div className="rounded-lg border bg-card p-6 text-center">
+              <div className="text-muted-foreground">
+                <p className="font-medium">{t('manualGeneration.noActiveGeneration')}</p>
+                <p className="text-sm mt-1">
+                  {t('manualGeneration.noActiveGenerationHint')}
+                </p>
+              </div>
             </div>
           )}
         </div>
       </div>
-
-      {/* Automatic Generation / Schedules */}
-      <AutomaticGeneration />
 
       {/* Preview Modal */}
       <PreviewModal

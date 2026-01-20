@@ -45,6 +45,7 @@ class TemplateService:
             self._env.filters["format_time"] = self._filter_format_time
             self._env.filters["number_format"] = self._filter_number_format
             self._env.filters["zfill"] = self._filter_zfill
+            self._env.filters["unique"] = self._filter_unique
 
             # Add global functions available in templates
             self._env.globals["len"] = len
@@ -71,6 +72,9 @@ class TemplateService:
             self._env.globals["number_format"] = self._filter_number_format
             self._env.globals["zfill"] = self._filter_zfill
             self._env.globals["format_cast_list"] = self._format_cast_list
+
+            # Add datetime.now as global (used as {{ now() }} in templates)
+            self._env.globals["now"] = datetime.now
 
         return self._env
 
@@ -137,6 +141,19 @@ class TemplateService:
     def _filter_zfill(value: int | str, width: int = 2) -> str:
         """Pad a number/string with zeros."""
         return str(value).zfill(width)
+
+    @staticmethod
+    def _filter_unique(value: list) -> list:
+        """Return unique items from a list, preserving order."""
+        seen = set()
+        result = []
+        for item in value:
+            # Make hashable for set comparison
+            key = item if isinstance(item, (str, int, float, bool, type(None))) else str(item)
+            if key not in seen:
+                seen.add(key)
+                result.append(item)
+        return result
 
     def validate_template(self, template_path: str) -> tuple[bool, str | None]:
         """Validate a template file.

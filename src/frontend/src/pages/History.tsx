@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { History as HistoryIcon, Download } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -137,28 +137,21 @@ export default function History() {
 
   if (error) {
     return (
-      <div className="container mx-auto py-6">
-        <div className="text-center text-destructive">{t('errors.generic')}</div>
+      <div className="text-center text-destructive py-8">
+        {t('errors.generic')}
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
-      {/* Header */}
+    <div className="space-y-6">
+      {/* Header with export */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight flex items-center gap-2">
-            <HistoryIcon className="h-8 w-8" />
-            {t('history.title')}
-          </h1>
-          <p className="text-muted-foreground">{t('history.subtitle')}</p>
-        </div>
+        <p className="text-muted-foreground text-sm">{t('history.subtitle')}</p>
 
-        {/* Export dropdown */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" disabled={exportHistory.isPending}>
+            <Button variant="outline" size="sm" disabled={exportHistory.isPending}>
               <Download className="h-4 w-4 mr-2" />
               {t('common.export')}
             </Button>
@@ -177,15 +170,17 @@ export default function History() {
       {/* Filters */}
       <HistoryFilters filters={filters} onChange={setFilters} />
 
-      {/* Table */}
-      <HistoryTable
-        entries={entries || []}
-        isLoading={isLoading}
-        onViewDetails={handleViewDetails}
-        onRegenerate={handleRegenerate}
-        onDelete={handleDelete}
-        onDeleteGhostPost={handleDeleteGhostPost}
-      />
+      {/* Table - Full width */}
+      <div className="w-full overflow-x-auto">
+        <HistoryTable
+          entries={entries || []}
+          isLoading={isLoading}
+          onViewDetails={handleViewDetails}
+          onRegenerate={handleRegenerate}
+          onDelete={handleDelete}
+          onDeleteGhostPost={handleDeleteGhostPost}
+        />
+      </div>
 
       {/* Progress modal */}
       <ProgressModal

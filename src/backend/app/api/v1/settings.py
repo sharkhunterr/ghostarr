@@ -24,6 +24,9 @@ router = APIRouter()
 
 SERVICES = ["tautulli", "tmdb", "ghost", "romm", "komga", "audiobookshelf", "tunarr"]
 
+# Services that don't require URL (have default API endpoint)
+SERVICES_WITHOUT_URL = ["tmdb"]
+
 
 def _mask_api_key(api_key: str | None) -> str | None:
     """Mask API key showing only last 4 characters."""
@@ -68,10 +71,16 @@ async def get_all_services(db: AsyncSession = Depends(get_db)):
             api_key_encrypted = config.get("api_key_encrypted", "")
             api_key = crypto_service.decrypt(api_key_encrypted) if api_key_encrypted else None
 
+            # For services without URL requirement, only check API key
+            if service in SERVICES_WITHOUT_URL:
+                is_configured = bool(api_key_encrypted)
+            else:
+                is_configured = bool(config.get("url") and api_key_encrypted)
+
             result[service] = ServiceConfigResponse(
                 url=config.get("url"),
                 api_key_masked=_mask_api_key(api_key),
-                is_configured=bool(config.get("url") and api_key_encrypted),
+                is_configured=is_configured,
             )
         else:
             result[service] = ServiceConfigResponse(is_configured=False)
@@ -92,10 +101,16 @@ async def get_service_config(service: str, db: AsyncSession = Depends(get_db)):
     api_key_encrypted = config.get("api_key_encrypted", "")
     api_key = crypto_service.decrypt(api_key_encrypted) if api_key_encrypted else None
 
+    # For services without URL requirement, only check API key
+    if service in SERVICES_WITHOUT_URL:
+        is_configured = bool(api_key_encrypted)
+    else:
+        is_configured = bool(config.get("url") and api_key_encrypted)
+
     return ServiceConfigResponse(
         url=config.get("url"),
         api_key_masked=_mask_api_key(api_key),
-        is_configured=bool(config.get("url") and api_key_encrypted),
+        is_configured=is_configured,
     )
 
 
@@ -131,10 +146,16 @@ async def update_service_config(
     # Return updated config
     api_key = crypto_service.decrypt(new_config["api_key_encrypted"]) if new_config["api_key_encrypted"] else None
 
+    # For services without URL requirement, only check API key
+    if service in SERVICES_WITHOUT_URL:
+        is_configured = bool(new_config["api_key_encrypted"])
+    else:
+        is_configured = bool(new_config["url"] and new_config["api_key_encrypted"])
+
     return ServiceConfigResponse(
         url=new_config["url"],
         api_key_masked=_mask_api_key(api_key),
-        is_configured=bool(new_config["url"] and new_config["api_key_encrypted"]),
+        is_configured=is_configured,
     )
 
 
@@ -156,7 +177,15 @@ async def test_service_connection(service: str, db: AsyncSession = Depends(get_d
     api_key_encrypted = config.get("api_key_encrypted", "")
     api_key = crypto_service.decrypt(api_key_encrypted) if api_key_encrypted else ""
 
-    if not url or not api_key:
+    # For services without URL requirement, only check API key
+    if service in SERVICES_WITHOUT_URL:
+        if not api_key:
+            return ServiceTestResult(
+                service=service,
+                success=False,
+                message="Missing API key",
+            )
+    elif not url or not api_key:
         return ServiceTestResult(
             service=service,
             success=False,

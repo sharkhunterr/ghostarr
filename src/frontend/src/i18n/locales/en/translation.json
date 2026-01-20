@@ -24,7 +24,8 @@
     "info": "Information"
   },
   "nav": {
-    "dashboard": "Dashboard",
+    "manual": "Manual Generation",
+    "scheduled": "Scheduled",
     "history": "History",
     "templates": "Templates",
     "settings": "Settings",
@@ -409,5 +410,15 @@
     "network": "Server connection error",
     "notFound": "Resource not found",
     "validation": "Validation error"
+  },
+  "manualGeneration": {
+    "title": "Manual Generation",
+    "subtitle": "Generate and publish your newsletters on demand",
+    "noActiveGeneration": "No active generation",
+    "noActiveGenerationHint": "Configure your options and start a generation to see progress here."
+  },
+  "scheduledGeneration": {
+    "title": "Scheduled Generation",
+    "subtitle": "Configure automatic newsletter generation schedules"
   }
 }

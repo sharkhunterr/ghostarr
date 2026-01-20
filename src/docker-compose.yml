@@ -3,13 +3,16 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        - PORT=${PORT:-8080}
     container_name: ghostarr
     ports:
-      - "8080:8080"
+      - "${PORT:-8080}:${PORT:-8080}"
     volumes:
       - ./config:/config
       - ./templates:/config/templates
     environment:
+      - PORT=${PORT:-8080}
       - APP_SECRET_KEY=${APP_SECRET_KEY:-dev-secret-key-change-in-production}
       - APP_ENV=${APP_ENV:-development}
       - APP_TIMEZONE=${APP_TIMEZONE:-Europe/Paris}

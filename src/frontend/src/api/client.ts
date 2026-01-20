@@ -2,6 +2,23 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "ax
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api/v1";
 
+/**
+ * Generate a UUID that works in both secure (HTTPS/localhost) and insecure (HTTP) contexts.
+ * crypto.randomUUID() is only available in secure contexts.
+ */
+function generateUUID(): string {
+  // Use crypto.randomUUID if available (secure context)
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  // Fallback for insecure contexts (HTTP on non-localhost)
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
   baseURL: API_BASE_URL,
@@ -15,7 +32,7 @@ const apiClient: AxiosInstance = axios.create({
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     // Add correlation ID for request tracing
-    const correlationId = crypto.randomUUID();
+    const correlationId = generateUUID();
     config.headers["X-Correlation-ID"] = correlationId;
     return config;
   },

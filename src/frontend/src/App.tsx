@@ -9,7 +9,8 @@ import { Layout } from "@/components/layout";
 
 // Pages
 import Settings from "@/pages/Settings";
-import Dashboard from "@/pages/Dashboard";
+import ManualGeneration from "@/pages/ManualGeneration";
+import ScheduledGeneration from "@/pages/ScheduledGeneration";
 import Templates from "@/pages/Templates";
 import History from "@/pages/History";
 import Help from "@/pages/Help";
@@ -43,9 +44,10 @@ function AppContent() {
 
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/" element={<Navigate to="/manual" replace />} />
       <Route element={<Layout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/manual" element={<ManualGeneration />} />
+        <Route path="/scheduled" element={<ScheduledGeneration />} />
         <Route path="/history" element={<History />} />
         <Route path="/templates" element={<Templates />} />
         <Route path="/settings" element={<Settings />} />

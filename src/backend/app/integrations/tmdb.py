@@ -57,12 +57,28 @@ class TMDBIntegration(BaseIntegration[TMDBMetadata]):
         """Check if TMDB API key is configured."""
         return bool(self.api_key)
 
+    @property
+    def _is_bearer_token(self) -> bool:
+        """Check if the API key is a Bearer token (Read Access Token) vs API Key v3."""
+        # Bearer tokens are longer (200+ chars) and start with "ey"
+        return len(self.api_key) > 100 and self.api_key.startswith("ey")
+
     def _get_default_headers(self) -> dict[str, str]:
-        return {
+        headers = {
             "Accept": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
             "User-Agent": "Ghostarr/1.0",
         }
+        # Use Bearer auth for Read Access Token, query param for API Key v3
+        if self._is_bearer_token:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+        return headers
+
+    def _add_api_key_param(self, params: dict[str, Any] | None) -> dict[str, Any]:
+        """Add API key to params if using v3 API key (not Bearer token)."""
+        params = params or {}
+        if not self._is_bearer_token:
+            params["api_key"] = self.api_key
+        return params
 
     async def test_connection(self) -> tuple[bool, str, int | None]:
         """Test connection to TMDB."""
@@ -71,10 +87,10 @@ class TMDBIntegration(BaseIntegration[TMDBMetadata]):
 
         try:
             start = time.time()
-            # Use API key as query param for this endpoint
             response = await self._request(
                 "GET",
                 "/configuration",
+                params=self._add_api_key_param(None),
             )
             elapsed_ms = int((time.time() - start) * 1000)
 
@@ -101,7 +117,7 @@ class TMDBIntegration(BaseIntegration[TMDBMetadata]):
             if year:
                 params["year"] = year
 
-            response = await self._request("GET", "/search/movie", params=params)
+            response = await self._request("GET", "/search/movie", params=self._add_api_key_param(params))
             results = response.get("results", [])
 
             if results:
@@ -123,7 +139,7 @@ class TMDBIntegration(BaseIntegration[TMDBMetadata]):
             if year:
                 params["first_air_date_year"] = year
 
-            response = await self._request("GET", "/search/tv", params=params)
+            response = await self._request("GET", "/search/tv", params=self._add_api_key_param(params))
             results = response.get("results", [])
 
             if results:
@@ -144,7 +160,7 @@ class TMDBIntegration(BaseIntegration[TMDBMetadata]):
             response = await self._request(
                 "GET",
                 f"/movie/{tmdb_id}",
-                params={"language": "fr-FR"},
+                params=self._add_api_key_param({"language": "fr-FR"}),
             )
 
             genres = [g["name"] for g in response.get("genres", [])]
@@ -178,7 +194,7 @@ class TMDBIntegration(BaseIntegration[TMDBMetadata]):
             response = await self._request(
                 "GET",
                 f"/tv/{tmdb_id}",
-                params={"language": "fr-FR"},
+                params=self._add_api_key_param({"language": "fr-FR"}),
             )
 
             genres = [g["name"] for g in response.get("genres", [])]

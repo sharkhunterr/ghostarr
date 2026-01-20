@@ -48,12 +48,16 @@ COPY templates ./templates
 # Create config directory
 RUN mkdir -p /config/templates
 
+# Default port (can be overridden via PORT env var)
+ARG PORT=8080
+ENV PORT=${PORT}
+
 # Expose port
-EXPOSE 8080
+EXPOSE ${PORT}
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD python -c "import httpx; httpx.get('http://localhost:8080/api/v1/health')" || exit 1
+    CMD python -c "import httpx; httpx.get('http://localhost:${PORT}/api/v1/health')" || exit 1
 
-# Run application
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+# Run application (reads PORT from environment)
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT}

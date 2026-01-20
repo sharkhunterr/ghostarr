@@ -7,6 +7,7 @@ import {
   useTestService,
 } from "@/api/settings";
 import type { ServiceTestResult } from "@/types";
+import { cn } from "@/lib/utils";
 
 const SERVICES = [
   {
@@ -82,20 +83,19 @@ export default function Settings() {
   ];
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-6">{t("settings.title")}</h1>
-
-      {/* Tabs */}
-      <div className="flex gap-1 border-b mb-6">
+    <div className="space-y-6">
+      {/* Tabs - Compact pill style */}
+      <div className="flex gap-1 p-1 bg-muted rounded-lg w-fit">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+            className={cn(
+              "px-4 py-1.5 text-sm font-medium rounded-md transition-all",
               activeTab === tab.id
-                ? "border-primary text-primary"
-                : "border-transparent text-muted-foreground hover:text-foreground"
-            }`}
+                ? "bg-background text-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
+            )}
           >
             {tab.label}
           </button>
@@ -107,7 +107,7 @@ export default function Settings() {
 
       {activeTab === "services" && (
         <div className="space-y-4">
-          <p className="text-muted-foreground mb-4">
+          <p className="text-muted-foreground text-sm">
             {t("settings.services.title")}
           </p>
 
@@ -116,7 +116,7 @@ export default function Settings() {
               {t("common.loading")}
             </div>
           ) : (
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
               {SERVICES.map((service) => (
                 <ServiceCard
                   key={service.id}

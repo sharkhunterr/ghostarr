@@ -29,8 +29,10 @@ const URL_PLACEHOLDERS: Record<string, string> = {
 const URL_HELP: Record<string, string> = {
   tautulli: "URL de base sans /api/v2",
   ghost: "URL de base sans /ghost/api/admin",
-  tmdb: "Laissez vide pour utiliser l'API par défaut",
 };
+
+// Services that don't require URL configuration
+const SERVICES_WITHOUT_URL = ["tmdb"];
 
 export function ServiceCard({
   service,
@@ -60,10 +62,14 @@ export function ServiceCard({
   };
 
   const handleSave = () => {
-    onSave(url, apiKey);
+    // For services without URL, pass empty string
+    const urlToSave = SERVICES_WITHOUT_URL.includes(service) ? "" : url;
+    onSave(urlToSave, apiKey);
     setHasChanges(false);
     setApiKey("");
   };
+
+  const showUrlField = !SERVICES_WITHOUT_URL.includes(service);
 
   const getStatusIcon = () => {
     if (isTesting) {
@@ -116,21 +122,23 @@ export function ServiceCard({
       </div>
 
       <div className="space-y-3">
-        <div>
-          <label className="text-sm font-medium">
-            {t("settings.services.url")}
-          </label>
-          <input
-            type="url"
-            value={url}
-            onChange={(e) => handleUrlChange(e.target.value)}
-            placeholder={URL_PLACEHOLDERS[service] || "http://localhost:8080"}
-            className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          />
-          {URL_HELP[service] && (
-            <p className="mt-1 text-xs text-muted-foreground">{URL_HELP[service]}</p>
-          )}
-        </div>
+        {showUrlField && (
+          <div>
+            <label className="text-sm font-medium">
+              {t("settings.services.url")}
+            </label>
+            <input
+              type="url"
+              value={url}
+              onChange={(e) => handleUrlChange(e.target.value)}
+              placeholder={URL_PLACEHOLDERS[service] || "http://localhost:8080"}
+              className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+            {URL_HELP[service] && (
+              <p className="mt-1 text-xs text-muted-foreground">{URL_HELP[service]}</p>
+            )}
+          </div>
+        )}
 
         <div>
           <label className="text-sm font-medium">

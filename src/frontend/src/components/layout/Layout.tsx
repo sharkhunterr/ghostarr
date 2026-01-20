@@ -1,19 +1,21 @@
 /**
- * Main application layout with sidebar and persistent progress card.
+ * Main application layout with sidebar (icons + text) and top navbar.
+ * Responsive design with collapsible sidebar on mobile.
  */
 
 import { useNavigate, useLocation, Link, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  LayoutDashboard,
+  Wand2,
+  CalendarClock,
   History,
   FileText,
   Settings,
   HelpCircle,
   Menu,
-  X,
+  Ghost,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ProgressCard } from '@/components/dashboard/ProgressCard';
 import { ThemeToggle, LanguageSelector } from '@/components/common';
@@ -24,15 +26,16 @@ import { cn } from '@/lib/utils';
 interface NavItem {
   path: string;
   label: string;
-  icon: React.ReactNode;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 const navItems: NavItem[] = [
-  { path: '/dashboard', label: 'nav.dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
-  { path: '/history', label: 'nav.history', icon: <History className="h-5 w-5" /> },
-  { path: '/templates', label: 'nav.templates', icon: <FileText className="h-5 w-5" /> },
-  { path: '/settings', label: 'nav.settings', icon: <Settings className="h-5 w-5" /> },
-  { path: '/help', label: 'nav.help', icon: <HelpCircle className="h-5 w-5" /> },
+  { path: '/manual', label: 'nav.manual', icon: Wand2 },
+  { path: '/scheduled', label: 'nav.scheduled', icon: CalendarClock },
+  { path: '/history', label: 'nav.history', icon: History },
+  { path: '/templates', label: 'nav.templates', icon: FileText },
+  { path: '/settings', label: 'nav.settings', icon: Settings },
+  { path: '/help', label: 'nav.help', icon: HelpCircle },
 ];
 
 export function Layout() {
@@ -57,9 +60,22 @@ export function Layout() {
     currentProgress &&
     (!currentProgress.isComplete || currentProgress.ghostPostUrl);
 
+  // Close sidebar on route change (mobile)
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [location.pathname]);
+
+  // Close sidebar on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSidebarOpen(false);
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, []);
+
   const handleCancel = async () => {
     if (!activeGenerationId) return;
-
     try {
       await cancelMutation.mutateAsync(activeGenerationId);
       cancelGeneration(activeGenerationId);
@@ -79,65 +95,61 @@ export function Layout() {
     handleClear();
   };
 
-  return (
-    <div className="min-h-screen bg-background">
-      {/* Mobile sidebar toggle */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-        >
-          {sidebarOpen ? (
-            <X className="h-5 w-5" />
-          ) : (
-            <Menu className="h-5 w-5" />
-          )}
-        </Button>
-      </div>
+  // Get current page title
+  const getCurrentPageTitle = () => {
+    const currentNav = navItems.find((item) => item.path === location.pathname);
+    return currentNav ? t(currentNav.label) : '';
+  };
 
-      {/* Sidebar */}
+  return (
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar - Desktop: fixed with icons + text, Mobile: overlay */}
       <aside
         className={cn(
-          'fixed left-0 top-0 z-40 h-screen w-64 transform bg-card border-r transition-transform duration-200 ease-in-out',
+          'fixed inset-y-0 left-0 z-50 flex flex-col w-56 bg-sidebar border-r border-sidebar-border transition-transform duration-300 ease-in-out',
+          // Mobile: slide in/out
           sidebarOpen ? 'translate-x-0' : '-translate-x-full',
+          // Desktop: always visible
           'lg:translate-x-0'
         )}
       >
         {/* Logo */}
-        <div className="flex h-16 items-center gap-2 border-b px-6">
-          <div className="h-8 w-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-lg">G</span>
-          </div>
-          <span className="text-xl font-bold">Ghostarr</span>
+        <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4">
+          <Link to="/manual" className="flex items-center gap-2">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <Ghost className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span className="text-lg font-semibold">Ghostarr</span>
+          </Link>
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 space-y-1">
+        <nav className="flex-1 py-3 px-2 space-y-0.5 overflow-y-auto">
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
+            const Icon = item.icon;
+
             return (
               <Link
                 key={item.path}
                 to={item.path}
-                onClick={() => setSidebarOpen(false)}
                 className={cn(
-                  'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors',
+                  'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                   isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-accent'
                 )}
               >
-                {item.icon}
-                {t(item.label)}
+                <Icon className="h-4 w-4 flex-shrink-0" />
+                <span>{t(item.label)}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* Bottom section with toggles */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
-          <div className="flex items-center justify-center gap-2">
+        {/* Bottom section - Theme & Language on desktop sidebar */}
+        <div className="p-3 border-t border-sidebar-border">
+          <div className="flex items-center justify-center gap-1">
             <ThemeToggle />
             <LanguageSelector />
           </div>
@@ -147,21 +159,51 @@ export function Layout() {
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Main content */}
-      <main className="lg:pl-64">
-        <div className="min-h-screen">
-          <Outlet />
-        </div>
-      </main>
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col lg:pl-56 w-full">
+        {/* Top Navigation Bar - Mobile only shows menu, Desktop shows page title */}
+        <header className="sticky top-0 z-30 h-14 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+          <div className="flex h-full items-center justify-between px-4">
+            {/* Left side - Mobile menu + Page title */}
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden h-9 w-9"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Open menu</span>
+              </Button>
+
+              {/* Page title */}
+              <h1 className="text-lg font-semibold">{getCurrentPageTitle()}</h1>
+            </div>
+
+            {/* Right side - Theme & Language on mobile only (shown in sidebar on desktop) */}
+            <div className="flex items-center gap-1 lg:hidden">
+              <ThemeToggle />
+              <LanguageSelector />
+            </div>
+          </div>
+        </header>
+
+        {/* Page content - Full width */}
+        <main className="flex-1 overflow-auto">
+          <div className="p-4 md:p-6 w-full">
+            <Outlet />
+          </div>
+        </main>
+      </div>
 
       {/* Persistent Progress Card (bottom-right) */}
-      {showProgressCard && location.pathname !== '/dashboard' && (
-        <div className="fixed bottom-4 right-4 z-50 w-96 max-w-[calc(100vw-2rem)]">
+      {showProgressCard && location.pathname !== '/manual' && (
+        <div className="fixed bottom-4 right-4 z-50 w-80 max-w-[calc(100vw-2rem)]">
           <ProgressCard
             progress={currentProgress}
             onCancel={handleCancel}

@@ -27,11 +27,11 @@ import {
 
 // Icon mapping
 const categoryIcons: Record<string, React.ReactNode> = {
-  rocket: <Rocket className="h-6 w-6" />,
-  edit: <Edit className="h-6 w-6" />,
-  calendar: <Calendar className="h-6 w-6" />,
-  'file-text': <FileText className="h-6 w-6" />,
-  'help-circle': <HelpCircle className="h-6 w-6" />,
+  rocket: <Rocket className="h-5 w-5" />,
+  edit: <Edit className="h-5 w-5" />,
+  calendar: <Calendar className="h-5 w-5" />,
+  'file-text': <FileText className="h-5 w-5" />,
+  'help-circle': <HelpCircle className="h-5 w-5" />,
 };
 
 // Simple markdown renderer
@@ -73,17 +73,19 @@ function CategoryCard({
   return (
     <button
       onClick={onClick}
-      className="flex items-start gap-4 p-6 rounded-lg border bg-card hover:bg-accent transition-colors text-left w-full"
+      className="flex items-start gap-3 p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left w-full group"
     >
-      <div className="p-3 rounded-lg bg-primary/10 text-primary">
-        {categoryIcons[category.icon] || <HelpCircle className="h-6 w-6" />}
+      <div className="p-2 rounded-lg bg-primary/10 text-primary">
+        {categoryIcons[category.icon] || <HelpCircle className="h-5 w-5" />}
       </div>
-      <div className="flex-1">
-        <h3 className="font-semibold mb-1">{t(`help.categories.${category.id.replace('-', '')}`) || category.title}</h3>
-        <p className="text-sm text-muted-foreground">{category.description}</p>
-        <p className="text-xs text-muted-foreground mt-2">{articleCount} articles</p>
+      <div className="flex-1 min-w-0">
+        <h3 className="font-medium text-sm mb-0.5 group-hover:text-primary transition-colors">
+          {t(`help.categories.${category.id.replace('-', '')}`) || category.title}
+        </h3>
+        <p className="text-xs text-muted-foreground line-clamp-2">{category.description}</p>
+        <p className="text-xs text-muted-foreground mt-1.5">{articleCount} articles</p>
       </div>
-      <ChevronRight className="h-5 w-5 text-muted-foreground" />
+      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 mt-1" />
     </button>
   );
 }
@@ -98,13 +100,13 @@ function ArticleCard({
   return (
     <button
       onClick={onClick}
-      className="flex items-start gap-4 p-4 rounded-lg border bg-card hover:bg-accent transition-colors text-left w-full"
+      className="flex items-start gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors text-left w-full group"
     >
-      <div className="flex-1">
-        <h4 className="font-medium mb-1">{article.title}</h4>
-        <p className="text-sm text-muted-foreground">{article.summary}</p>
+      <div className="flex-1 min-w-0">
+        <h4 className="font-medium text-sm mb-0.5 group-hover:text-primary transition-colors">{article.title}</h4>
+        <p className="text-xs text-muted-foreground line-clamp-2">{article.summary}</p>
       </div>
-      <ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+      <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 mt-0.5" />
     </button>
   );
 }
@@ -116,10 +118,11 @@ function ArticleView({
   articleId: string;
   onBack: () => void;
 }) {
+  const { t } = useTranslation();
   const { data: article, isLoading } = useHelpArticle(articleId);
 
   if (isLoading) {
-    return <div className="text-center py-8 text-muted-foreground">Loading...</div>;
+    return <div className="text-center py-8 text-muted-foreground">{t('common.loading')}</div>;
   }
 
   if (!article) {
@@ -128,9 +131,9 @@ function ArticleView({
 
   return (
     <div>
-      <Button variant="ghost" onClick={onBack} className="mb-4">
+      <Button variant="ghost" size="sm" onClick={onBack} className="mb-4 -ml-2">
         <ArrowLeft className="h-4 w-4 mr-2" />
-        Back
+        {t('common.back')}
       </Button>
       <div
         className="prose prose-sm dark:prose-invert max-w-none"
@@ -183,41 +186,41 @@ export default function Help() {
   };
 
   return (
-    <div className="p-8 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">{t('help.title')}</h1>
-
-      {/* Search */}
-      <div className="relative mb-8">
+    <div className="space-y-6">
+      {/* Search - Full width */}
+      <div className="relative max-w-xl">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder={t('help.search')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10"
+          className="pl-10 h-10"
         />
       </div>
 
       {/* Content */}
       {selectedArticle ? (
-        <ArticleView articleId={selectedArticle} onBack={handleBack} />
+        <div className="max-w-4xl">
+          <ArticleView articleId={selectedArticle} onBack={handleBack} />
+        </div>
       ) : showSearchResults ? (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">
-              Search results ({searchResults.length})
+            <h2 className="text-sm font-medium">
+              {t('help.searchResults')} ({searchResults.length})
             </h2>
             {searchQuery && (
               <Button variant="ghost" size="sm" onClick={() => setSearchQuery('')}>
-                Clear
+                {t('common.clear')}
               </Button>
             )}
           </div>
           {searchResults.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
-              No results found for "{searchQuery}"
+            <p className="text-muted-foreground text-center py-8 text-sm">
+              {t('help.noResults', { query: searchQuery })}
             </p>
           ) : (
-            <div className="space-y-2">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {searchResults.map((article) => (
                 <ArticleCard
                   key={article.id}
@@ -230,11 +233,11 @@ export default function Help() {
         </div>
       ) : selectedCategory ? (
         <div className="space-y-4">
-          <Button variant="ghost" onClick={handleBack} className="mb-2">
+          <Button variant="ghost" size="sm" onClick={handleBack} className="-ml-2">
             <ArrowLeft className="h-4 w-4 mr-2" />
             {t('common.all')} categories
           </Button>
-          <div className="space-y-2">
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {displayedArticles.map((article) => (
               <ArticleCard
                 key={article.id}
@@ -245,7 +248,7 @@ export default function Help() {
           </div>
         </div>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
           {categories.map((category) => (
             <CategoryCard
               key={category.id}

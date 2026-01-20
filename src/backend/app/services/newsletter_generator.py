@@ -513,10 +513,16 @@ class NewsletterGenerator:
                 return
 
             integration = TautulliIntegration(url=url, api_key=api_key)
-            stats = await integration.fetch_statistics(days=self.config.statistics.days)
+            stats = await integration.fetch_statistics(
+                days=self.config.statistics.days,
+                include_comparison=self.config.statistics.include_comparison,
+            )
             await integration.close()
 
             self.statistics = stats.model_dump()
+
+            # Enrich statistics with TMDB data (posters, ratings, etc.)
+            await self._enrich_statistics_tmdb()
 
             await self.tracker.complete_step(
                 "fetch_statistics",
@@ -527,6 +533,53 @@ class NewsletterGenerator:
         except Exception as e:
             logger.error(f"Statistics fetch failed: {e}")
             await self.tracker.complete_step("fetch_statistics", "Fetch failed, continuing", 0)
+
+    async def _enrich_statistics_tmdb(self) -> None:
+        """Enrich statistics top movies and shows with TMDB data."""
+        if not self.statistics:
+            return
+
+        try:
+            _, api_key = await get_service_credentials(self.db, "tmdb")
+            if not api_key:
+                logger.debug("TMDB not configured, skipping statistics enrichment")
+                return
+
+            integration = TMDBIntegration(api_key=api_key)
+
+            # Enrich top movies
+            if self.statistics.get("top_movies_played"):
+                for movie in self.statistics["top_movies_played"]:
+                    if isinstance(movie, dict):
+                        metadata = await integration.enrich_media(
+                            title=movie.get("title", ""),
+                            media_type="movie",
+                        )
+                        if metadata:
+                            movie["poster_url"] = metadata.poster_url or ""
+                            movie["backdrop_url"] = metadata.backdrop_url or ""
+                            movie["rating"] = str(metadata.vote_average or "")
+                            movie["year"] = (metadata.release_date or "")[:4] if metadata.release_date else ""
+
+            # Enrich top shows
+            if self.statistics.get("top_shows_played"):
+                for show in self.statistics["top_shows_played"]:
+                    if isinstance(show, dict):
+                        metadata = await integration.enrich_media(
+                            title=show.get("title", ""),
+                            media_type="tv",
+                        )
+                        if metadata:
+                            show["poster_url"] = metadata.poster_url or ""
+                            show["backdrop_url"] = metadata.backdrop_url or ""
+                            show["rating"] = str(metadata.vote_average or "")
+                            show["year"] = (metadata.release_date or "")[:4] if metadata.release_date else ""
+
+            await integration.close()
+            logger.debug("Statistics enriched with TMDB data")
+
+        except Exception as e:
+            logger.warning(f"Failed to enrich statistics with TMDB: {e}")
 
     def _build_plex_image_url(self, thumb_path: str | None) -> str:
         """Build a full Plex image URL from a relative thumb path via Tautulli proxy."""
@@ -547,6 +600,11 @@ class NewsletterGenerator:
         if not poster_url:
             poster_url = self._build_plex_image_url(movie.get("thumb"))
 
+        # Build backdrop URL - prefer TMDB, fallback to Plex art
+        backdrop_url = movie.get("backdrop_url")
+        if not backdrop_url:
+            backdrop_url = self._build_plex_image_url(movie.get("art"))
+
         return {
             **movie,
             # Map runtime to duration (in minutes, convert to seconds for format_duration)
@@ -555,6 +613,8 @@ class NewsletterGenerator:
             "summary": movie.get("overview") or movie.get("summary") or "",
             # Poster URL (TMDB or Plex via Tautulli)
             "poster_url": poster_url,
+            # Backdrop URL for featured movie background
+            "backdrop_url": backdrop_url,
             # Map vote_average to rating
             "rating": movie.get("vote_average") or movie.get("rating"),
             # Ensure genres is a list
@@ -574,6 +634,11 @@ class NewsletterGenerator:
         if not poster_url:
             poster_url = self._build_plex_image_url(episode.get("thumb"))
 
+        # Build backdrop URL - prefer TMDB show backdrop, fallback to Plex art
+        backdrop_url = episode.get("show_backdrop_url") or episode.get("backdrop_url")
+        if not backdrop_url:
+            backdrop_url = self._build_plex_image_url(episode.get("art"))
+
         return {
             **episode,
             # Map season/episode numbers
@@ -581,6 +646,8 @@ class NewsletterGenerator:
             "episode_number": episode.get("media_index") or episode.get("episode_number") or 0,
             # Poster URL (TMDB or Plex via Tautulli)
             "poster_url": poster_url,
+            # Backdrop URL for series background
+            "backdrop_url": backdrop_url,
             # Map genres from show
             "genres": episode.get("show_genres") or episode.get("genres") or [],
             # Map summary
@@ -588,7 +655,9 @@ class NewsletterGenerator:
             # Map rating
             "rating": episode.get("show_vote_average") or episode.get("vote_average") or episode.get("rating"),
             "content_rating": episode.get("content_rating") or "",
-            "year": episode.get("year") or "",
+            "year": episode.get("year") or episode.get("show_year") or "",
+            # Series title for display
+            "series_title": episode.get("grandparent_title") or episode.get("series_title") or "",
         }
 
     def _group_episodes_by_show(self, episodes: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
@@ -628,14 +697,48 @@ class NewsletterGenerator:
                 featured_movie = normalized_movies[0]
                 show_featured_movie = bool(featured_movie.get("poster_url"))
 
-            # Prepare real_stats from statistics
+            # Prepare real_stats from statistics - pass full statistics object
+            # The TautulliStatistics model now has all the fields expected by template_mixe.html
             real_stats = None
             if self.statistics:
-                real_stats = {
-                    "total_plays": self.statistics.get("total_plays", 0),
-                    "total_watch_time": self.statistics.get("total_duration", 0),
-                    "total_viewers": self.statistics.get("unique_users", 0),
-                }
+                # Start with all statistics data
+                real_stats = dict(self.statistics)
+
+                # Build poster URLs for top_movies_played
+                if real_stats.get("top_movies_played"):
+                    updated_movies = []
+                    for movie_stat in real_stats["top_movies_played"]:
+                        if isinstance(movie_stat, dict):
+                            movie_dict = dict(movie_stat)
+                        else:
+                            movie_dict = movie_stat.model_dump() if hasattr(movie_stat, "model_dump") else dict(movie_stat)
+                        if movie_dict.get("thumb") and not movie_dict.get("poster_url"):
+                            movie_dict["poster_url"] = self._build_plex_image_url(movie_dict.get("thumb"))
+                        updated_movies.append(movie_dict)
+                    real_stats["top_movies_played"] = updated_movies
+
+                # Build poster URLs for top_shows_played
+                if real_stats.get("top_shows_played"):
+                    updated_shows = []
+                    for show_stat in real_stats["top_shows_played"]:
+                        if isinstance(show_stat, dict):
+                            show_dict = dict(show_stat)
+                        else:
+                            show_dict = show_stat.model_dump() if hasattr(show_stat, "model_dump") else dict(show_stat)
+                        if show_dict.get("thumb") and not show_dict.get("poster_url"):
+                            show_dict["poster_url"] = self._build_plex_image_url(show_dict.get("thumb"))
+                        updated_shows.append(show_dict)
+                    real_stats["top_shows_played"] = updated_shows
+
+                # Convert top_users_by_time to dicts
+                if real_stats.get("top_users_by_time"):
+                    updated_users = []
+                    for user_stat in real_stats["top_users_by_time"]:
+                        if isinstance(user_stat, dict):
+                            updated_users.append(user_stat)
+                        else:
+                            updated_users.append(user_stat.model_dump() if hasattr(user_stat, "model_dump") else dict(user_stat))
+                    real_stats["top_users_by_time"] = updated_users
 
             # Build context
             context = {
@@ -663,6 +766,13 @@ class NewsletterGenerator:
             }
 
             html = template_service.render(template.file_path, context)
+
+            # Debug: Log HTML length and snippet
+            logger.info(f"Rendered HTML length: {len(html)} characters")
+            if len(html) < 500:
+                logger.warning(f"HTML content seems too short: {html}")
+            else:
+                logger.debug(f"HTML preview (first 500 chars): {html[:500]}")
 
             await self.tracker.complete_step(
                 "render_template",
@@ -703,6 +813,9 @@ class NewsletterGenerator:
                 send_email = True
 
             title = template_service.render_title(self.config.title)
+
+            # Debug: Log what we're sending to Ghost
+            logger.info(f"Publishing to Ghost: title='{title}', html_length={len(html)}, status={status}, send_email={send_email}")
 
             post = await integration.create_post(
                 title=title,
