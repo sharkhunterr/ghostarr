@@ -32,7 +32,10 @@ class Schedule(Base):
     template_id = Column(String(36), ForeignKey("templates.id"), nullable=False)
     generation_config = Column(JSON, nullable=False)  # Full config snapshot
     last_run_at = Column(DateTime, nullable=True)
-    last_run_status = Column(Enum(RunStatus), nullable=True)
+    last_run_status = Column(
+        Enum(RunStatus, values_callable=lambda x: [e.value for e in x]),
+        nullable=True,
+    )
     next_run_at = Column(DateTime, nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
