@@ -263,7 +263,8 @@ class TautulliIntegration(BaseIntegration[MediaItem]):
             # Fetch previous period stats for comparison
             if include_comparison:
                 previous_stats = await self._fetch_previous_period_stats(days)
-                self._calculate_comparison(stats, previous_stats)
+                previous_rankings = await self._fetch_previous_rankings(days)
+                self._calculate_comparison(stats, previous_stats, previous_rankings)
 
         except Exception as e:
             logger.error(f"Failed to fetch Tautulli statistics: {e}")
@@ -332,7 +333,12 @@ class TautulliIntegration(BaseIntegration[MediaItem]):
 
         return previous_stats
 
-    def _calculate_comparison(self, current: TautulliStatistics, previous_2x: TautulliStatistics) -> None:
+    def _calculate_comparison(
+        self,
+        current: TautulliStatistics,
+        previous_2x: TautulliStatistics,
+        previous_rankings: dict[str, dict[str, int]],
+    ) -> None:
         """Calculate growth percentages comparing current period to previous period.
 
         Since we fetched 2x the period, we need to subtract current from 2x to get previous.
@@ -368,8 +374,8 @@ class TautulliIntegration(BaseIntegration[MediaItem]):
                 ((current.unique_users - previous_users) / previous_users) * 100, 1
             )
 
-        # Update evolution types for top movies and shows
-        self._update_evolution_types(current)
+        # Update evolution types for top movies, shows and users based on ranking changes
+        self._update_evolution_types(current, previous_rankings)
 
         logger.info(
             f"Comparison calculated - Current: plays={current.total_plays}, watch_time={current.total_watch_time}, users={current.unique_users}"
@@ -382,58 +388,178 @@ class TautulliIntegration(BaseIntegration[MediaItem]):
             f"time={current.time_growth_percentage}%, users={current.users_growth_percentage}%"
         )
 
-    def _update_evolution_types(self, stats: TautulliStatistics) -> None:
-        """Update evolution types based on growth percentages.
+    async def _fetch_previous_rankings(self, days: int) -> dict[str, dict[str, int]]:
+        """Fetch rankings from the previous period to calculate evolution.
 
-        Uses a threshold of 5% to determine if there's meaningful change.
-        Positive growth = "up", negative growth = "down", otherwise "stable".
-        evolution_value represents the absolute difference in plays (always positive for display).
+        Uses get_history API with after/before date filters to get playback data
+        for the previous period, then calculates rankings based on play counts.
+
+        Returns a dict with 'movies', 'shows', 'users' keys, each containing
+        a dict mapping title/username to their previous position (1-indexed).
         """
-        # Calculate absolute plays difference for display
-        plays_diff = abs(stats.total_plays - stats.previous_total_plays)
+        previous_rankings: dict[str, dict[str, int]] = {
+            "movies": {},
+            "shows": {},
+            "users": {},
+        }
 
-        # For movies - use plays growth
-        for movie in stats.top_movies_played:
-            if stats.plays_growth_percentage > 5:
-                movie.evolution_type = "up"
-                movie.evolution_percentage = stats.plays_growth_percentage
-                movie.evolution_value = plays_diff
-            elif stats.plays_growth_percentage < -5:
-                movie.evolution_type = "down"
-                movie.evolution_percentage = stats.plays_growth_percentage
-                movie.evolution_value = plays_diff
-            else:
-                movie.evolution_type = "stable"
-                movie.evolution_percentage = 0.0
-                movie.evolution_value = 0
+        try:
+            # Previous period: from (2*days ago) to (days ago)
+            end_date = datetime.now() - timedelta(days=days)
+            start_date = end_date - timedelta(days=days)
 
-        # For shows - use plays growth
-        for show in stats.top_shows_played:
-            if stats.plays_growth_percentage > 5:
-                show.evolution_type = "up"
-                show.evolution_percentage = stats.plays_growth_percentage
-                show.evolution_value = plays_diff
-            elif stats.plays_growth_percentage < -5:
-                show.evolution_type = "down"
-                show.evolution_percentage = stats.plays_growth_percentage
-                show.evolution_value = plays_diff
-            else:
-                show.evolution_type = "stable"
-                show.evolution_percentage = 0.0
-                show.evolution_value = 0
+            logger.info(
+                f"Fetching previous rankings for period {start_date.strftime('%Y-%m-%d')} to {end_date.strftime('%Y-%m-%d')} using get_history"
+            )
 
-        # For users - use users growth
-        users_diff = abs(stats.unique_users - stats.previous_unique_users)
-        for user in stats.top_users_by_time:
-            if stats.users_growth_percentage > 5:
-                user.evolution_type = "up"
-                user.evolution_value = users_diff if users_diff > 0 else 1
-            elif stats.users_growth_percentage < -5:
-                user.evolution_type = "down"
-                user.evolution_value = users_diff if users_diff > 0 else 1
-            else:
-                user.evolution_type = "stable"
-                user.evolution_value = 0
+            # Fetch history for the previous period
+            response = await self._request(
+                "GET",
+                "/api/v2",
+                params={
+                    "apikey": self.api_key,
+                    "cmd": "get_history",
+                    "after": start_date.strftime("%Y-%m-%d"),
+                    "before": end_date.strftime("%Y-%m-%d"),
+                    "length": 5000,  # Get enough records
+                },
+            )
+
+            result = response.get("response", {}).get("result")
+            logger.info(f"Previous rankings get_history result: {result}")
+
+            if result != "success":
+                logger.warning("Failed to fetch history for previous period")
+                return previous_rankings
+
+            history_data = response.get("response", {}).get("data", {}).get("data", [])
+            logger.info(f"Previous period history records: {len(history_data)}")
+
+            # Aggregate play counts by title/user
+            movie_plays: dict[str, int] = {}
+            show_plays: dict[str, int] = {}
+            user_plays: dict[str, int] = {}
+
+            for record in history_data:
+                media_type = record.get("media_type", "")
+                title = record.get("full_title", "") or record.get("title", "")
+                user = record.get("friendly_name", "") or record.get("user", "")
+
+                # For shows, use grandparent_title (series name)
+                if media_type == "episode":
+                    show_title = record.get("grandparent_title", "") or title
+                    if show_title:
+                        show_plays[show_title] = show_plays.get(show_title, 0) + 1
+                elif media_type == "movie":
+                    if title:
+                        movie_plays[title] = movie_plays.get(title, 0) + 1
+
+                # Count user plays regardless of media type
+                if user:
+                    user_plays[user] = user_plays.get(user, 0) + 1
+
+            # Sort by play count and assign rankings
+            sorted_movies = sorted(movie_plays.items(), key=lambda x: x[1], reverse=True)
+            for position, (title, _) in enumerate(sorted_movies[:10], 1):
+                previous_rankings["movies"][title] = position
+
+            sorted_shows = sorted(show_plays.items(), key=lambda x: x[1], reverse=True)
+            for position, (title, _) in enumerate(sorted_shows[:10], 1):
+                previous_rankings["shows"][title] = position
+
+            sorted_users = sorted(user_plays.items(), key=lambda x: x[1], reverse=True)
+            for position, (username, _) in enumerate(sorted_users[:10], 1):
+                previous_rankings["users"][username] = position
+
+            logger.info(
+                f"Previous rankings calculated from history - movies: {previous_rankings['movies']}, "
+                f"shows: {previous_rankings['shows']}, users: {previous_rankings['users']}"
+            )
+
+        except Exception as e:
+            logger.warning(f"Failed to fetch previous rankings: {e}")
+
+        return previous_rankings
+
+    def _calculate_item_evolution(
+        self, current_position: int, previous_position: int | None
+    ) -> tuple[str, int]:
+        """Calculate evolution type and value for an item.
+
+        Args:
+            current_position: Current ranking position (1-indexed)
+            previous_position: Previous ranking position (1-indexed) or None if new
+
+        Returns:
+            Tuple of (evolution_type, evolution_value)
+            - evolution_type: 'new', 'up', 'down', or 'stable'
+            - evolution_value: Number of positions changed (positive for up, positive for down display)
+        """
+        if previous_position is None:
+            # New in ranking
+            return "new", 0
+        elif previous_position > current_position:
+            # Moved up (was lower position number = better rank)
+            return "up", previous_position - current_position
+        elif previous_position < current_position:
+            # Moved down
+            return "down", current_position - previous_position
+        else:
+            # Same position
+            return "stable", 0
+
+    def _update_evolution_types(
+        self, stats: TautulliStatistics, previous_rankings: dict[str, dict[str, int]]
+    ) -> None:
+        """Update evolution types based on ranking changes.
+
+        Compares current rankings with previous period rankings to determine
+        if each item moved up, down, is new, or stayed stable.
+        """
+        logger.info(f"Updating evolution types with previous rankings: {previous_rankings}")
+
+        # For movies - calculate individual evolution based on ranking change
+        for position, movie in enumerate(stats.top_movies_played, 1):
+            previous_pos = previous_rankings.get("movies", {}).get(movie.title)
+            evolution_type, evolution_value = self._calculate_item_evolution(
+                position, previous_pos
+            )
+            logger.info(
+                f"Movie '{movie.title}': current_pos={position}, previous_pos={previous_pos} "
+                f"-> {evolution_type} ({evolution_value})"
+            )
+            movie.evolution_type = evolution_type
+            movie.evolution_value = evolution_value
+            movie.evolution_percentage = None  # Not used for ranking evolution
+
+        # For shows - calculate individual evolution based on ranking change
+        for position, show in enumerate(stats.top_shows_played, 1):
+            previous_pos = previous_rankings.get("shows", {}).get(show.title)
+            evolution_type, evolution_value = self._calculate_item_evolution(
+                position, previous_pos
+            )
+            logger.info(
+                f"Show '{show.title}': current_pos={position}, previous_pos={previous_pos} "
+                f"-> {evolution_type} ({evolution_value})"
+            )
+            show.evolution_type = evolution_type
+            show.evolution_value = evolution_value
+            show.evolution_percentage = None
+
+        # For users - calculate individual evolution based on ranking change
+        for position, user in enumerate(stats.top_users_by_time, 1):
+            # Try friendly_name first, then username
+            username = user.friendly_name or user.username
+            previous_pos = previous_rankings.get("users", {}).get(username)
+            evolution_type, evolution_value = self._calculate_item_evolution(
+                position, previous_pos
+            )
+            logger.info(
+                f"User '{username}': current_pos={position}, previous_pos={previous_pos} "
+                f"-> {evolution_type} ({evolution_value})"
+            )
+            user.evolution_type = evolution_type
+            user.evolution_value = evolution_value
 
     async def _fetch_home_stats(self, stats: TautulliStatistics, days: int) -> None:
         """Fetch home stats (top movies, shows, users)."""

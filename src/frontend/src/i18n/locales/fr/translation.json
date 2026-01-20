@@ -21,7 +21,8 @@
     "success": "Succès",
     "error": "Erreur",
     "warning": "Attention",
-    "info": "Information"
+    "info": "Information",
+    "unlimited": "Illimité"
   },
   "nav": {
     "manual": "Génération manuelle",
@@ -193,6 +194,18 @@
     "progressModal": {
       "title": "Détails de la génération",
       "noSteps": "Aucune information d'étape disponible"
+    },
+    "config": {
+      "title": "Paramètres de génération",
+      "publicationMode": "Mode de publication",
+      "sources": "Sources actives",
+      "days": "jours",
+      "maxItems": "Max éléments",
+      "featuredItem": "Élément vedette",
+      "statistics": "Statistiques",
+      "comparison": "comparaison",
+      "maintenance": "Maintenance",
+      "maxTotalItems": "Max total"
     }
   },
   "templates": {

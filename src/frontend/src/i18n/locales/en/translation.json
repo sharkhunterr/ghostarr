@@ -21,7 +21,8 @@
     "success": "Success",
     "error": "Error",
     "warning": "Warning",
-    "info": "Information"
+    "info": "Information",
+    "unlimited": "Unlimited"
   },
   "nav": {
     "manual": "Manual Generation",
@@ -193,6 +194,18 @@
     "progressModal": {
       "title": "Generation Details",
       "noSteps": "No step information available"
+    },
+    "config": {
+      "title": "Generation Parameters",
+      "publicationMode": "Publication mode",
+      "sources": "Active sources",
+      "days": "days",
+      "maxItems": "Max items",
+      "featuredItem": "Featured item",
+      "statistics": "Statistics",
+      "comparison": "comparison",
+      "maintenance": "Maintenance",
+      "maxTotalItems": "Max total items"
     }
   },
   "templates": {

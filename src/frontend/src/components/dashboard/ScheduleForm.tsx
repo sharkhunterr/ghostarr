@@ -87,7 +87,7 @@ const defaultConfig: GenerationConfig = {
   statistics: {
     enabled: true,
     days: 7,
-    include_comparison: false,
+    include_comparison: true,
   },
   maintenance: {
     enabled: false,

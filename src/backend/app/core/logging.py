@@ -157,12 +157,14 @@ class DatabaseLogHandler(logging.Handler):
         logging.CRITICAL: "error",  # Map critical to error
     }
 
-    def __init__(self, level: int = logging.INFO):
+    def __init__(self, level: int = logging.INFO, batch_size: int = 10, flush_interval: float = 2.0):
         super().__init__(level)
-        self._queue: queue.Queue = queue.Queue()
+        self._queue: queue.Queue = queue.Queue(maxsize=1000)  # Limit queue size
         self._thread: threading.Thread | None = None
         self._running = False
         self._db_initialized = False
+        self._batch_size = batch_size
+        self._flush_interval = flush_interval
 
     def start(self) -> None:
         """Start the background thread for database writes."""
@@ -192,67 +194,101 @@ class DatabaseLogHandler(logging.Handler):
             pass  # Drop log if queue is full
 
     def _worker(self) -> None:
-        """Background worker that writes logs to the database."""
+        """Background worker that writes logs to the database in batches."""
+        import time
+
         # Create a new event loop for this thread
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
 
         try:
+            batch: list[logging.LogRecord] = []
+            last_flush = time.time()
+
             while self._running:
                 try:
-                    record = self._queue.get(timeout=1)
+                    # Try to get a record with short timeout
+                    record = self._queue.get(timeout=0.5)
                     if record is None:  # Shutdown signal
+                        # Flush remaining logs
+                        if batch:
+                            loop.run_until_complete(self._write_logs_batch(batch))
                         break
 
-                    loop.run_until_complete(self._write_log(record))
+                    batch.append(record)
+
+                    # Flush if batch is full or interval elapsed
+                    current_time = time.time()
+                    if len(batch) >= self._batch_size or (current_time - last_flush) >= self._flush_interval:
+                        loop.run_until_complete(self._write_logs_batch(batch))
+                        batch = []
+                        last_flush = current_time
+
                 except queue.Empty:
-                    continue
+                    # Flush any pending logs on timeout
+                    if batch:
+                        loop.run_until_complete(self._write_logs_batch(batch))
+                        batch = []
+                        last_flush = time.time()
                 except Exception:
                     pass  # Silently ignore errors to avoid recursive logging
         finally:
             loop.close()
 
-    async def _write_log(self, record: logging.LogRecord) -> None:
-        """Write a log record to the database."""
+    def _record_to_log_params(self, record: logging.LogRecord) -> dict:
+        """Convert a log record to parameters for Log model."""
+        from app.models.log import LogLevel, LogSource
+
+        level_str = self.LEVEL_MAP.get(record.levelno, "info")
+        level = LogLevel(level_str)
+
+        # Determine source based on logger name
+        if "integration" in record.name.lower():
+            source = LogSource.INTEGRATION
+        else:
+            source = LogSource.BACKEND
+
+        # Extract service name from logger (e.g., "app.integrations.tautulli" -> "tautulli")
+        service = None
+        parts = record.name.split(".")
+        if len(parts) >= 3 and parts[1] == "integrations":
+            service = parts[2]
+        elif len(parts) >= 3 and parts[1] == "services":
+            service = parts[2]
+
+        correlation_id = getattr(record, "correlation_id", None)
+        if correlation_id == "-":
+            correlation_id = None
+
+        return {
+            "level": level,
+            "source": source,
+            "service": service,
+            "message": record.getMessage()[:2000],  # Limit message length
+            "correlation_id": correlation_id,
+        }
+
+    async def _write_logs_batch(self, records: list[logging.LogRecord]) -> None:
+        """Write multiple log records to the database in a single transaction."""
+        if not records:
+            return
+
         try:
             # Late import to avoid circular dependencies
             from app.database import AsyncSessionLocal
-            from app.models.log import Log, LogLevel, LogSource
-
-            level_str = self.LEVEL_MAP.get(record.levelno, "info")
-            level = LogLevel(level_str)
-
-            # Determine source based on logger name
-            if "integration" in record.name.lower():
-                source = LogSource.INTEGRATION
-            else:
-                source = LogSource.BACKEND
-
-            # Extract service name from logger (e.g., "app.integrations.tautulli" -> "tautulli")
-            service = None
-            parts = record.name.split(".")
-            if len(parts) >= 3 and parts[1] == "integrations":
-                service = parts[2]
-            elif len(parts) >= 3 and parts[1] == "services":
-                service = parts[2]
-
-            correlation_id = getattr(record, "correlation_id", None)
-            if correlation_id == "-":
-                correlation_id = None
+            from app.models.log import Log
 
             async with AsyncSessionLocal() as session:
-                log = Log(
-                    level=level,
-                    source=source,
-                    service=service,
-                    message=record.getMessage()[:2000],  # Limit message length
-                    correlation_id=correlation_id,
-                )
-                session.add(log)
+                logs = [Log(**self._record_to_log_params(r)) for r in records]
+                session.add_all(logs)
                 await session.commit()
 
         except Exception:
             pass  # Silently fail to avoid recursive logging
+
+    async def _write_log(self, record: logging.LogRecord) -> None:
+        """Write a single log record to the database (for backward compatibility)."""
+        await self._write_logs_batch([record])
 
 
 # Global database handler instance

@@ -53,7 +53,7 @@ class StatisticsConfig(BaseModel):
 
     enabled: bool = False
     days: int = Field(default=7, ge=1, le=90, description="Statistics period in days")
-    include_comparison: bool = Field(default=False, description="Include period comparison")
+    include_comparison: bool = Field(default=True, description="Include period comparison")
 
 
 class MaintenanceConfig(BaseModel):

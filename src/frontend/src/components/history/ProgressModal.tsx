@@ -2,6 +2,7 @@
  * Progress modal for viewing generation step details.
  */
 
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   CheckCircle,
@@ -10,6 +11,9 @@ import {
   Loader2,
   AlertCircle,
   X,
+  ChevronDown,
+  ChevronRight,
+  Settings2,
 } from 'lucide-react';
 import {
   Dialog,
@@ -20,8 +24,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import type { History, ProgressStep, ProgressStepStatus } from '@/types';
+import type { History, ProgressStep, ProgressStepStatus, GenerationConfig } from '@/types';
 
 interface ProgressModalProps {
   open: boolean;
@@ -53,12 +62,87 @@ function formatDuration(ms: number): string {
   return `${minutes}m ${remainingSeconds}s`;
 }
 
+function ConfigSection({ config, t }: { config: GenerationConfig; t: (key: string) => string }) {
+  const enabledSources = [];
+  if (config.tautulli?.enabled) enabledSources.push('Tautulli');
+  if (config.romm?.enabled) enabledSources.push('Romm');
+  if (config.komga?.enabled) enabledSources.push('Komga');
+  if (config.audiobookshelf?.enabled) enabledSources.push('Audiobookshelf');
+  if (config.tunarr?.enabled) enabledSources.push('Tunarr');
+
+  return (
+    <div className="space-y-2 text-sm">
+      {/* Publication mode */}
+      <div className="flex justify-between">
+        <span className="text-muted-foreground">{t('history.config.publicationMode')}</span>
+        <Badge variant="outline">{config.publication_mode}</Badge>
+      </div>
+
+      {/* Enabled sources */}
+      {enabledSources.length > 0 && (
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">{t('history.config.sources')}</span>
+          <span>{enabledSources.join(', ')}</span>
+        </div>
+      )}
+
+      {/* Tautulli details */}
+      {config.tautulli?.enabled && (
+        <div className="pl-4 space-y-1 border-l-2 border-muted">
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Tautulli - {t('history.config.days')}</span>
+            <span>{config.tautulli.days}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">Tautulli - {t('history.config.maxItems')}</span>
+            <span>{config.tautulli.max_items === -1 ? t('common.unlimited') : config.tautulli.max_items}</span>
+          </div>
+          {config.tautulli.featured_item && (
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('history.config.featuredItem')}</span>
+              <CheckCircle className="h-4 w-4 text-green-500" />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Statistics */}
+      {config.statistics?.enabled && (
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">{t('history.config.statistics')}</span>
+          <span>
+            {config.statistics.days} {t('history.config.days')}
+            {config.statistics.include_comparison && ` + ${t('history.config.comparison')}`}
+          </span>
+        </div>
+      )}
+
+      {/* Maintenance */}
+      {config.maintenance?.enabled && (
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">{t('history.config.maintenance')}</span>
+          <Badge variant="secondary">{config.maintenance.type}</Badge>
+        </div>
+      )}
+
+      {/* Max items */}
+      {config.max_total_items !== -1 && (
+        <div className="flex justify-between">
+          <span className="text-muted-foreground">{t('history.config.maxTotalItems')}</span>
+          <span>{config.max_total_items}</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ProgressModal({
   open,
   onOpenChange,
   history,
 }: ProgressModalProps) {
   const { t } = useTranslation();
+  const [configOpen, setConfigOpen] = useState(false);
 
   if (!history) return null;
 
@@ -107,6 +191,32 @@ export function ProgressModal({
           <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm">
             {history.error_message}
           </div>
+        )}
+
+        {/* Generation config collapsible */}
+        {history.generation_config && (
+          <Collapsible open={configOpen} onOpenChange={setConfigOpen}>
+            <CollapsibleTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full justify-between px-2"
+              >
+                <div className="flex items-center gap-2">
+                  <Settings2 className="h-4 w-4" />
+                  <span>{t('history.config.title')}</span>
+                </div>
+                {configOpen ? (
+                  <ChevronDown className="h-4 w-4" />
+                ) : (
+                  <ChevronRight className="h-4 w-4" />
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="px-2 py-2">
+              <ConfigSection config={history.generation_config} t={t} />
+            </CollapsibleContent>
+          </Collapsible>
         )}
 
         <Separator />
