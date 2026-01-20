@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.database import AsyncSessionLocal, SYNC_DATABASE_URL
 from app.core.logging import get_logger
-from app.models.schedule import Schedule
+from app.models.schedule import Schedule, RunStatus
 from app.models.history import GenerationType
 from app.schemas.generation import GenerationConfig
 
@@ -225,7 +225,13 @@ async def execute_scheduled_generation(schedule_id: str) -> None:
 
             # Update schedule last run info
             schedule.last_run_at = datetime.utcnow()
-            schedule.last_run_status = history.status.value
+            # Map history status to RunStatus enum
+            if history.status.value == "success":
+                schedule.last_run_status = RunStatus.SUCCESS
+            elif history.status.value == "failed":
+                schedule.last_run_status = RunStatus.FAILED
+            else:
+                schedule.last_run_status = RunStatus.PENDING
 
             # Update next run time
             job = get_scheduler().get_job(f"schedule_{schedule_id}")
@@ -244,7 +250,7 @@ async def execute_scheduled_generation(schedule_id: str) -> None:
 
             # Update schedule with failure
             schedule.last_run_at = datetime.utcnow()
-            schedule.last_run_status = "failed"
+            schedule.last_run_status = RunStatus.FAILED
             await db.commit()
 
 
