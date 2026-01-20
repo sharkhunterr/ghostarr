@@ -236,7 +236,8 @@
       "mobile": "Mobile",
       "tablet": "Tablette",
       "desktop": "Bureau",
-      "noContent": "Aucun contenu à prévisualiser"
+      "noContent": "Aucun contenu à prévisualiser",
+      "error": "Erreur de prévisualisation"
     }
   },
   "settings": {

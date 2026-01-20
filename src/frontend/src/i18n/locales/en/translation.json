@@ -236,7 +236,8 @@
       "mobile": "Mobile",
       "tablet": "Tablet",
       "desktop": "Desktop",
-      "noContent": "No content to preview"
+      "noContent": "No content to preview",
+      "error": "Preview error"
     }
   },
   "settings": {

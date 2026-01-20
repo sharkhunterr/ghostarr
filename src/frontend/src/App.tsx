@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import "@/i18n";
 import { usePreferencesStore } from "@/stores/preferencesStore";
 import { Layout } from "@/components/layout";
+import { Toaster } from "@/components/ui/toaster";
 
 // Pages
 import Settings from "@/pages/Settings";
@@ -62,6 +63,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <AppContent />
+        <Toaster />
       </BrowserRouter>
     </QueryClientProvider>
   );

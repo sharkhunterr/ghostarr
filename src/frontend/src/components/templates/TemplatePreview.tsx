@@ -2,7 +2,7 @@
  * Template preview modal with viewport toggles.
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Monitor,
@@ -10,6 +10,7 @@ import {
   Smartphone,
   X,
   Loader2,
+  AlertCircle,
 } from 'lucide-react';
 import {
   Dialog,
@@ -21,6 +22,8 @@ import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useTemplatePreview } from '@/api/templates';
 import { cn } from '@/lib/utils';
+import { toastError } from '@/hooks';
+import { getErrorMessage } from '@/api/client';
 
 type Viewport = 'mobile' | 'tablet' | 'desktop';
 
@@ -51,6 +54,16 @@ export function TemplatePreview({
     viewport,
     open && !!templateId
   );
+
+  // Show toast notification on error
+  useEffect(() => {
+    if (error) {
+      toastError(
+        t('templates.preview.error'),
+        getErrorMessage(error)
+      );
+    }
+  }, [error, t]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -95,8 +108,12 @@ export function TemplatePreview({
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
           ) : error ? (
-            <div className="flex items-center justify-center h-full text-destructive">
-              {t('errors.generic')}
+            <div className="flex flex-col items-center justify-center h-full gap-3 text-destructive">
+              <AlertCircle className="h-12 w-12" />
+              <p className="font-medium">{t('templates.preview.error')}</p>
+              <p className="text-sm text-muted-foreground max-w-md text-center">
+                {getErrorMessage(error)}
+              </p>
             </div>
           ) : data?.html ? (
             <div
