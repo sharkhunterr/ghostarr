@@ -16,17 +16,18 @@ import {
   AlertCircle,
   MoreVertical,
   Calendar,
+  Loader2,
 } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -50,7 +51,11 @@ import {
   useDeleteSchedule,
   useExecuteSchedule,
 } from '@/api/schedules';
-import type { Schedule, RunStatus } from '@/types';
+import { useCancelGeneration } from '@/api/newsletters';
+import { useProgressStore } from '@/stores/progressStore';
+import { useSSE } from '@/hooks/useSSE';
+import { ProgressCard } from './ProgressCard';
+import type { Schedule, RunStatus, ProgressEvent } from '@/types';
 
 interface ScheduleListProps {
   onEdit?: (schedule: Schedule) => void;
@@ -104,8 +109,43 @@ export function ScheduleList({ onEdit }: ScheduleListProps) {
   const toggleSchedule = useToggleSchedule();
   const deleteSchedule = useDeleteSchedule();
   const executeSchedule = useExecuteSchedule();
+  const cancelMutation = useCancelGeneration();
 
   const [deleteTarget, setDeleteTarget] = useState<Schedule | null>(null);
+  const [executingScheduleId, setExecutingScheduleId] = useState<string | null>(null);
+  const [progressModalOpen, setProgressModalOpen] = useState(false);
+
+  // Progress store for tracking generation
+  const {
+    activeGenerationId,
+    generations,
+    startGeneration,
+    updateProgress,
+    cancelGeneration: cancelGenerationInStore,
+    clearGeneration,
+  } = useProgressStore();
+
+  // Get current generation progress
+  const currentProgress = activeGenerationId ? generations[activeGenerationId] : null;
+  const isGenerationActive = currentProgress && !currentProgress.isComplete && !currentProgress.isCancelled && !currentProgress.error;
+
+  // Handle SSE events
+  const handleSSEEvent = (event: ProgressEvent) => {
+    updateProgress(event);
+
+    if (event.type === 'generation_complete' || event.type === 'generation_cancelled') {
+      // Keep modal open to show result
+    }
+  };
+
+  // Connect to SSE when generation is active
+  const { disconnect } = useSSE(
+    isGenerationActive ? activeGenerationId : null,
+    {
+      onEvent: handleSSEEvent,
+      onError: (error) => console.error('SSE error:', error),
+    }
+  );
 
   const handleToggle = async (schedule: Schedule) => {
     try {
@@ -128,9 +168,35 @@ export function ScheduleList({ onEdit }: ScheduleListProps) {
 
   const handleExecute = async (schedule: Schedule) => {
     try {
-      await executeSchedule.mutateAsync(schedule.id);
+      setExecutingScheduleId(schedule.id);
+      const result = await executeSchedule.mutateAsync(schedule.id);
+
+      // Start tracking progress
+      startGeneration(result.generation_id);
+      setProgressModalOpen(true);
     } catch (error) {
       console.error('Failed to execute schedule:', error);
+    } finally {
+      setExecutingScheduleId(null);
+    }
+  };
+
+  const handleCancelGeneration = async () => {
+    if (!activeGenerationId) return;
+
+    try {
+      await cancelMutation.mutateAsync(activeGenerationId);
+      cancelGenerationInStore(activeGenerationId);
+      disconnect();
+    } catch (error) {
+      console.error('Failed to cancel generation:', error);
+    }
+  };
+
+  const handleCloseProgressModal = () => {
+    setProgressModalOpen(false);
+    if (activeGenerationId) {
+      clearGeneration(activeGenerationId);
     }
   };
 
@@ -226,9 +292,13 @@ export function ScheduleList({ onEdit }: ScheduleListProps) {
                     variant="outline"
                     size="sm"
                     onClick={() => handleExecute(schedule)}
-                    disabled={executeSchedule.isPending}
+                    disabled={executeSchedule.isPending || executingScheduleId === schedule.id}
                   >
-                    <PlayCircle className="h-4 w-4" />
+                    {executingScheduleId === schedule.id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <PlayCircle className="h-4 w-4" />
+                    )}
                     <span className="sr-only">
                       {t('schedule.actions.executeNow')}
                     </span>
@@ -291,6 +361,21 @@ export function ScheduleList({ onEdit }: ScheduleListProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Progress modal */}
+      <Dialog open={progressModalOpen} onOpenChange={setProgressModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{t('dashboard.generation.progress')}</DialogTitle>
+          </DialogHeader>
+          <ProgressCard
+            progress={currentProgress}
+            onCancel={isGenerationActive ? handleCancelGeneration : undefined}
+            onClear={handleCloseProgressModal}
+            isCancelling={cancelMutation.isPending}
+          />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

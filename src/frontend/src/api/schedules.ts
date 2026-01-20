@@ -173,22 +173,27 @@ export function useToggleSchedule() {
   });
 }
 
+// Execute schedule result type
+export interface ExecuteScheduleResult {
+  status: string;
+  schedule_id: string;
+  generation_id: string;
+}
+
 // Execute schedule immediately
 export function useExecuteSchedule() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (
-      scheduleId: string
-    ): Promise<{ status: string; schedule_id: string }> => {
-      const response = await apiClient.post<{
-        status: string;
-        schedule_id: string;
-      }>(`/schedules/${scheduleId}/execute`);
+    mutationFn: async (scheduleId: string): Promise<ExecuteScheduleResult> => {
+      const response = await apiClient.post<ExecuteScheduleResult>(
+        `/schedules/${scheduleId}/execute`
+      );
       return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['history'] });
+      queryClient.invalidateQueries({ queryKey: scheduleKeys.all });
     },
   });
 }

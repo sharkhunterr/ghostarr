@@ -5,8 +5,9 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.models.schedule import Schedule
+from app.models.schedule import Schedule, RunStatus
 from app.models.template import Template
+from app.schemas.generation import GenerationConfig
 from app.schemas.schedule import (
     ScheduleCreate,
     ScheduleUpdate,
@@ -212,16 +213,82 @@ async def toggle_schedule(schedule_id: str, db: AsyncSession = Depends(get_db)):
 
 @router.post("/{schedule_id}/execute")
 async def execute_schedule(schedule_id: str, db: AsyncSession = Depends(get_db)):
-    """Execute a schedule immediately (manual trigger)."""
+    """Execute a schedule immediately (manual trigger).
+
+    Returns the history entry for progress tracking via SSE.
+    """
+    import asyncio
+    from app.services.newsletter_generator import NewsletterGenerator, _active_generations
+    from app.services.progress_tracker import ProgressTracker
+    from app.models.history import History, GenerationType
+    from app.database import AsyncSessionLocal
+
     schedule = await db.get(Schedule, schedule_id)
     if not schedule:
         raise HTTPException(status_code=404, detail="Schedule not found")
 
-    # Execute in background
-    import asyncio
-    asyncio.create_task(execute_scheduled_generation(schedule_id))
+    # Create generation config from schedule
+    config = GenerationConfig.model_validate(schedule.generation_config)
 
-    return {"status": "started", "schedule_id": schedule_id}
+    # Create generator and history entry
+    generator = NewsletterGenerator(db, config)
+    history = await generator.create_history_entry(
+        generation_type=GenerationType.MANUAL,
+        schedule_id=schedule_id,
+    )
+
+    # Get generation_id before session closes
+    generation_id = generator.generation_id
+
+    # Run generation in background with new session
+    async def run_scheduled_generation():
+        await asyncio.sleep(1.5)  # Allow SSE connection to establish
+        try:
+            async with AsyncSessionLocal() as new_db:
+                bg_generator = NewsletterGenerator(new_db, config)
+                bg_generator.generation_id = generation_id
+                bg_generator.history = await new_db.get(History, generation_id)
+
+                # Re-initialize tracker
+                enabled_steps = bg_generator._get_enabled_steps()
+                bg_generator.tracker = ProgressTracker(generation_id, enabled_steps)
+                _active_generations[generation_id] = bg_generator.tracker
+
+                await bg_generator.run_pipeline()
+
+                # Update schedule last run info
+                schedule_obj = await new_db.get(Schedule, schedule_id)
+                if schedule_obj and bg_generator.history:
+                    from datetime import datetime
+                    schedule_obj.last_run_at = datetime.utcnow()
+                    if bg_generator.history.status.value == "success":
+                        schedule_obj.last_run_status = RunStatus.SUCCESS
+                    elif bg_generator.history.status.value == "failed":
+                        schedule_obj.last_run_status = RunStatus.FAILED
+                    else:
+                        schedule_obj.last_run_status = RunStatus.PENDING
+                    await new_db.commit()
+        except Exception as e:
+            logger.error(f"Background scheduled generation failed: {e}")
+            # Update schedule with failure
+            try:
+                async with AsyncSessionLocal() as err_db:
+                    from datetime import datetime
+                    schedule_obj = await err_db.get(Schedule, schedule_id)
+                    if schedule_obj:
+                        schedule_obj.last_run_at = datetime.utcnow()
+                        schedule_obj.last_run_status = RunStatus.FAILED
+                        await err_db.commit()
+            except Exception:
+                pass
+
+    asyncio.create_task(run_scheduled_generation())
+
+    return {
+        "status": "started",
+        "schedule_id": schedule_id,
+        "generation_id": generation_id,
+    }
 
 
 @router.get("/{schedule_id}/next-runs", response_model=ScheduleNextRuns)
