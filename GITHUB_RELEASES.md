@@ -54,6 +54,13 @@
 - Added queue size limits to prevent memory issues
 - Improved flush interval handling
 
+### Schedule Execution Progress
+- **Progress modal** now appears when executing a schedule manually
+- Same real-time progress tracking as manual generation (SSE)
+- Shows all steps with status, elapsed time, and estimated completion
+- Cancel button to abort generation in progress
+- Loading indicator on execute button during initialization
+
 ### New Dependencies
 - Added `@radix-ui/react-collapsible` for expandable UI sections
 - New `Collapsible` UI component
