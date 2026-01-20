@@ -1,0 +1,413 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "confirm": "Confirm",
+    "close": "Close",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "refresh": "Refresh",
+    "retry": "Retry",
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "none": "None",
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Information"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "history": "History",
+    "templates": "Templates",
+    "settings": "Settings",
+    "help": "Help"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Generate and publish your newsletters manually",
+    "items": "items",
+    "noActiveGeneration": "No active generation",
+    "noActiveGenerationHint": "Configure your options and start a generation to see progress here.",
+    "manualGeneration": {
+      "title": "Manual Generation",
+      "description": "Configure and generate a newsletter"
+    },
+    "generation": {
+      "progress": "Generation Progress",
+      "preparing": "Preparing...",
+      "viewPost": "View post on Ghost"
+    },
+    "status": {
+      "complete": "Complete",
+      "cancelled": "Cancelled",
+      "failed": "Failed",
+      "running": "Running"
+    },
+    "actions": {
+      "generate": "Generate",
+      "generating": "Generating...",
+      "preview": "Preview",
+      "previewing": "Loading...",
+      "cancel": "Cancel",
+      "clear": "Clear"
+    },
+    "tabs": {
+      "media": "Media",
+      "extras": "Extras",
+      "statistics": "Statistics",
+      "maintenance": "Maintenance"
+    },
+    "config": {
+      "template": "Template",
+      "selectTemplate": "Select a template",
+      "title": "Newsletter title",
+      "titleHelp": "Use {{date.week}} for week number, {{date.year}} for year",
+      "publicationMode": "Publication mode",
+      "modes": {
+        "draft": "Draft",
+        "publish": "Publish",
+        "email": "Email only",
+        "emailPublish": "Email + Publish"
+      },
+      "days": "Period (days)",
+      "maxItems": "Max items",
+      "maxItemsHelp": "Limits the total number of items in the newsletter",
+      "skipEmpty": "Skip if empty",
+      "skipEmptyHelp": "Don't generate if no content is available",
+      "featuredItem": "Feature an item",
+      "channels": "Channels",
+      "channelsHelp": "Select channels to include"
+    },
+    "sources": {
+      "tautulli": "Movies & TV Shows",
+      "tautulliDesc": "Recently added content via Tautulli",
+      "romm": "Video Games",
+      "rommDesc": "Recently added games via ROMM",
+      "komga": "Comics & Books",
+      "komgaDesc": "Recently added comics via Komga",
+      "audiobookshelf": "Audiobooks",
+      "audiobookshelfDesc": "Recently added audiobooks",
+      "tunarr": "TV Schedule",
+      "tunarrDesc": "TV programming via Tunarr"
+    },
+    "statistics": {
+      "title": "Statistics",
+      "description": "Include viewing statistics",
+      "days": "Analysis period (days)",
+      "includeComparison": "Include comparison",
+      "includeComparisonHelp": "Compare with previous period"
+    },
+    "maintenance": {
+      "title": "Maintenance Notice",
+      "description": "Add a maintenance notice to the newsletter",
+      "type": "Maintenance type",
+      "types": {
+        "scheduled": "Scheduled maintenance",
+        "outage": "Outage",
+        "network": "Network issue",
+        "update": "Update",
+        "improvement": "Improvement",
+        "security": "Security"
+      },
+      "descriptionLabel": "Message",
+      "descriptionPlaceholder": "Describe the maintenance...",
+      "duration": "Estimated duration",
+      "units": {
+        "hours": "hours",
+        "days": "days",
+        "weeks": "weeks"
+      },
+      "startTime": "Start date and time",
+      "startTimeHelp": "Leave empty for immediate"
+    },
+    "preview": {
+      "title": "Newsletter Preview",
+      "noContent": "No content to display"
+    },
+    "automaticGeneration": {
+      "title": "Automatic Generation",
+      "description": "Configure scheduled newsletter generation"
+    }
+  },
+  "history": {
+    "title": "Generation History",
+    "subtitle": "View and manage all newsletter generations",
+    "columns": {
+      "date": "Date",
+      "type": "Type",
+      "template": "Template",
+      "status": "Status",
+      "duration": "Duration",
+      "items": "Items",
+      "actions": "Actions"
+    },
+    "types": {
+      "manual": "Manual",
+      "automatic": "Automatic"
+    },
+    "status": {
+      "pending": "Pending",
+      "running": "Running",
+      "success": "Success",
+      "failed": "Failed",
+      "cancelled": "Cancelled"
+    },
+    "actions": {
+      "viewDetails": "View details",
+      "viewOnGhost": "View on Ghost",
+      "regenerate": "Regenerate",
+      "deleteFromGhost": "Delete from Ghost"
+    },
+    "filters": {
+      "title": "Filters",
+      "clear": "Clear",
+      "period": "Period",
+      "type": "Type",
+      "status": "Status",
+      "template": "Template",
+      "startDate": "Start date",
+      "endDate": "End date"
+    },
+    "empty": "No generations recorded",
+    "deleteConfirm": {
+      "title": "Delete history entry",
+      "message": "Are you sure you want to delete this history entry? This action cannot be undone."
+    },
+    "regenerateConfirm": {
+      "title": "Regenerate newsletter",
+      "message": "This will create a new generation using the same configuration. Continue?"
+    },
+    "deleteGhostPostConfirm": {
+      "title": "Delete Ghost post",
+      "message": "This will delete the published post from Ghost. This action cannot be undone."
+    },
+    "progressModal": {
+      "title": "Generation Details",
+      "noSteps": "No step information available"
+    }
+  },
+  "templates": {
+    "title": "Templates",
+    "subtitle": "Manage your newsletter templates",
+    "upload": "Upload template",
+    "uploadDescription": "Upload a new HTML template for your newsletters",
+    "default": "Default",
+    "empty": "No templates",
+    "emptyDescription": "Upload your first template to get started",
+    "dragOrClick": "Drag and drop a file here, or click to browse",
+    "dropHere": "Drop the file here",
+    "acceptedFormats": "Accepts .html, .htm, or .zip files",
+    "editTitle": "Edit Template",
+    "editDescription": "Update template metadata",
+    "actions": {
+      "preview": "Preview",
+      "edit": "Edit",
+      "delete": "Delete",
+      "setDefault": "Set as default"
+    },
+    "deleteConfirm": {
+      "title": "Delete template",
+      "message": "Are you sure you want to delete this template?",
+      "inUse": "This template is used by active schedules and cannot be deleted."
+    },
+    "form": {
+      "name": "Name",
+      "namePlaceholder": "My Newsletter Template",
+      "description": "Description",
+      "descriptionPlaceholder": "A brief description of this template",
+      "tags": "Tags",
+      "tagsPlaceholder": "newsletter, weekly, media",
+      "tagsHelp": "Comma-separated list of tags",
+      "file": "Template file",
+      "setAsDefault": "Set as default",
+      "setAsDefaultHelp": "Use this template by default for new generations"
+    },
+    "preview": {
+      "title": "Template Preview",
+      "mobile": "Mobile",
+      "tablet": "Tablet",
+      "desktop": "Desktop",
+      "noContent": "No content to preview"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "tabs": {
+      "general": "General",
+      "services": "Services",
+      "logs": "Logs"
+    },
+    "general": {
+      "timezone": "Timezone",
+      "retention": {
+        "title": "Data Retention",
+        "history": "History (days)",
+        "logs": "Logs (days)"
+      },
+      "export": "Export configuration",
+      "import": "Import configuration"
+    },
+    "services": {
+      "title": "External Services",
+      "testAll": "Test all services",
+      "test": "Test connection",
+      "connected": "Connected",
+      "notConfigured": "Not configured",
+      "error": "Connection error",
+      "url": "URL",
+      "apiKey": "API Key",
+      "tautulli": {
+        "name": "Tautulli",
+        "description": "Media server statistics and history"
+      },
+      "tmdb": {
+        "name": "TMDB",
+        "description": "Movies and TV shows metadata"
+      },
+      "ghost": {
+        "name": "Ghost",
+        "description": "Newsletter publishing"
+      },
+      "romm": {
+        "name": "ROMM",
+        "description": "Video games library"
+      },
+      "komga": {
+        "name": "Komga",
+        "description": "Comics and books library"
+      },
+      "audiobookshelf": {
+        "name": "Audiobookshelf",
+        "description": "Audiobooks library"
+      },
+      "tunarr": {
+        "name": "Tunarr",
+        "description": "TV programming"
+      }
+    },
+    "logs": {
+      "title": "System Logs",
+      "level": "Level",
+      "source": "Source",
+      "service": "Service",
+      "message": "Message",
+      "timestamp": "Date/Time",
+      "purge": "Purge old logs",
+      "levels": {
+        "debug": "Debug",
+        "info": "Info",
+        "warning": "Warning",
+        "error": "Error"
+      }
+    },
+    "theme": {
+      "toggle": "Toggle theme",
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "help": {
+    "title": "Help",
+    "search": "Search help...",
+    "categories": {
+      "gettingStarted": "Getting Started",
+      "manualGeneration": "Manual Generation",
+      "scheduling": "Scheduling",
+      "templates": "Templates",
+      "troubleshooting": "Troubleshooting"
+    }
+  },
+  "progress": {
+    "title": "Generation in Progress",
+    "step": "steps",
+    "elapsed": "Elapsed",
+    "remaining": "Remaining",
+    "cancel": "Cancel",
+    "steps": {
+      "fetch_tautulli": "Fetching media",
+      "enrich_tmdb": "TMDB enrichment",
+      "fetch_romm": "Fetching games",
+      "fetch_komga": "Fetching comics",
+      "fetch_audiobookshelf": "Fetching audiobooks",
+      "fetch_tunarr": "Fetching TV schedule",
+      "fetch_statistics": "Fetching statistics",
+      "render_template": "Rendering template",
+      "publish_ghost": "Publishing to Ghost"
+    },
+    "complete": "Generation complete",
+    "cancelled": "Generation cancelled",
+    "failed": "Generation failed"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "empty": "No notifications"
+  },
+  "schedule": {
+    "create": "Create schedule",
+    "empty": "No schedules configured",
+    "nextRun": "Next run",
+    "lastRun": "Last run",
+    "status": {
+      "paused": "Paused"
+    },
+    "form": {
+      "createTitle": "Create Schedule",
+      "createDescription": "Configure a new automatic newsletter generation schedule",
+      "editTitle": "Edit Schedule",
+      "editDescription": "Modify the schedule settings",
+      "name": "Schedule name",
+      "namePlaceholder": "e.g., Weekly Newsletter",
+      "cron": "CRON expression",
+      "cronHelp": "e.g., 0 8 * * 1 (every Monday at 8am)",
+      "simpleMode": "Simple mode",
+      "advancedMode": "Advanced mode",
+      "frequency": "Frequency",
+      "time": "Time",
+      "weekday": "Day of week",
+      "dayOfMonth": "Day of month",
+      "timezone": "Timezone",
+      "active": "Active",
+      "activeHelp": "Enable this schedule for automatic execution",
+      "generationConfig": "Generation settings",
+      "nextRuns": "Next runs"
+    },
+    "frequencies": {
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly"
+    },
+    "weekdays": {
+      "sunday": "Sunday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday"
+    },
+    "actions": {
+      "executeNow": "Execute now",
+      "toggle": "Enable/Disable"
+    },
+    "deleteConfirm": {
+      "title": "Delete schedule",
+      "message": "Are you sure you want to delete the schedule \"{{name}}\"?"
+    }
+  },
+  "errors": {
+    "generic": "An error occurred",
+    "network": "Server connection error",
+    "notFound": "Resource not found",
+    "validation": "Validation error"
+  }
+}

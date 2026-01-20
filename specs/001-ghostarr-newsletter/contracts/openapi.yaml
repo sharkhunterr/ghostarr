@@ -1,0 +1,1393 @@
+openapi: 3.1.0
+info:
+  title: Ghostarr API
+  description: Newsletter generator for media servers
+  version: 1.0.0
+  contact:
+    name: Ghostarr
+servers:
+  - url: /api/v1
+    description: API v1
+
+tags:
+  - name: newsletters
+    description: Newsletter generation
+  - name: templates
+    description: Template management
+  - name: schedules
+    description: Scheduled generation
+  - name: history
+    description: Generation history
+  - name: settings
+    description: Application settings
+  - name: logs
+    description: System logs
+  - name: integrations
+    description: External service data
+  - name: progress
+    description: Real-time progress
+
+paths:
+  # ============ NEWSLETTERS ============
+  /newsletters/generate:
+    post:
+      tags: [newsletters]
+      summary: Generate newsletter
+      operationId: generateNewsletter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerationConfig'
+      responses:
+        '202':
+          description: Generation started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryResponse'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+
+  /newsletters/preview:
+    post:
+      tags: [newsletters]
+      summary: Preview newsletter without publishing
+      operationId: previewNewsletter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerationConfig'
+      responses:
+        '200':
+          description: Preview HTML
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  html:
+                    type: string
+                  title:
+                    type: string
+                  items_count:
+                    type: integer
+
+  /newsletters/{id}:
+    delete:
+      tags: [newsletters]
+      summary: Delete newsletter from Ghost
+      operationId: deleteNewsletterFromGhost
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # ============ TEMPLATES ============
+  /templates:
+    get:
+      tags: [templates]
+      summary: List templates
+      operationId: listTemplates
+      responses:
+        '200':
+          description: Template list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TemplateResponse'
+
+    post:
+      tags: [templates]
+      summary: Create template
+      operationId: createTemplate
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [name, file]
+              properties:
+                name:
+                  type: string
+                description:
+                  type: string
+                tags:
+                  type: string
+                  description: JSON array of tags
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+
+  /templates/{id}:
+    get:
+      tags: [templates]
+      summary: Get template
+      operationId: getTemplate
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Template details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [templates]
+      summary: Update template
+      operationId: updateTemplate
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TemplateUpdate'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+
+    delete:
+      tags: [templates]
+      summary: Delete template
+      operationId: deleteTemplate
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          description: Deleted
+        '409':
+          description: Template in use by active schedules
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  detail:
+                    type: string
+                  schedules:
+                    type: array
+                    items:
+                      type: string
+
+  /templates/{id}/preview:
+    get:
+      tags: [templates]
+      summary: Preview template with mock data
+      operationId: previewTemplate
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Preview HTML
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  html:
+                    type: string
+
+  /templates/{id}/set-default:
+    post:
+      tags: [templates]
+      summary: Set template as default
+      operationId: setDefaultTemplate
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Set as default
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateResponse'
+
+  # ============ SCHEDULES ============
+  /schedules:
+    get:
+      tags: [schedules]
+      summary: List schedules
+      operationId: listSchedules
+      responses:
+        '200':
+          description: Schedule list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScheduleResponse'
+
+    post:
+      tags: [schedules]
+      summary: Create schedule
+      operationId: createSchedule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleCreate'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+
+  /schedules/{id}:
+    get:
+      tags: [schedules]
+      summary: Get schedule
+      operationId: getSchedule
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Schedule details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+
+    put:
+      tags: [schedules]
+      summary: Update schedule
+      operationId: updateSchedule
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleUpdate'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+
+    delete:
+      tags: [schedules]
+      summary: Delete schedule
+      operationId: deleteSchedule
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          description: Deleted
+
+  /schedules/{id}/toggle:
+    post:
+      tags: [schedules]
+      summary: Toggle schedule active status
+      operationId: toggleSchedule
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Toggled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+
+  /schedules/{id}/execute:
+    post:
+      tags: [schedules]
+      summary: Execute schedule immediately
+      operationId: executeSchedule
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '202':
+          description: Execution started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryResponse'
+
+  /schedules/{id}/duplicate:
+    post:
+      tags: [schedules]
+      summary: Duplicate schedule
+      operationId: duplicateSchedule
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '201':
+          description: Duplicated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleResponse'
+
+  # ============ HISTORY ============
+  /history:
+    get:
+      tags: [history]
+      summary: List history entries
+      operationId: listHistory
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [manual, automatic]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, running, success, failed, cancelled]
+        - name: template_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - name: from_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: to_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Paginated history
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryPaginated'
+
+  /history/{id}:
+    get:
+      tags: [history]
+      summary: Get history entry with progress details
+      operationId: getHistory
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: History details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryResponse'
+
+    delete:
+      tags: [history]
+      summary: Delete history entry
+      operationId: deleteHistory
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '204':
+          description: Deleted
+
+  /history/{id}/regenerate:
+    post:
+      tags: [history]
+      summary: Regenerate with same config
+      operationId: regenerateFromHistory
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '202':
+          description: Regeneration started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryResponse'
+
+  /history/{id}/cancel:
+    post:
+      tags: [history]
+      summary: Cancel running generation
+      operationId: cancelGeneration
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Cancelled
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HistoryResponse'
+
+  /history/export:
+    get:
+      tags: [history]
+      summary: Export history
+      operationId: exportHistory
+      parameters:
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [json, csv]
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [manual, automatic]
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [pending, running, success, failed, cancelled]
+      responses:
+        '200':
+          description: Export file
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoryResponse'
+            text/csv:
+              schema:
+                type: string
+
+  # ============ SETTINGS ============
+  /settings:
+    get:
+      tags: [settings]
+      summary: Get all settings
+      operationId: getSettings
+      responses:
+        '200':
+          description: Settings
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+
+    put:
+      tags: [settings]
+      summary: Update settings
+      operationId: updateSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SettingsUpdate'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SettingsResponse'
+
+  /settings/services/{service}/test:
+    post:
+      tags: [settings]
+      summary: Test service connection
+      operationId: testService
+      parameters:
+        - name: service
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [tautulli, tmdb, ghost, romm, komga, audiobookshelf, tunarr]
+      responses:
+        '200':
+          description: Connection result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  version:
+                    type: string
+
+  /settings/services/test-all:
+    post:
+      tags: [settings]
+      summary: Test all configured services
+      operationId: testAllServices
+      responses:
+        '200':
+          description: Connection results
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    success:
+                      type: boolean
+                    message:
+                      type: string
+
+  /settings/export:
+    get:
+      tags: [settings]
+      summary: Export configuration
+      operationId: exportSettings
+      responses:
+        '200':
+          description: Configuration JSON
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /settings/import:
+    post:
+      tags: [settings]
+      summary: Import configuration
+      operationId: importSettings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Imported
+
+  # ============ PREFERENCES ============
+  /preferences:
+    get:
+      tags: [settings]
+      summary: Get user preferences
+      operationId: getPreferences
+      responses:
+        '200':
+          description: Preferences
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferenceResponse'
+
+    put:
+      tags: [settings]
+      summary: Update user preferences
+      operationId: updatePreferences
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserPreferenceUpdate'
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserPreferenceResponse'
+
+  /languages:
+    get:
+      tags: [settings]
+      summary: List available languages
+      operationId: listLanguages
+      responses:
+        '200':
+          description: Languages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    code:
+                      type: string
+                    name:
+                      type: string
+                    flag:
+                      type: string
+
+  # ============ LOGS ============
+  /logs:
+    get:
+      tags: [logs]
+      summary: List logs
+      operationId: listLogs
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+            maximum: 200
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum: [debug, info, warning, error]
+        - name: source
+          in: query
+          schema:
+            type: string
+            enum: [backend, frontend, integration]
+        - name: service
+          in: query
+          schema:
+            type: string
+        - name: correlation_id
+          in: query
+          schema:
+            type: string
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated logs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogsPaginated'
+
+    delete:
+      tags: [logs]
+      summary: Purge old logs
+      operationId: purgeLogs
+      parameters:
+        - name: older_than_days
+          in: query
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: Purge result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  deleted_count:
+                    type: integer
+
+  /logs/export:
+    get:
+      tags: [logs]
+      summary: Export logs
+      operationId: exportLogs
+      parameters:
+        - name: format
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [json, csv]
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum: [debug, info, warning, error]
+      responses:
+        '200':
+          description: Export file
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LogResponse'
+
+  # ============ INTEGRATIONS ============
+  /integrations/ghost/newsletters:
+    get:
+      tags: [integrations]
+      summary: List Ghost newsletters/tiers
+      operationId: listGhostNewsletters
+      responses:
+        '200':
+          description: Newsletter list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    description:
+                      type: string
+
+  /integrations/tunarr/channels:
+    get:
+      tags: [integrations]
+      summary: List Tunarr channels
+      operationId: listTunarrChannels
+      responses:
+        '200':
+          description: Channel list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                    name:
+                      type: string
+                    icon:
+                      type: string
+
+  # ============ PROGRESS ============
+  /progress/stream:
+    get:
+      tags: [progress]
+      summary: SSE stream for generation progress
+      operationId: progressStream
+      responses:
+        '200':
+          description: SSE stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+
+  # ============ HELP ============
+  /help:
+    get:
+      tags: [settings]
+      summary: List help articles
+      operationId: listHelp
+      responses:
+        '200':
+          description: Help articles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HelpArticle'
+
+  /help/search:
+    get:
+      tags: [settings]
+      summary: Search help articles
+      operationId: searchHelp
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HelpArticle'
+
+components:
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+
+    ValidationError:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    loc:
+                      type: array
+                      items:
+                        type: string
+                    msg:
+                      type: string
+                    type:
+                      type: string
+
+  schemas:
+    # ---- Generation Config ----
+    GenerationConfig:
+      type: object
+      required: [template_id]
+      properties:
+        template_id:
+          type: string
+          format: uuid
+        title:
+          type: string
+          default: "Newsletter {{date.week}}"
+        publication_mode:
+          type: string
+          enum: [draft, publish, email, email+publish]
+          default: draft
+        ghost_newsletter_id:
+          type: string
+          nullable: true
+        tautulli:
+          $ref: '#/components/schemas/TautulliConfig'
+        romm:
+          $ref: '#/components/schemas/ContentSourceConfig'
+        komga:
+          $ref: '#/components/schemas/ContentSourceConfig'
+        audiobookshelf:
+          $ref: '#/components/schemas/ContentSourceConfig'
+        tunarr:
+          $ref: '#/components/schemas/TunarrConfig'
+        statistics:
+          $ref: '#/components/schemas/StatisticsConfig'
+        maintenance:
+          $ref: '#/components/schemas/MaintenanceConfig'
+        max_total_items:
+          type: integer
+          default: -1
+        skip_if_empty:
+          type: boolean
+          default: false
+
+    ContentSourceConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          default: false
+        days:
+          type: integer
+          minimum: 1
+          maximum: 90
+          default: 7
+        max_items:
+          type: integer
+          minimum: -1
+          default: -1
+
+    TautulliConfig:
+      allOf:
+        - $ref: '#/components/schemas/ContentSourceConfig'
+        - type: object
+          properties:
+            featured_item:
+              type: boolean
+              default: false
+
+    TunarrConfig:
+      allOf:
+        - $ref: '#/components/schemas/ContentSourceConfig'
+        - type: object
+          properties:
+            days:
+              type: integer
+              minimum: 1
+              maximum: 7
+              default: 7
+            channels:
+              type: array
+              items:
+                type: string
+            display_format:
+              type: string
+              enum: [grid, list]
+              default: grid
+
+    StatisticsConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          default: false
+        days:
+          type: integer
+          minimum: 1
+          maximum: 90
+          default: 7
+        include_comparison:
+          type: boolean
+          default: false
+
+    MaintenanceConfig:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+          default: false
+        description:
+          type: string
+        type:
+          type: string
+          enum: [scheduled, outage, network, update, improvement, security]
+          default: scheduled
+        duration_value:
+          type: integer
+          default: 1
+        duration_unit:
+          type: string
+          enum: [hours, days, weeks]
+          default: hours
+        start_datetime:
+          type: string
+          format: date-time
+          nullable: true
+
+    # ---- Templates ----
+    TemplateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+          nullable: true
+        tags:
+          type: array
+          items:
+            type: string
+        file_path:
+          type: string
+        preset_config:
+          $ref: '#/components/schemas/GenerationConfig'
+        is_default:
+          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    TemplateUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        preset_config:
+          $ref: '#/components/schemas/GenerationConfig'
+
+    # ---- Schedules ----
+    ScheduleResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        is_active:
+          type: boolean
+        cron_expression:
+          type: string
+        cron_human_readable:
+          type: string
+        timezone:
+          type: string
+        template_id:
+          type: string
+          format: uuid
+        template:
+          $ref: '#/components/schemas/TemplateResponse'
+        generation_config:
+          $ref: '#/components/schemas/GenerationConfig'
+        last_run_at:
+          type: string
+          format: date-time
+          nullable: true
+        last_run_status:
+          type: string
+          enum: [pending, success, failed, skipped]
+          nullable: true
+        next_run_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ScheduleCreate:
+      type: object
+      required: [name, cron_expression, template_id, generation_config]
+      properties:
+        name:
+          type: string
+        cron_expression:
+          type: string
+        timezone:
+          type: string
+          default: Europe/Paris
+        template_id:
+          type: string
+          format: uuid
+        generation_config:
+          $ref: '#/components/schemas/GenerationConfig'
+
+    ScheduleUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        cron_expression:
+          type: string
+        timezone:
+          type: string
+        template_id:
+          type: string
+          format: uuid
+        generation_config:
+          $ref: '#/components/schemas/GenerationConfig'
+        is_active:
+          type: boolean
+
+    # ---- History ----
+    HistoryResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [manual, automatic]
+        schedule_id:
+          type: string
+          format: uuid
+          nullable: true
+        schedule:
+          $ref: '#/components/schemas/ScheduleResponse'
+        template_id:
+          type: string
+          format: uuid
+        template:
+          $ref: '#/components/schemas/TemplateResponse'
+        status:
+          type: string
+          enum: [pending, running, success, failed, cancelled]
+        ghost_post_id:
+          type: string
+          nullable: true
+        ghost_post_url:
+          type: string
+          nullable: true
+        generation_config:
+          $ref: '#/components/schemas/GenerationConfig'
+        progress_log:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProgressStep'
+        error_message:
+          type: string
+          nullable: true
+        items_count:
+          type: integer
+        duration_seconds:
+          type: number
+          nullable: true
+        started_at:
+          type: string
+          format: date-time
+          nullable: true
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    HistoryPaginated:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/HistoryResponse'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        pages:
+          type: integer
+
+    ProgressStep:
+      type: object
+      properties:
+        step:
+          type: string
+        status:
+          type: string
+          enum: [pending, running, success, failed, skipped]
+        started_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+        duration_ms:
+          type: integer
+        items_count:
+          type: integer
+        message:
+          type: string
+        error:
+          type: string
+
+    # ---- Settings ----
+    SettingsResponse:
+      type: object
+      properties:
+        services:
+          type: object
+          properties:
+            tautulli:
+              $ref: '#/components/schemas/ServiceConfig'
+            tmdb:
+              $ref: '#/components/schemas/ServiceConfig'
+            ghost:
+              $ref: '#/components/schemas/ServiceConfig'
+            romm:
+              $ref: '#/components/schemas/ServiceConfig'
+            komga:
+              $ref: '#/components/schemas/ServiceConfig'
+            audiobookshelf:
+              $ref: '#/components/schemas/ServiceConfig'
+            tunarr:
+              $ref: '#/components/schemas/ServiceConfig'
+        retention:
+          type: object
+          properties:
+            history_days:
+              type: integer
+            logs_days:
+              type: integer
+        notifications:
+          type: object
+          properties:
+            admin_email:
+              type: string
+              nullable: true
+
+    SettingsUpdate:
+      type: object
+      properties:
+        services:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              url:
+                type: string
+              api_key:
+                type: string
+        retention:
+          type: object
+          properties:
+            history_days:
+              type: integer
+            logs_days:
+              type: integer
+        notifications:
+          type: object
+          properties:
+            admin_email:
+              type: string
+
+    ServiceConfig:
+      type: object
+      properties:
+        url:
+          type: string
+        configured:
+          type: boolean
+        status:
+          type: string
+          enum: [connected, error, unconfigured]
+        last_checked:
+          type: string
+          format: date-time
+          nullable: true
+
+    # ---- User Preferences ----
+    UserPreferenceResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        theme:
+          type: string
+          enum: [light, dark, system]
+        language:
+          type: string
+        timezone:
+          type: string
+
+    UserPreferenceUpdate:
+      type: object
+      properties:
+        theme:
+          type: string
+          enum: [light, dark, system]
+        language:
+          type: string
+        timezone:
+          type: string
+
+    # ---- Logs ----
+    LogResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        level:
+          type: string
+          enum: [debug, info, warning, error]
+        source:
+          type: string
+          enum: [backend, frontend, integration]
+        service:
+          type: string
+          nullable: true
+        message:
+          type: string
+        context:
+          type: object
+          nullable: true
+        correlation_id:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+
+    LogsPaginated:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogResponse'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        pages:
+          type: integer
+
+    # ---- Help ----
+    HelpArticle:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        category:
+          type: string
+        content:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        related:
+          type: array
+          items:
+            type: string

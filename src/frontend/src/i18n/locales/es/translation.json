@@ -1,0 +1,413 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "confirm": "Confirmar",
+    "close": "Cerrar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "export": "Exportar",
+    "import": "Importar",
+    "refresh": "Actualizar",
+    "retry": "Reintentar",
+    "yes": "Sí",
+    "no": "No",
+    "all": "Todos",
+    "none": "Ninguno",
+    "success": "Éxito",
+    "error": "Error",
+    "warning": "Advertencia",
+    "info": "Información"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "history": "Historial",
+    "templates": "Plantillas",
+    "settings": "Configuración",
+    "help": "Ayuda"
+  },
+  "dashboard": {
+    "title": "Panel",
+    "subtitle": "Genera y publica tus newsletters manualmente",
+    "items": "elementos",
+    "noActiveGeneration": "Sin generación activa",
+    "noActiveGenerationHint": "Configura tus opciones e inicia una generación para ver el progreso aquí.",
+    "manualGeneration": {
+      "title": "Generación manual",
+      "description": "Configura y genera un newsletter"
+    },
+    "generation": {
+      "progress": "Progreso de la generación",
+      "preparing": "Preparando...",
+      "viewPost": "Ver publicación en Ghost"
+    },
+    "status": {
+      "complete": "Completado",
+      "cancelled": "Cancelado",
+      "failed": "Fallido",
+      "running": "En curso"
+    },
+    "actions": {
+      "generate": "Generar",
+      "generating": "Generando...",
+      "preview": "Vista previa",
+      "previewing": "Cargando...",
+      "cancel": "Cancelar",
+      "clear": "Limpiar"
+    },
+    "tabs": {
+      "media": "Medios",
+      "extras": "Extras",
+      "statistics": "Estadísticas",
+      "maintenance": "Mantenimiento"
+    },
+    "config": {
+      "template": "Plantilla",
+      "selectTemplate": "Seleccionar una plantilla",
+      "title": "Título del newsletter",
+      "titleHelp": "Usa {{date.week}} para el número de semana, {{date.year}} para el año",
+      "publicationMode": "Modo de publicación",
+      "modes": {
+        "draft": "Borrador",
+        "publish": "Publicar",
+        "email": "Solo email",
+        "emailPublish": "Email + Publicar"
+      },
+      "days": "Período (días)",
+      "maxItems": "Elementos máx.",
+      "maxItemsHelp": "Limita el número total de elementos en el newsletter",
+      "skipEmpty": "Omitir si está vacío",
+      "skipEmptyHelp": "No generar si no hay contenido disponible",
+      "featuredItem": "Destacar un elemento",
+      "channels": "Canales",
+      "channelsHelp": "Selecciona los canales a incluir"
+    },
+    "sources": {
+      "tautulli": "Películas y Series",
+      "tautulliDesc": "Contenido añadido recientemente a través de Tautulli",
+      "romm": "Videojuegos",
+      "rommDesc": "Juegos añadidos recientemente a través de ROMM",
+      "komga": "Cómics y Libros",
+      "komgaDesc": "Cómics añadidos recientemente a través de Komga",
+      "audiobookshelf": "Audiolibros",
+      "audiobookshelfDesc": "Audiolibros añadidos recientemente",
+      "tunarr": "Programación TV",
+      "tunarrDesc": "Programación de TV a través de Tunarr"
+    },
+    "statistics": {
+      "title": "Estadísticas",
+      "description": "Incluir estadísticas de visualización",
+      "days": "Período de análisis (días)",
+      "includeComparison": "Incluir comparación",
+      "includeComparisonHelp": "Comparar con el período anterior"
+    },
+    "maintenance": {
+      "title": "Aviso de mantenimiento",
+      "description": "Añadir un aviso de mantenimiento al newsletter",
+      "type": "Tipo de mantenimiento",
+      "types": {
+        "scheduled": "Mantenimiento programado",
+        "outage": "Interrupción",
+        "network": "Problema de red",
+        "update": "Actualización",
+        "improvement": "Mejora",
+        "security": "Seguridad"
+      },
+      "descriptionLabel": "Mensaje",
+      "descriptionPlaceholder": "Describe el mantenimiento...",
+      "duration": "Duración estimada",
+      "units": {
+        "hours": "horas",
+        "days": "días",
+        "weeks": "semanas"
+      },
+      "startTime": "Fecha y hora de inicio",
+      "startTimeHelp": "Dejar vacío para inmediato"
+    },
+    "preview": {
+      "title": "Vista previa del newsletter",
+      "noContent": "Sin contenido para mostrar"
+    },
+    "automaticGeneration": {
+      "title": "Generación automática",
+      "description": "Configura la generación automática de newsletters"
+    }
+  },
+  "history": {
+    "title": "Historial de generaciones",
+    "subtitle": "Ver y gestionar todas las generaciones de newsletters",
+    "columns": {
+      "date": "Fecha",
+      "type": "Tipo",
+      "template": "Plantilla",
+      "status": "Estado",
+      "duration": "Duración",
+      "items": "Elementos",
+      "actions": "Acciones"
+    },
+    "types": {
+      "manual": "Manual",
+      "automatic": "Automático"
+    },
+    "status": {
+      "pending": "Pendiente",
+      "running": "En curso",
+      "success": "Éxito",
+      "failed": "Fallido",
+      "cancelled": "Cancelado"
+    },
+    "actions": {
+      "viewDetails": "Ver detalles",
+      "viewOnGhost": "Ver en Ghost",
+      "regenerate": "Regenerar",
+      "deleteFromGhost": "Eliminar de Ghost"
+    },
+    "filters": {
+      "title": "Filtros",
+      "clear": "Limpiar",
+      "period": "Período",
+      "type": "Tipo",
+      "status": "Estado",
+      "template": "Plantilla",
+      "startDate": "Fecha de inicio",
+      "endDate": "Fecha de fin"
+    },
+    "empty": "Sin generaciones registradas",
+    "deleteConfirm": {
+      "title": "Eliminar entrada del historial",
+      "message": "¿Estás seguro de que deseas eliminar esta entrada del historial? Esta acción no se puede deshacer."
+    },
+    "regenerateConfirm": {
+      "title": "Regenerar newsletter",
+      "message": "Esto creará una nueva generación con la misma configuración. ¿Continuar?"
+    },
+    "deleteGhostPostConfirm": {
+      "title": "Eliminar publicación de Ghost",
+      "message": "Esto eliminará la publicación de Ghost. Esta acción no se puede deshacer."
+    },
+    "progressModal": {
+      "title": "Detalles de la generación",
+      "noSteps": "Sin información de pasos disponible"
+    }
+  },
+  "templates": {
+    "title": "Plantillas",
+    "subtitle": "Gestiona tus plantillas de newsletter",
+    "upload": "Subir plantilla",
+    "uploadDescription": "Sube una nueva plantilla HTML para tus newsletters",
+    "default": "Predeterminada",
+    "empty": "Sin plantillas",
+    "emptyDescription": "Sube tu primera plantilla para comenzar",
+    "dragOrClick": "Arrastra y suelta un archivo aquí, o haz clic para explorar",
+    "dropHere": "Suelta el archivo aquí",
+    "acceptedFormats": "Formatos aceptados: .html, .htm o .zip",
+    "editTitle": "Editar plantilla",
+    "editDescription": "Actualizar metadatos de la plantilla",
+    "actions": {
+      "preview": "Vista previa",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "setDefault": "Establecer como predeterminada"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar plantilla",
+      "message": "¿Estás seguro de que deseas eliminar esta plantilla?",
+      "inUse": "Esta plantilla está siendo utilizada por programaciones activas y no puede ser eliminada."
+    },
+    "form": {
+      "name": "Nombre",
+      "namePlaceholder": "Mi plantilla de newsletter",
+      "description": "Descripción",
+      "descriptionPlaceholder": "Una breve descripción de esta plantilla",
+      "tags": "Etiquetas",
+      "tagsPlaceholder": "newsletter, semanal, medios",
+      "tagsHelp": "Lista de etiquetas separadas por comas",
+      "file": "Archivo de plantilla",
+      "setAsDefault": "Establecer como predeterminada",
+      "setAsDefaultHelp": "Usar esta plantilla por defecto para nuevas generaciones"
+    },
+    "preview": {
+      "title": "Vista previa de plantilla",
+      "mobile": "Móvil",
+      "tablet": "Tablet",
+      "desktop": "Escritorio",
+      "noContent": "Sin contenido para previsualizar"
+    }
+  },
+  "settings": {
+    "title": "Configuración",
+    "tabs": {
+      "general": "General",
+      "services": "Servicios",
+      "logs": "Registros"
+    },
+    "general": {
+      "timezone": "Zona horaria",
+      "retention": {
+        "title": "Retención de datos",
+        "history": "Historial (días)",
+        "logs": "Registros (días)"
+      },
+      "export": "Exportar configuración",
+      "import": "Importar configuración"
+    },
+    "services": {
+      "title": "Servicios externos",
+      "testAll": "Probar todos los servicios",
+      "test": "Probar conexión",
+      "connected": "Conectado",
+      "notConfigured": "No configurado",
+      "error": "Error de conexión",
+      "url": "URL",
+      "apiKey": "Clave API",
+      "tautulli": {
+        "name": "Tautulli",
+        "description": "Estadísticas e historial del servidor de medios"
+      },
+      "tmdb": {
+        "name": "TMDB",
+        "description": "Metadatos de películas y series"
+      },
+      "ghost": {
+        "name": "Ghost",
+        "description": "Publicación de newsletters"
+      },
+      "romm": {
+        "name": "ROMM",
+        "description": "Biblioteca de videojuegos"
+      },
+      "komga": {
+        "name": "Komga",
+        "description": "Biblioteca de cómics y libros"
+      },
+      "audiobookshelf": {
+        "name": "Audiobookshelf",
+        "description": "Biblioteca de audiolibros"
+      },
+      "tunarr": {
+        "name": "Tunarr",
+        "description": "Programación de TV"
+      }
+    },
+    "logs": {
+      "title": "Registros del sistema",
+      "level": "Nivel",
+      "source": "Origen",
+      "service": "Servicio",
+      "message": "Mensaje",
+      "timestamp": "Fecha/Hora",
+      "purge": "Purgar registros antiguos",
+      "levels": {
+        "debug": "Debug",
+        "info": "Info",
+        "warning": "Advertencia",
+        "error": "Error"
+      }
+    },
+    "theme": {
+      "toggle": "Cambiar tema",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "system": "Sistema"
+    }
+  },
+  "help": {
+    "title": "Ayuda",
+    "search": "Buscar en la ayuda...",
+    "categories": {
+      "gettingStarted": "Primeros pasos",
+      "manualGeneration": "Generación manual",
+      "scheduling": "Programación",
+      "templates": "Plantillas",
+      "troubleshooting": "Solución de problemas"
+    }
+  },
+  "progress": {
+    "title": "Generación en curso",
+    "step": "pasos",
+    "elapsed": "Transcurrido",
+    "remaining": "Restante",
+    "cancel": "Cancelar",
+    "steps": {
+      "fetch_tautulli": "Obteniendo medios",
+      "enrich_tmdb": "Enriquecimiento TMDB",
+      "fetch_romm": "Obteniendo juegos",
+      "fetch_komga": "Obteniendo cómics",
+      "fetch_audiobookshelf": "Obteniendo audiolibros",
+      "fetch_tunarr": "Obteniendo programación TV",
+      "fetch_statistics": "Obteniendo estadísticas",
+      "render_template": "Renderizando plantilla",
+      "publish_ghost": "Publicando en Ghost"
+    },
+    "complete": "Generación completada",
+    "cancelled": "Generación cancelada",
+    "failed": "Generación fallida"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "markAllRead": "Marcar todo como leído",
+    "empty": "Sin notificaciones"
+  },
+  "schedule": {
+    "create": "Crear programación",
+    "empty": "Sin programaciones configuradas",
+    "nextRun": "Próxima ejecución",
+    "lastRun": "Última ejecución",
+    "status": {
+      "paused": "Pausado"
+    },
+    "form": {
+      "createTitle": "Crear programación",
+      "createDescription": "Configura una nueva programación para la generación automática de newsletters",
+      "editTitle": "Editar programación",
+      "editDescription": "Modificar la configuración de la programación",
+      "name": "Nombre de la programación",
+      "namePlaceholder": "ej. Newsletter semanal",
+      "cron": "Expresión CRON",
+      "cronHelp": "ej. 0 8 * * 1 (cada lunes a las 8am)",
+      "simpleMode": "Modo simple",
+      "advancedMode": "Modo avanzado",
+      "frequency": "Frecuencia",
+      "time": "Hora",
+      "weekday": "Día de la semana",
+      "dayOfMonth": "Día del mes",
+      "timezone": "Zona horaria",
+      "active": "Activo",
+      "activeHelp": "Habilitar esta programación para ejecución automática",
+      "generationConfig": "Configuración de generación",
+      "nextRuns": "Próximas ejecuciones"
+    },
+    "frequencies": {
+      "daily": "Diario",
+      "weekly": "Semanal",
+      "monthly": "Mensual"
+    },
+    "weekdays": {
+      "sunday": "Domingo",
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado"
+    },
+    "actions": {
+      "executeNow": "Ejecutar ahora",
+      "toggle": "Activar/Desactivar"
+    },
+    "deleteConfirm": {
+      "title": "Eliminar programación",
+      "message": "¿Estás seguro de que deseas eliminar la programación \"{{name}}\"?"
+    }
+  },
+  "errors": {
+    "generic": "Se produjo un error",
+    "network": "Error de conexión al servidor",
+    "notFound": "Recurso no encontrado",
+    "validation": "Error de validación"
+  }
+}

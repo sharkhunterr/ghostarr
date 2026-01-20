@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="{{ language | default('fr') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        /* Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+        }
+
+        /* Container */
+        .newsletter-container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header .date {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Content */
+        .content {
+            padding: 30px;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .icon {
+            font-size: 24px;
+        }
+
+        /* Media Grid */
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        /* Media Card */
+        .media-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .media-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .media-card .poster {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            background-color: #e0e0e0;
+        }
+
+        .media-card .info {
+            padding: 15px;
+        }
+
+        .media-card .title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .media-card .meta {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .media-card .year {
+            color: #888;
+        }
+
+        .media-card .rating {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background: #ffd700;
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .media-card .genres {
+            font-size: 12px;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .media-card .overview {
+            font-size: 13px;
+            color: #666;
+            margin-top: 10px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Episode info for series */
+        .media-card .episode-info {
+            font-size: 12px;
+            color: #667eea;
+            font-weight: 500;
+            margin-top: 5px;
+        }
+
+        /* Maintenance Notice */
+        .maintenance {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .maintenance h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .maintenance p {
+            font-size: 14px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .maintenance .dates {
+            margin-top: 15px;
+            font-size: 13px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        /* Statistics */
+        .statistics {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .statistics h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .stat-item .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .stat-item .label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* TV Programming */
+        .programming-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .program-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .program-item .time {
+            font-size: 14px;
+            font-weight: 600;
+            color: #667eea;
+            min-width: 60px;
+        }
+
+        .program-item .details {
+            flex: 1;
+        }
+
+        .program-item .program-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .program-item .channel {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* Footer */
+        .footer {
+            background: #333;
+            color: #fff;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .footer p {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .footer .powered-by {
+            font-size: 12px;
+            opacity: 0.6;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .header {
+                padding: 30px 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .content {
+                padding: 20px;
+            }
+
+            .media-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .media-card .poster {
+                height: 200px;
+            }
+
+            .media-card .info {
+                padding: 10px;
+            }
+
+            .media-card .title {
+                font-size: 14px;
+            }
+
+            .media-card .overview {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="newsletter-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>{{ title }}</h1>
+            <div class="date">{{ generation_date | format_date }}</div>
+        </div>
+
+        <div class="content">
+            <!-- Maintenance Notice -->
+            {% if maintenance and maintenance.enabled %}
+            <div class="maintenance">
+                <h3>
+                    <span class="icon">&#9888;</span>
+                    {{ maintenance.title | default('Maintenance planifiee') }}
+                </h3>
+                <p>{{ maintenance.message }}</p>
+                {% if maintenance.start_date or maintenance.end_date %}
+                <div class="dates">
+                    {% if maintenance.start_date %}
+                    <strong>Debut:</strong> {{ maintenance.start_date | format_date }}<br>
+                    {% endif %}
+                    {% if maintenance.end_date %}
+                    <strong>Fin:</strong> {{ maintenance.end_date | format_date }}
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Statistics Section -->
+            {% if statistics %}
+            <div class="statistics">
+                <h3>&#128202; Statistiques de la semaine</h3>
+                <div class="stats-grid">
+                    {% if statistics.total_plays is defined %}
+                    <div class="stat-item">
+                        <div class="value">{{ statistics.total_plays | number_format }}</div>
+                        <div class="label">Lectures</div>
+                    </div>
+                    {% endif %}
+                    {% if statistics.total_duration is defined %}
+                    <div class="stat-item">
+                        <div class="value">{{ statistics.total_duration | duration }}</div>
+                        <div class="label">Temps de visionnage</div>
+                    </div>
+                    {% endif %}
+                    {% if statistics.unique_users is defined %}
+                    <div class="stat-item">
+                        <div class="value">{{ statistics.unique_users }}</div>
+                        <div class="label">Utilisateurs</div>
+                    </div>
+                    {% endif %}
+                    {% if statistics.movies_watched is defined %}
+                    <div class="stat-item">
+                        <div class="value">{{ statistics.movies_watched }}</div>
+                        <div class="label">Films</div>
+                    </div>
+                    {% endif %}
+                    {% if statistics.episodes_watched is defined %}
+                    <div class="stat-item">
+                        <div class="value">{{ statistics.episodes_watched }}</div>
+                        <div class="label">Episodes</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Movies Section -->
+            {% if movies and movies | length > 0 %}
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">&#127909;</span>
+                    Films recemment ajoutes
+                </h2>
+                <div class="media-grid">
+                    {% for movie in movies %}
+                    <div class="media-card">
+                        {% if movie.poster_url %}
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" class="poster" loading="lazy">
+                        {% else %}
+                        <div class="poster" style="display: flex; align-items: center; justify-content: center; font-size: 48px; color: #ccc;">&#127909;</div>
+                        {% endif %}
+                        <div class="info">
+                            <div class="title">{{ movie.title }}</div>
+                            <div class="meta">
+                                <span class="year">{{ movie.year }}</span>
+                                {% if movie.runtime %}
+                                <span> &middot; {{ movie.runtime }} min</span>
+                                {% endif %}
+                            </div>
+                            {% if movie.rating %}
+                            <div class="rating">
+                                &#11088; {{ movie.rating | round(1) }}
+                            </div>
+                            {% endif %}
+                            {% if movie.genres %}
+                            <div class="genres">{{ movie.genres | join(', ') }}</div>
+                            {% endif %}
+                            {% if movie.overview %}
+                            <div class="overview">{{ movie.overview | truncate(150) }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Series Section -->
+            {% if series and series | length > 0 %}
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">&#128250;</span>
+                    Series recemment ajoutees
+                </h2>
+                <div class="media-grid">
+                    {% for show in series %}
+                    <div class="media-card">
+                        {% if show.poster_url %}
+                        <img src="{{ show.poster_url }}" alt="{{ show.title }}" class="poster" loading="lazy">
+                        {% else %}
+                        <div class="poster" style="display: flex; align-items: center; justify-content: center; font-size: 48px; color: #ccc;">&#128250;</div>
+                        {% endif %}
+                        <div class="info">
+                            <div class="title">{{ show.title }}</div>
+                            <div class="meta">
+                                <span class="year">{{ show.year }}</span>
+                            </div>
+                            {% if show.season and show.episode %}
+                            <div class="episode-info">S{{ show.season | string | zfill(2) }}E{{ show.episode | string | zfill(2) }}</div>
+                            {% endif %}
+                            {% if show.rating %}
+                            <div class="rating">
+                                &#11088; {{ show.rating | round(1) }}
+                            </div>
+                            {% endif %}
+                            {% if show.genres %}
+                            <div class="genres">{{ show.genres | join(', ') }}</div>
+                            {% endif %}
+                            {% if show.overview %}
+                            <div class="overview">{{ show.overview | truncate(150) }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Games Section (ROMM) -->
+            {% if games and games | length > 0 %}
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">&#127918;</span>
+                    Jeux recemment ajoutes
+                </h2>
+                <div class="media-grid">
+                    {% for game in games %}
+                    <div class="media-card">
+                        {% if game.cover_url %}
+                        <img src="{{ game.cover_url }}" alt="{{ game.name }}" class="poster" loading="lazy">
+                        {% else %}
+                        <div class="poster" style="display: flex; align-items: center; justify-content: center; font-size: 48px; color: #ccc;">&#127918;</div>
+                        {% endif %}
+                        <div class="info">
+                            <div class="title">{{ game.name }}</div>
+                            <div class="meta">
+                                {% if game.platform %}
+                                <span>{{ game.platform }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Books Section (Komga) -->
+            {% if books and books | length > 0 %}
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">&#128218;</span>
+                    Livres recemment ajoutes
+                </h2>
+                <div class="media-grid">
+                    {% for book in books %}
+                    <div class="media-card">
+                        {% if book.thumbnail %}
+                        <img src="{{ book.thumbnail }}" alt="{{ book.name }}" class="poster" loading="lazy">
+                        {% else %}
+                        <div class="poster" style="display: flex; align-items: center; justify-content: center; font-size: 48px; color: #ccc;">&#128218;</div>
+                        {% endif %}
+                        <div class="info">
+                            <div class="title">{{ book.name }}</div>
+                            <div class="meta">
+                                {% if book.series_title %}
+                                <span>{{ book.series_title }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Audiobooks Section (Audiobookshelf) -->
+            {% if audiobooks and audiobooks | length > 0 %}
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">&#127911;</span>
+                    Livres audio recemment ajoutes
+                </h2>
+                <div class="media-grid">
+                    {% for audiobook in audiobooks %}
+                    <div class="media-card">
+                        {% if audiobook.cover %}
+                        <img src="{{ audiobook.cover }}" alt="{{ audiobook.title }}" class="poster" loading="lazy">
+                        {% else %}
+                        <div class="poster" style="display: flex; align-items: center; justify-content: center; font-size: 48px; color: #ccc;">&#127911;</div>
+                        {% endif %}
+                        <div class="info">
+                            <div class="title">{{ audiobook.title }}</div>
+                            <div class="meta">
+                                {% if audiobook.author %}
+                                <span>{{ audiobook.author }}</span>
+                                {% endif %}
+                            </div>
+                            {% if audiobook.duration %}
+                            <div class="genres">{{ audiobook.duration | duration }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- TV Programming Section (Tunarr) -->
+            {% if programming and programming | length > 0 %}
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">&#128250;</span>
+                    Programme TV de la semaine
+                </h2>
+                <div class="programming-list">
+                    {% for program in programming %}
+                    <div class="program-item">
+                        <div class="time">{{ program.start_time | format_time }}</div>
+                        <div class="details">
+                            <div class="program-title">{{ program.title }}</div>
+                            {% if program.channel %}
+                            <div class="channel">{{ program.channel }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Empty State -->
+            {% if (not movies or movies | length == 0) and (not series or series | length == 0) and (not games or games | length == 0) and (not books or books | length == 0) and (not audiobooks or audiobooks | length == 0) %}
+            <div class="empty-state">
+                <div class="icon">&#128247;</div>
+                <p>Aucun nouveau contenu cette semaine.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Newsletter generee automatiquement</p>
+            <p class="powered-by">Propulse par Ghostarr</p>
+        </div>
+    </div>
+</body>
+</html>
