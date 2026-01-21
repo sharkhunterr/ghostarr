@@ -161,3 +161,18 @@ export function useTemplatePreview(
     enabled: enabled && !!templateId,
   });
 }
+
+// Scan and import templates from filesystem
+export function useScanTemplates() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (): Promise<Template[]> => {
+      const response = await apiClient.post<Template[]>('/templates/scan');
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: templateKeys.all });
+    },
+  });
+}

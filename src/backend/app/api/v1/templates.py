@@ -222,3 +222,63 @@ async def get_default_template(db: AsyncSession = Depends(get_db)):
         raise HTTPException(status_code=404, detail="No templates found")
 
     return TemplateResponse.model_validate(template)
+
+
+@router.post("/scan", response_model=list[TemplateResponse])
+async def scan_and_import_templates(db: AsyncSession = Depends(get_db)):
+    """Scan templates directory and import any templates not already in database."""
+    templates_dir = Path(settings.templates_dir)
+    if not templates_dir.exists():
+        return []
+
+    # Get all existing template file paths from database
+    result = await db.execute(select(Template.file_path))
+    existing_files = {row[0] for row in result.fetchall()}
+
+    imported = []
+
+    # Scan directory for HTML files
+    for file_path in templates_dir.glob("*.html"):
+        filename = file_path.name
+
+        # Skip if already in database
+        if filename in existing_files:
+            continue
+
+        # Skip files that look like UUIDs (uploaded via API)
+        if len(filename) == 36 and filename.count("-") == 4:
+            continue
+
+        # Validate template
+        is_valid, error = template_service.validate_template(filename)
+        if not is_valid:
+            logger.warning(f"Skipping invalid template {filename}: {error}")
+            continue
+
+        # Generate name from filename
+        name = filename.replace(".html", "").replace("_", " ").title()
+
+        # Check for duplicate name
+        existing_name = await db.execute(select(Template).where(Template.name == name))
+        if existing_name.scalar_one_or_none():
+            # Add suffix to make unique
+            name = f"{name} (imported)"
+
+        # Create template record
+        template = Template(
+            name=name,
+            description=f"Imported from {filename}",
+            tags=["imported"],
+            file_path=filename,
+            is_default=False,
+            preset_config={},
+        )
+        db.add(template)
+        await db.flush()
+        await db.refresh(template)
+        imported.append(TemplateResponse.model_validate(template))
+        logger.info(f"Imported template: {name} from {filename}")
+
+    await db.commit()
+
+    return imported

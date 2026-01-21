@@ -4,6 +4,8 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FolderSearch } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,7 +22,8 @@ import {
   TemplateUploadDialog,
   TemplateEditDialog,
 } from '@/components/templates';
-import { useTemplates, useDeleteTemplate, useUpdateTemplate } from '@/api/templates';
+import { useTemplates, useDeleteTemplate, useUpdateTemplate, useScanTemplates } from '@/api/templates';
+import { useNotificationStore } from '@/stores/notificationStore';
 import type { Template } from '@/types';
 
 export default function Templates() {
@@ -28,11 +31,39 @@ export default function Templates() {
   const { data: templates, isLoading, error } = useTemplates();
   const deleteTemplate = useDeleteTemplate();
   const updateTemplate = useUpdateTemplate();
+  const scanTemplates = useScanTemplates();
+  const addNotification = useNotificationStore((state) => state.addNotification);
 
   const [uploadOpen, setUploadOpen] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
   const [editTemplate, setEditTemplate] = useState<Template | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Template | null>(null);
+
+  const handleScan = async () => {
+    try {
+      const imported = await scanTemplates.mutateAsync();
+      if (imported.length > 0) {
+        addNotification({
+          type: 'success',
+          title: t('templates.scan.success'),
+          message: t('templates.scan.imported', { count: imported.length }),
+        });
+      } else {
+        addNotification({
+          type: 'info',
+          title: t('templates.scan.noNew'),
+          message: t('templates.scan.noNewDescription'),
+        });
+      }
+    } catch (error) {
+      console.error('Failed to scan templates:', error);
+      addNotification({
+        type: 'error',
+        title: t('errors.generic'),
+        message: String(error),
+      });
+    }
+  };
 
   const handlePreview = (template: Template) => {
     setPreviewTemplate(template);
@@ -74,10 +105,22 @@ export default function Templates() {
 
   return (
     <div className="space-y-6">
-      {/* Page description */}
-      <p className="text-muted-foreground text-sm">
-        {t('templates.subtitle')}
-      </p>
+      {/* Header with scan button */}
+      <div className="flex items-center justify-between">
+        <p className="text-muted-foreground text-sm">
+          {t('templates.subtitle')}
+        </p>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleScan}
+          disabled={scanTemplates.isPending}
+        >
+          <FolderSearch className="h-4 w-4 mr-2" />
+          {scanTemplates.isPending ? t('common.loading') : t('templates.scan.button')}
+        </Button>
+      </div>
 
       {/* Grid - Full width responsive */}
       <TemplateGrid
