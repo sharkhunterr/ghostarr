@@ -10,7 +10,6 @@ import {
   Clock,
   Loader2,
   AlertCircle,
-  X,
   ChevronDown,
   ChevronRight,
   Settings2,
@@ -30,7 +29,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import type { History, ProgressStep, ProgressStepStatus, GenerationConfig } from '@/types';
+import type { History, ProgressStepStatus, GenerationConfig } from '@/types';
 
 interface ProgressModalProps {
   open: boolean;
@@ -63,73 +62,155 @@ function formatDuration(ms: number): string {
 }
 
 function ConfigSection({ config, t }: { config: GenerationConfig; t: (key: string) => string }) {
-  const enabledSources = [];
-  if (config.tautulli?.enabled) enabledSources.push('Tautulli');
-  if (config.romm?.enabled) enabledSources.push('Romm');
-  if (config.komga?.enabled) enabledSources.push('Komga');
-  if (config.audiobookshelf?.enabled) enabledSources.push('Audiobookshelf');
-  if (config.tunarr?.enabled) enabledSources.push('Tunarr');
-
   return (
-    <div className="space-y-2 text-sm">
+    <div className="space-y-3 text-sm">
       {/* Publication mode */}
-      <div className="flex justify-between">
-        <span className="text-muted-foreground">{t('history.config.publicationMode')}</span>
-        <Badge variant="outline">{config.publication_mode}</Badge>
+      <div className="flex justify-between items-center">
+        <span className="text-muted-foreground">{t('dashboard.config.publicationMode')}</span>
+        <Badge variant="outline">{t(`dashboard.publicationModes.${config.publication_mode}`)}</Badge>
       </div>
 
-      {/* Enabled sources */}
-      {enabledSources.length > 0 && (
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">{t('history.config.sources')}</span>
-          <span>{enabledSources.join(', ')}</span>
-        </div>
-      )}
+      {/* Media sources section */}
+      {(config.tautulli?.enabled || config.romm?.enabled || config.komga?.enabled || config.audiobookshelf?.enabled) && (
+        <div className="space-y-2">
+          <span className="font-medium">{t('dashboard.tabs.media')}</span>
 
-      {/* Tautulli details */}
-      {config.tautulli?.enabled && (
-        <div className="pl-4 space-y-1 border-l-2 border-muted">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Tautulli - {t('history.config.days')}</span>
-            <span>{config.tautulli.days}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Tautulli - {t('history.config.maxItems')}</span>
-            <span>{config.tautulli.max_items === -1 ? t('common.unlimited') : config.tautulli.max_items}</span>
-          </div>
-          {config.tautulli.featured_item && (
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('history.config.featuredItem')}</span>
-              <CheckCircle className="h-4 w-4 text-green-500" />
+          {/* Tautulli / Films & Séries */}
+          {config.tautulli?.enabled && (
+            <div className="pl-3 space-y-1 border-l-2 border-primary/30">
+              <div className="font-medium text-primary">{t('dashboard.sources.tautulli')}</div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('dashboard.statistics.days')}</span>
+                <span>{config.tautulli.days}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('dashboard.config.maxItems')}</span>
+                <span>{config.tautulli.max_items === -1 ? t('common.unlimited') : config.tautulli.max_items}</span>
+              </div>
+              {config.tautulli.featured_item && (
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">{t('dashboard.config.featuredItem')}</span>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Romm / Jeux vidéo */}
+          {config.romm?.enabled && (
+            <div className="pl-3 space-y-1 border-l-2 border-primary/30">
+              <div className="font-medium text-primary">{t('dashboard.sources.romm')}</div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('dashboard.statistics.days')}</span>
+                <span>{config.romm.days}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('dashboard.config.maxItems')}</span>
+                <span>{config.romm.max_items === -1 ? t('common.unlimited') : config.romm.max_items}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Komga / BD & Comics */}
+          {config.komga?.enabled && (
+            <div className="pl-3 space-y-1 border-l-2 border-primary/30">
+              <div className="font-medium text-primary">{t('dashboard.sources.komga')}</div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('dashboard.statistics.days')}</span>
+                <span>{config.komga.days}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('dashboard.config.maxItems')}</span>
+                <span>{config.komga.max_items === -1 ? t('common.unlimited') : config.komga.max_items}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Audiobookshelf / Livres audio */}
+          {config.audiobookshelf?.enabled && (
+            <div className="pl-3 space-y-1 border-l-2 border-primary/30">
+              <div className="font-medium text-primary">{t('dashboard.sources.audiobookshelf')}</div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('dashboard.statistics.days')}</span>
+                <span>{config.audiobookshelf.days}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('dashboard.config.maxItems')}</span>
+                <span>{config.audiobookshelf.max_items === -1 ? t('common.unlimited') : config.audiobookshelf.max_items}</span>
+              </div>
             </div>
           )}
         </div>
       )}
 
-      {/* Statistics */}
+      {/* Extras section (Tunarr) */}
+      {config.tunarr?.enabled && (
+        <div className="space-y-2">
+          <span className="font-medium">{t('dashboard.tabs.extras')}</span>
+          <div className="pl-3 space-y-1 border-l-2 border-primary/30">
+            <div className="font-medium text-primary">{t('dashboard.sources.tunarr')}</div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('dashboard.statistics.days')}</span>
+              <span>{config.tunarr.days}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('dashboard.config.maxItems')}</span>
+              <span>{config.tunarr.max_items === -1 ? t('common.unlimited') : config.tunarr.max_items}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Statistics section */}
       {config.statistics?.enabled && (
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">{t('history.config.statistics')}</span>
-          <span>
-            {config.statistics.days} {t('history.config.days')}
-            {config.statistics.include_comparison && ` + ${t('history.config.comparison')}`}
-          </span>
+        <div className="space-y-2">
+          <span className="font-medium">{t('dashboard.tabs.statistics')}</span>
+          <div className="pl-3 space-y-1 border-l-2 border-primary/30">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('dashboard.statistics.days')}</span>
+              <span>{config.statistics.days}</span>
+            </div>
+            {config.statistics.include_comparison && (
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">{t('dashboard.statistics.includeComparison')}</span>
+                <CheckCircle className="h-4 w-4 text-green-500" />
+              </div>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Maintenance */}
+      {/* Maintenance section */}
       {config.maintenance?.enabled && (
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">{t('history.config.maintenance')}</span>
-          <Badge variant="secondary">{config.maintenance.type}</Badge>
+        <div className="space-y-2">
+          <span className="font-medium">{t('dashboard.tabs.maintenance')}</span>
+          <div className="pl-3 space-y-1 border-l-2 border-primary/30">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">{t('dashboard.maintenance.type')}</span>
+              <Badge variant="secondary">{t(`dashboard.maintenance.types.${config.maintenance.type}`)}</Badge>
+            </div>
+            {config.maintenance.description && (
+              <div className="text-muted-foreground italic">
+                {config.maintenance.description}
+              </div>
+            )}
+          </div>
         </div>
       )}
 
-      {/* Max items */}
+      {/* Max total items */}
       {config.max_total_items !== -1 && (
-        <div className="flex justify-between">
-          <span className="text-muted-foreground">{t('history.config.maxTotalItems')}</span>
+        <div className="flex justify-between items-center">
+          <span className="text-muted-foreground">{t('dashboard.config.maxItems')}</span>
           <span>{config.max_total_items}</span>
+        </div>
+      )}
+
+      {/* Skip if empty */}
+      {config.skip_if_empty && (
+        <div className="flex justify-between items-center">
+          <span className="text-muted-foreground">{t('dashboard.config.skipIfEmpty')}</span>
+          <CheckCircle className="h-4 w-4 text-green-500" />
         </div>
       )}
     </div>
@@ -142,7 +223,7 @@ export function ProgressModal({
   history,
 }: ProgressModalProps) {
   const { t } = useTranslation();
-  const [configOpen, setConfigOpen] = useState(false);
+  const [configOpen, setConfigOpen] = useState(true);
 
   if (!history) return null;
 
@@ -151,15 +232,8 @@ export function ProgressModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
-        <DialogHeader className="flex-row items-center justify-between">
+        <DialogHeader>
           <DialogTitle>{t('history.progressModal.title')}</DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => onOpenChange(false)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogHeader>
 
         {/* Summary */}
