@@ -120,6 +120,53 @@ export function useDeleteGhostPost() {
   });
 }
 
+// Bulk delete history entries
+export function useBulkDeleteHistory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (
+      historyIds: string[]
+    ): Promise<{ status: string; deleted_count: number }> => {
+      const response = await apiClient.post<{
+        status: string;
+        deleted_count: number;
+      }>('/history/bulk-delete', historyIds);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: historyKeys.all });
+    },
+  });
+}
+
+// Bulk delete history entries with Ghost posts
+export function useBulkDeleteHistoryWithGhost() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (
+      historyIds: string[]
+    ): Promise<{
+      status: string;
+      deleted_count: number;
+      ghost_deleted_count: number;
+      errors: string[] | null;
+    }> => {
+      const response = await apiClient.post<{
+        status: string;
+        deleted_count: number;
+        ghost_deleted_count: number;
+        errors: string[] | null;
+      }>('/history/bulk-delete-with-ghost', historyIds);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: historyKeys.all });
+    },
+  });
+}
+
 // Export history
 export function useExportHistory() {
   return useMutation({

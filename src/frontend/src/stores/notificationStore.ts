@@ -21,13 +21,22 @@ interface NotificationState {
   unreadCount: () => number;
 }
 
+// Generate unique ID with fallback for browsers without crypto.randomUUID
+const generateId = (): string => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback for older browsers
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+};
+
 export const useNotificationStore = create<NotificationState>((set, get) => ({
   notifications: [],
 
   addNotification: (notification) => {
     const newNotification: Notification = {
       ...notification,
-      id: crypto.randomUUID(),
+      id: generateId(),
       timestamp: new Date(),
       read: false,
     };

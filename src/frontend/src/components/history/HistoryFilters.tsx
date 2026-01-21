@@ -80,16 +80,16 @@ export function HistoryFilters({ filters, onChange }: HistoryFiltersProps) {
             <div className="space-y-2">
               <Label className="text-sm">{t('history.filters.type')}</Label>
               <Select
-                value={filters.type || ''}
-                onValueChange={(value: GenerationType | '') =>
-                  updateFilter('type', value as GenerationType)
+                value={filters.type || 'all'}
+                onValueChange={(value: string) =>
+                  updateFilter('type', value === 'all' ? undefined : value as GenerationType)
                 }
               >
                 <SelectTrigger>
                   <SelectValue placeholder={t('common.all')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">{t('common.all')}</SelectItem>
+                  <SelectItem value="all">{t('common.all')}</SelectItem>
                   <SelectItem value="manual">
                     {t('history.types.manual')}
                   </SelectItem>
@@ -104,16 +104,16 @@ export function HistoryFilters({ filters, onChange }: HistoryFiltersProps) {
             <div className="space-y-2">
               <Label className="text-sm">{t('history.filters.status')}</Label>
               <Select
-                value={filters.status || ''}
-                onValueChange={(value: GenerationStatus | '') =>
-                  updateFilter('status', value as GenerationStatus)
+                value={filters.status || 'all'}
+                onValueChange={(value: string) =>
+                  updateFilter('status', value === 'all' ? undefined : value as GenerationStatus)
                 }
               >
                 <SelectTrigger>
                   <SelectValue placeholder={t('common.all')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">{t('common.all')}</SelectItem>
+                  <SelectItem value="all">{t('common.all')}</SelectItem>
                   <SelectItem value="success">
                     {t('history.status.success')}
                   </SelectItem>
@@ -137,14 +137,14 @@ export function HistoryFilters({ filters, onChange }: HistoryFiltersProps) {
             <div className="space-y-2">
               <Label className="text-sm">{t('history.filters.template')}</Label>
               <Select
-                value={filters.template_id || ''}
-                onValueChange={(value) => updateFilter('template_id', value)}
+                value={filters.template_id || 'all'}
+                onValueChange={(value) => updateFilter('template_id', value === 'all' ? undefined : value)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder={t('common.all')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">{t('common.all')}</SelectItem>
+                  <SelectItem value="all">{t('common.all')}</SelectItem>
                   {templates?.map((template) => (
                     <SelectItem key={template.id} value={template.id}>
                       {template.name}

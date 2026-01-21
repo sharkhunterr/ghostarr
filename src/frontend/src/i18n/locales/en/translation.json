@@ -207,6 +207,22 @@
       "comparison": "comparison",
       "maintenance": "Maintenance",
       "maxTotalItems": "Max total items"
+    },
+    "bulk": {
+      "selectAll": "Select all",
+      "selectRow": "Select this row",
+      "selected": "{{count}} item(s) selected",
+      "clearSelection": "Clear selection",
+      "deleteHistory": "Delete from history",
+      "deleteWithGhost": "Delete with Ghost",
+      "deleteConfirm": {
+        "title": "Delete selected entries",
+        "message": "Are you sure you want to delete {{count}} history entry(ies)? This action cannot be undone."
+      },
+      "deleteWithGhostConfirm": {
+        "title": "Delete with Ghost posts",
+        "message": "Are you sure you want to delete {{count}} history entry(ies) and {{ghostCount}} associated Ghost post(s)? This action cannot be undone."
+      }
     }
   },
   "templates": {

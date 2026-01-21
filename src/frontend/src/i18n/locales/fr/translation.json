@@ -207,6 +207,22 @@
       "comparison": "comparaison",
       "maintenance": "Maintenance",
       "maxTotalItems": "Max total"
+    },
+    "bulk": {
+      "selectAll": "Tout sélectionner",
+      "selectRow": "Sélectionner cette ligne",
+      "selected": "{{count}} élément(s) sélectionné(s)",
+      "clearSelection": "Désélectionner",
+      "deleteHistory": "Supprimer de l'historique",
+      "deleteWithGhost": "Supprimer avec Ghost",
+      "deleteConfirm": {
+        "title": "Supprimer les entrées sélectionnées",
+        "message": "Êtes-vous sûr de vouloir supprimer {{count}} entrée(s) de l'historique ? Cette action est irréversible."
+      },
+      "deleteWithGhostConfirm": {
+        "title": "Supprimer avec les publications Ghost",
+        "message": "Êtes-vous sûr de vouloir supprimer {{count}} entrée(s) de l'historique et {{ghostCount}} publication(s) Ghost associée(s) ? Cette action est irréversible."
+      }
     }
   },
   "templates": {

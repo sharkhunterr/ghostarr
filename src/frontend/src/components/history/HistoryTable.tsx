@@ -25,6 +25,7 @@ import {
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -37,6 +38,8 @@ import type { History, GenerationStatus } from '@/types';
 interface HistoryTableProps {
   entries: History[];
   isLoading?: boolean;
+  selectedIds: Set<string>;
+  onSelectionChange: (ids: Set<string>) => void;
   onViewDetails: (entry: History) => void;
   onRegenerate: (entry: History) => void;
   onDelete: (entry: History) => void;
@@ -94,12 +97,35 @@ function formatDate(dateStr: string): string {
 export function HistoryTable({
   entries,
   isLoading,
+  selectedIds,
+  onSelectionChange,
   onViewDetails,
   onRegenerate,
   onDelete,
   onDeleteGhostPost,
 }: HistoryTableProps) {
   const { t } = useTranslation();
+
+  const allSelected = entries.length > 0 && entries.every((e) => selectedIds.has(e.id));
+  const someSelected = entries.some((e) => selectedIds.has(e.id)) && !allSelected;
+
+  const toggleAll = () => {
+    if (allSelected) {
+      onSelectionChange(new Set());
+    } else {
+      onSelectionChange(new Set(entries.map((e) => e.id)));
+    }
+  };
+
+  const toggleOne = (id: string) => {
+    const newSet = new Set(selectedIds);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    onSelectionChange(newSet);
+  };
 
   if (isLoading) {
     return (
@@ -123,6 +149,18 @@ export function HistoryTable({
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead className="w-[50px]">
+              <Checkbox
+                checked={allSelected}
+                ref={(el) => {
+                  if (el) {
+                    (el as HTMLButtonElement & { indeterminate: boolean }).indeterminate = someSelected;
+                  }
+                }}
+                onCheckedChange={toggleAll}
+                aria-label={t('history.bulk.selectAll')}
+              />
+            </TableHead>
             <TableHead>{t('history.columns.date')}</TableHead>
             <TableHead>{t('history.columns.type')}</TableHead>
             <TableHead>{t('history.columns.status')}</TableHead>
@@ -139,7 +177,17 @@ export function HistoryTable({
         </TableHeader>
         <TableBody>
           {entries.map((entry) => (
-            <TableRow key={entry.id}>
+            <TableRow
+              key={entry.id}
+              className={selectedIds.has(entry.id) ? 'bg-muted/50' : undefined}
+            >
+              <TableCell>
+                <Checkbox
+                  checked={selectedIds.has(entry.id)}
+                  onCheckedChange={() => toggleOne(entry.id)}
+                  aria-label={t('history.bulk.selectRow')}
+                />
+              </TableCell>
               <TableCell className="font-medium">
                 {formatDate(entry.created_at)}
               </TableCell>

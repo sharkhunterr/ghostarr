@@ -207,6 +207,65 @@ async def delete_history(history_id: str, db: AsyncSession = Depends(get_db)):
     return {"status": "deleted", "history_id": history_id}
 
 
+@router.post("/bulk-delete")
+async def bulk_delete_history(
+    history_ids: list[str],
+    db: AsyncSession = Depends(get_db),
+):
+    """Delete multiple history entries at once."""
+    if not history_ids:
+        raise HTTPException(status_code=400, detail="No history IDs provided")
+
+    deleted_count = 0
+    for history_id in history_ids:
+        entry = await db.get(History, history_id)
+        if entry:
+            await db.delete(entry)
+            deleted_count += 1
+
+    await db.commit()
+
+    return {"status": "deleted", "deleted_count": deleted_count}
+
+
+@router.post("/bulk-delete-with-ghost")
+async def bulk_delete_history_with_ghost(
+    history_ids: list[str],
+    db: AsyncSession = Depends(get_db),
+):
+    """Delete multiple history entries and their Ghost posts."""
+    if not history_ids:
+        raise HTTPException(status_code=400, detail="No history IDs provided")
+
+    deleted_count = 0
+    ghost_deleted_count = 0
+    errors = []
+
+    for history_id in history_ids:
+        entry = await db.get(History, history_id)
+        if entry:
+            # Try to delete Ghost post if exists
+            if entry.ghost_post_id:
+                try:
+                    await ghost_client.delete_post(entry.ghost_post_id)
+                    ghost_deleted_count += 1
+                except Exception as e:
+                    logger.warning(f"Failed to delete Ghost post {entry.ghost_post_id}: {e}")
+                    errors.append(f"Ghost post {entry.ghost_post_id}: {str(e)}")
+
+            await db.delete(entry)
+            deleted_count += 1
+
+    await db.commit()
+
+    return {
+        "status": "deleted",
+        "deleted_count": deleted_count,
+        "ghost_deleted_count": ghost_deleted_count,
+        "errors": errors if errors else None,
+    }
+
+
 @router.post("/{history_id}/regenerate", response_model=HistoryResponse)
 async def regenerate_history(history_id: str, db: AsyncSession = Depends(get_db)):
     """Regenerate a newsletter from a history entry."""

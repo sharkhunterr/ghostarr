@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download } from 'lucide-react';
+import { Download, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -32,13 +32,15 @@ import {
   useDeleteHistory,
   useRegenerateHistory,
   useDeleteGhostPost,
+  useBulkDeleteHistory,
+  useBulkDeleteHistoryWithGhost,
   useExportHistory,
   downloadBlob,
   type HistoryFilters as Filters,
 } from '@/api/history';
 import type { History as HistoryType } from '@/types';
 
-type ConfirmAction = 'delete' | 'regenerate' | 'deleteGhostPost' | null;
+type ConfirmAction = 'delete' | 'regenerate' | 'deleteGhostPost' | 'bulkDelete' | 'bulkDeleteWithGhost' | null;
 
 export default function History() {
   const { t } = useTranslation();
@@ -47,12 +49,20 @@ export default function History() {
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
   const [actionTarget, setActionTarget] = useState<HistoryType | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   const { data: entries, isLoading, error } = useHistory(filters);
   const deleteHistory = useDeleteHistory();
   const regenerateHistory = useRegenerateHistory();
   const deleteGhostPost = useDeleteGhostPost();
+  const bulkDeleteHistory = useBulkDeleteHistory();
+  const bulkDeleteHistoryWithGhost = useBulkDeleteHistoryWithGhost();
   const exportHistory = useExportHistory();
+
+  // Count how many selected entries have Ghost posts
+  const selectedWithGhost = entries?.filter(
+    (e) => selectedIds.has(e.id) && e.ghost_post_id
+  ).length || 0;
 
   const handleViewDetails = (entry: HistoryType) => {
     setSelectedEntry(entry);
@@ -74,19 +84,43 @@ export default function History() {
     setConfirmAction('deleteGhostPost');
   };
 
-  const executeAction = async () => {
-    if (!actionTarget) return;
+  const handleBulkDelete = () => {
+    setConfirmAction('bulkDelete');
+  };
 
+  const handleBulkDeleteWithGhost = () => {
+    setConfirmAction('bulkDeleteWithGhost');
+  };
+
+  const clearSelection = () => {
+    setSelectedIds(new Set());
+  };
+
+  const executeAction = async () => {
     try {
       switch (confirmAction) {
         case 'delete':
-          await deleteHistory.mutateAsync(actionTarget.id);
+          if (actionTarget) {
+            await deleteHistory.mutateAsync(actionTarget.id);
+          }
           break;
         case 'regenerate':
-          await regenerateHistory.mutateAsync(actionTarget.id);
+          if (actionTarget) {
+            await regenerateHistory.mutateAsync(actionTarget.id);
+          }
           break;
         case 'deleteGhostPost':
-          await deleteGhostPost.mutateAsync(actionTarget.id);
+          if (actionTarget) {
+            await deleteGhostPost.mutateAsync(actionTarget.id);
+          }
+          break;
+        case 'bulkDelete':
+          await bulkDeleteHistory.mutateAsync(Array.from(selectedIds));
+          clearSelection();
+          break;
+        case 'bulkDeleteWithGhost':
+          await bulkDeleteHistoryWithGhost.mutateAsync(Array.from(selectedIds));
+          clearSelection();
           break;
       }
     } catch (error) {
@@ -124,6 +158,19 @@ export default function History() {
           title: t('history.deleteGhostPostConfirm.title'),
           description: t('history.deleteGhostPostConfirm.message'),
         };
+      case 'bulkDelete':
+        return {
+          title: t('history.bulk.deleteConfirm.title'),
+          description: t('history.bulk.deleteConfirm.message', { count: selectedIds.size }),
+        };
+      case 'bulkDeleteWithGhost':
+        return {
+          title: t('history.bulk.deleteWithGhostConfirm.title'),
+          description: t('history.bulk.deleteWithGhostConfirm.message', {
+            count: selectedIds.size,
+            ghostCount: selectedWithGhost,
+          }),
+        };
       default:
         return { title: '', description: '' };
     }
@@ -133,7 +180,9 @@ export default function History() {
   const isActionLoading =
     deleteHistory.isPending ||
     regenerateHistory.isPending ||
-    deleteGhostPost.isPending;
+    deleteGhostPost.isPending ||
+    bulkDeleteHistory.isPending ||
+    bulkDeleteHistoryWithGhost.isPending;
 
   if (error) {
     return (
@@ -170,11 +219,49 @@ export default function History() {
       {/* Filters */}
       <HistoryFilters filters={filters} onChange={setFilters} />
 
+      {/* Bulk action bar */}
+      {selectedIds.size > 0 && (
+        <div className="flex items-center gap-4 p-3 bg-muted rounded-lg">
+          <span className="text-sm font-medium">
+            {t('history.bulk.selected', { count: selectedIds.size })}
+          </span>
+          <div className="flex-1" />
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearSelection}
+          >
+            <X className="h-4 w-4 mr-2" />
+            {t('history.bulk.clearSelection')}
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleBulkDelete}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            {t('history.bulk.deleteHistory')}
+          </Button>
+          {selectedWithGhost > 0 && (
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={handleBulkDeleteWithGhost}
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              {t('history.bulk.deleteWithGhost')}
+            </Button>
+          )}
+        </div>
+      )}
+
       {/* Table - Full width */}
       <div className="w-full overflow-x-auto">
         <HistoryTable
           entries={entries || []}
           isLoading={isLoading}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           onViewDetails={handleViewDetails}
           onRegenerate={handleRegenerate}
           onDelete={handleDelete}
