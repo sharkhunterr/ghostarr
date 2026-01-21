@@ -92,7 +92,7 @@ async def create_schedule(
         cron_expression=data.cron_expression,
         timezone=data.timezone or "UTC",
         template_id=data.template_id,
-        generation_config=data.generation_config.model_dump(),
+        generation_config=data.generation_config.model_dump(mode="json"),
         is_active=data.is_active if data.is_active is not None else True,
     )
     db.add(schedule)
@@ -146,7 +146,7 @@ async def update_schedule(
     update_data = data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         if field == "generation_config" and value:
-            value = value.model_dump() if hasattr(value, "model_dump") else value
+            value = value.model_dump(mode="json") if hasattr(value, "model_dump") else value
         setattr(schedule, field, value)
         if field in ["cron_expression", "timezone", "is_active"]:
             needs_reschedule = True

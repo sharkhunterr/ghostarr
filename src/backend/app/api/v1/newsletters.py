@@ -26,6 +26,29 @@ logger = get_logger(__name__)
 router = APIRouter()
 
 
+def _get_maintenance_type_label(maintenance_type: str) -> str:
+    """Convert maintenance type enum to template label."""
+    type_map = {
+        "scheduled": "maintenance",
+        "outage": "panne",
+        "network": "perturbation",
+        "update": "mise_a_jour",
+        "improvement": "amelioration",
+        "security": "securite",
+    }
+    return type_map.get(str(maintenance_type).lower(), "maintenance")
+
+
+def _get_duration_unit_label(unit: str) -> str:
+    """Convert duration unit to French label for template."""
+    unit_map = {
+        "hours": "heures",
+        "days": "jours",
+        "weeks": "semaines",
+    }
+    return unit_map.get(unit.lower(), "heures")
+
+
 @router.post("/generate", response_model=HistoryResponse)
 async def generate_newsletter(
     request: GenerationRequest,
@@ -97,6 +120,13 @@ async def preview_newsletter(
     # Add maintenance if configured
     if request.config.maintenance.enabled:
         context["maintenance"] = request.config.maintenance.model_dump()
+        # Add flattened maintenance variables for templates
+        context["include_maintenance"] = True
+        context["maintenance_type"] = _get_maintenance_type_label(request.config.maintenance.type)
+        context["maintenance_description"] = request.config.maintenance.description
+        context["maintenance_duration_value"] = request.config.maintenance.duration_value
+        context["maintenance_duration_unit"] = _get_duration_unit_label(request.config.maintenance.duration_unit)
+        context["maintenance_start_date"] = request.config.maintenance.start_datetime.isoformat() if request.config.maintenance.start_datetime else None
 
     try:
         html = template_service.render(template.file_path, context)

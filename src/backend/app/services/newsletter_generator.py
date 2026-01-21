@@ -108,7 +108,7 @@ class NewsletterGenerator:
             schedule_id=schedule_id,
             template_id=self.config.template_id,
             status=GenerationStatus.RUNNING,
-            generation_config=self.config.model_dump(),
+            generation_config=self.config.model_dump(mode="json"),
             started_at=datetime.utcnow(),
         )
         self.db.add(self.history)
@@ -173,8 +173,10 @@ class NewsletterGenerator:
                 return await self._handle_cancellation()
 
             # Check if we should skip due to no content
+            # Don't skip if maintenance is enabled (maintenance-only newsletters are valid)
             total_items = self._get_total_items()
-            if self.config.skip_if_empty and total_items == 0:
+            has_maintenance = self.config.maintenance.enabled
+            if self.config.skip_if_empty and total_items == 0 and not has_maintenance:
                 self.history.status = GenerationStatus.SUCCESS
                 self.history.error_message = "Skipped: no new content"
                 self.history.items_count = 0
@@ -714,6 +716,27 @@ class NewsletterGenerator:
             grouped[show_name].append(episode)
         return grouped
 
+    def _get_maintenance_type_label(self, maintenance_type: str) -> str:
+        """Convert maintenance type enum to template label."""
+        type_map = {
+            "scheduled": "maintenance",
+            "outage": "panne",
+            "network": "perturbation",
+            "update": "mise_a_jour",
+            "improvement": "amelioration",
+            "security": "securite",
+        }
+        return type_map.get(str(maintenance_type).lower(), "maintenance")
+
+    def _get_duration_unit_label(self, unit: str) -> str:
+        """Convert duration unit to French label for template."""
+        unit_map = {
+            "hours": "heures",
+            "days": "jours",
+            "weeks": "semaines",
+        }
+        return unit_map.get(unit.lower(), "heures")
+
     async def _render_template(self) -> str:
         """Render the newsletter template."""
         await self.tracker.start_step("render_template", "Rendering newsletter...")
@@ -803,6 +826,13 @@ class NewsletterGenerator:
                 "audiobooks": self.audiobooks,
                 "tv_programs": self.tv_programs,
                 "maintenance": self.config.maintenance.model_dump() if self.config.maintenance.enabled else None,
+                # Flattened maintenance variables for templates that expect individual keys
+                "include_maintenance": self.config.maintenance.enabled,
+                "maintenance_type": self._get_maintenance_type_label(self.config.maintenance.type) if self.config.maintenance.enabled else None,
+                "maintenance_description": self.config.maintenance.description if self.config.maintenance.enabled else None,
+                "maintenance_duration_value": self.config.maintenance.duration_value if self.config.maintenance.enabled else None,
+                "maintenance_duration_unit": self._get_duration_unit_label(self.config.maintenance.duration_unit) if self.config.maintenance.enabled else None,
+                "maintenance_start_date": self.config.maintenance.start_datetime.isoformat() if self.config.maintenance.enabled and self.config.maintenance.start_datetime else None,
                 "config": {
                     "tunarr_display_format": self.config.tunarr.display_format,
                     "include_statistics_comparison": self.config.statistics.include_comparison,
