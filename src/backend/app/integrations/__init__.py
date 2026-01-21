@@ -21,7 +21,13 @@ __all__ = [
 ]
 
 
-def get_integration(service: str, url: str, api_key: str) -> BaseIntegration:
+def get_integration(
+    service: str,
+    url: str,
+    api_key: str,
+    username: str = "",
+    password: str = "",
+) -> BaseIntegration:
     """Factory function to get integration instance by service name."""
     integrations = {
         "tautulli": TautulliIntegration,
@@ -35,5 +41,9 @@ def get_integration(service: str, url: str, api_key: str) -> BaseIntegration:
 
     if service not in integrations:
         raise ValueError(f"Unknown service: {service}")
+
+    # ROMM supports username/password authentication
+    if service == "romm":
+        return ROMMIntegration(url=url, api_key=api_key, username=username, password=password)
 
     return integrations[service](url=url, api_key=api_key)

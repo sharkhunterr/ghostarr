@@ -23,6 +23,7 @@ export default function ManualGeneration() {
   const {
     progress,
     isGenerating,
+    isStarting,
     isCancelling,
     generate,
     cancel,
@@ -72,7 +73,7 @@ export default function ManualGeneration() {
         <ManualGenerationForm
           onGenerate={handleGenerate}
           onPreview={handlePreview}
-          isGenerating={isGenerating}
+          isGenerating={isGenerating || isStarting}
           isPreviewing={previewMutation.isPending}
         />
 

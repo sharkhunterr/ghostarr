@@ -11,7 +11,7 @@ interface ServiceCardProps {
   config: ServiceConfigResponse | undefined;
   testResult?: ServiceTestResult;
   isTesting: boolean;
-  onSave: (url: string, apiKey: string) => void;
+  onSave: (url: string, apiKey: string, username?: string, password?: string) => void;
   onTest: () => void;
   isSaving: boolean;
 }
@@ -34,6 +34,9 @@ const URL_HELP: Record<string, string> = {
 // Services that don't require URL configuration
 const SERVICES_WITHOUT_URL = ["tmdb"];
 
+// Services that support username/password authentication
+const SERVICES_WITH_BASIC_AUTH = ["romm"];
+
 export function ServiceCard({
   service,
   name,
@@ -49,6 +52,9 @@ export function ServiceCard({
   const [url, setUrl] = useState(config?.url || "");
   const [apiKey, setApiKey] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
+  const [username, setUsername] = useState(config?.username || "");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
   const handleUrlChange = (value: string) => {
@@ -61,15 +67,31 @@ export function ServiceCard({
     setHasChanges(true);
   };
 
+  const handleUsernameChange = (value: string) => {
+    setUsername(value);
+    setHasChanges(true);
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    setHasChanges(true);
+  };
+
   const handleSave = () => {
     // For services without URL, pass empty string
     const urlToSave = SERVICES_WITHOUT_URL.includes(service) ? "" : url;
-    onSave(urlToSave, apiKey);
+    if (SERVICES_WITH_BASIC_AUTH.includes(service)) {
+      onSave(urlToSave, apiKey, username, password);
+    } else {
+      onSave(urlToSave, apiKey);
+    }
     setHasChanges(false);
     setApiKey("");
+    setPassword("");
   };
 
   const showUrlField = !SERVICES_WITHOUT_URL.includes(service);
+  const showBasicAuthFields = SERVICES_WITH_BASIC_AUTH.includes(service);
 
   const getStatusIcon = () => {
     if (isTesting) {
@@ -140,9 +162,63 @@ export function ServiceCard({
           </div>
         )}
 
+        {/* Username/Password fields for services with basic auth */}
+        {showBasicAuthFields && (
+          <>
+            <div>
+              <label className="text-sm font-medium">
+                {t("settings.services.username")}
+              </label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => handleUsernameChange(e.target.value)}
+                placeholder={config?.username || t("settings.services.usernamePlaceholder")}
+                className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">
+                {t("settings.services.password")}
+              </label>
+              <div className="relative mt-1">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => handlePasswordChange(e.target.value)}
+                  placeholder={config?.password_masked || "••••••••"}
+                  className="w-full rounded-md border bg-background px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="text-xs text-muted-foreground">
+              {t("settings.services.basicAuthHelp")}
+            </div>
+          </>
+        )}
+
+        {/* API Key field - shown for all services, optional for services with basic auth */}
         <div>
           <label className="text-sm font-medium">
             {t("settings.services.apiKey")}
+            {showBasicAuthFields && (
+              <span className="ml-1 text-muted-foreground font-normal">
+                ({t("common.optional")})
+              </span>
+            )}
           </label>
           <div className="relative mt-1">
             <input

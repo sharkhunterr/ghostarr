@@ -10,6 +10,8 @@ class ServiceConfig(BaseModel):
 
     url: str | None = Field(default=None, description="Service URL")
     api_key: str | None = Field(default=None, description="API key (will be encrypted)")
+    username: str | None = Field(default=None, description="Username for basic auth")
+    password: str | None = Field(default=None, description="Password for basic auth (will be encrypted)")
 
 
 class ServiceConfigResponse(BaseModel):
@@ -17,6 +19,8 @@ class ServiceConfigResponse(BaseModel):
 
     url: str | None = None
     api_key_masked: str | None = Field(default=None, description="Masked API key (last 4 chars)")
+    username: str | None = Field(default=None, description="Username for basic auth")
+    password_masked: str | None = Field(default=None, description="Masked password (last 4 chars)")
     is_configured: bool = False
 
 

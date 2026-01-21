@@ -22,7 +22,8 @@
     "error": "Erreur",
     "warning": "Attention",
     "info": "Information",
-    "unlimited": "Illimité"
+    "unlimited": "Illimité",
+    "optional": "optionnel"
   },
   "nav": {
     "manual": "Génération manuelle",
@@ -279,6 +280,10 @@
       "error": "Erreur de connexion",
       "url": "URL",
       "apiKey": "Clé API",
+      "username": "Nom d'utilisateur",
+      "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+      "password": "Mot de passe",
+      "basicAuthHelp": "Utilisez soit nom d'utilisateur/mot de passe, soit une clé API pour l'authentification",
       "tautulli": {
         "name": "Tautulli",
         "description": "Statistiques et historique de votre serveur multimédia"

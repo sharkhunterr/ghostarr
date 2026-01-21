@@ -27,6 +27,9 @@ SERVICES = ["tautulli", "tmdb", "ghost", "romm", "komga", "audiobookshelf", "tun
 # Services that don't require URL (have default API endpoint)
 SERVICES_WITHOUT_URL = ["tmdb"]
 
+# Services that support username/password authentication
+SERVICES_WITH_BASIC_AUTH = ["romm"]
+
 
 def _mask_api_key(api_key: str | None) -> str | None:
     """Mask API key showing only last 4 characters."""
@@ -71,15 +74,27 @@ async def get_all_services(db: AsyncSession = Depends(get_db)):
             api_key_encrypted = config.get("api_key_encrypted", "")
             api_key = crypto_service.decrypt(api_key_encrypted) if api_key_encrypted else None
 
+            # Decrypt password for masking (for services with basic auth)
+            password_encrypted = config.get("password_encrypted", "")
+            password = crypto_service.decrypt(password_encrypted) if password_encrypted else None
+            username = config.get("username", "")
+
             # For services without URL requirement, only check API key
             if service in SERVICES_WITHOUT_URL:
                 is_configured = bool(api_key_encrypted)
+            elif service in SERVICES_WITH_BASIC_AUTH:
+                # For services with basic auth, either username/password or api_key is valid
+                has_basic_auth = bool(username and password_encrypted)
+                has_api_key = bool(api_key_encrypted)
+                is_configured = bool(config.get("url") and (has_basic_auth or has_api_key))
             else:
                 is_configured = bool(config.get("url") and api_key_encrypted)
 
             result[service] = ServiceConfigResponse(
                 url=config.get("url"),
                 api_key_masked=_mask_api_key(api_key),
+                username=username if service in SERVICES_WITH_BASIC_AUTH else None,
+                password_masked=_mask_api_key(password) if service in SERVICES_WITH_BASIC_AUTH else None,
                 is_configured=is_configured,
             )
         else:
@@ -101,15 +116,27 @@ async def get_service_config(service: str, db: AsyncSession = Depends(get_db)):
     api_key_encrypted = config.get("api_key_encrypted", "")
     api_key = crypto_service.decrypt(api_key_encrypted) if api_key_encrypted else None
 
+    # Decrypt password for masking (for services with basic auth)
+    password_encrypted = config.get("password_encrypted", "")
+    password = crypto_service.decrypt(password_encrypted) if password_encrypted else None
+    username = config.get("username", "")
+
     # For services without URL requirement, only check API key
     if service in SERVICES_WITHOUT_URL:
         is_configured = bool(api_key_encrypted)
+    elif service in SERVICES_WITH_BASIC_AUTH:
+        # For services with basic auth, either username/password or api_key is valid
+        has_basic_auth = bool(username and password_encrypted)
+        has_api_key = bool(api_key_encrypted)
+        is_configured = bool(config.get("url") and (has_basic_auth or has_api_key))
     else:
         is_configured = bool(config.get("url") and api_key_encrypted)
 
     return ServiceConfigResponse(
         url=config.get("url"),
         api_key_masked=_mask_api_key(api_key),
+        username=username if service in SERVICES_WITH_BASIC_AUTH else None,
+        password_masked=_mask_api_key(password) if service in SERVICES_WITH_BASIC_AUTH else None,
         is_configured=is_configured,
     )
 
@@ -141,20 +168,45 @@ async def update_service_config(
     else:
         new_config["api_key_encrypted"] = existing.get("api_key_encrypted", "")
 
+    # Handle username/password for services with basic auth
+    if service in SERVICES_WITH_BASIC_AUTH:
+        if config.username is not None:
+            new_config["username"] = config.username
+        else:
+            new_config["username"] = existing.get("username", "")
+
+        if config.password is not None:
+            new_config["password_encrypted"] = crypto_service.encrypt(config.password) if config.password else ""
+        else:
+            new_config["password_encrypted"] = existing.get("password_encrypted", "")
+
     await _save_service_config(db, service, new_config)
 
     # Return updated config
     api_key = crypto_service.decrypt(new_config["api_key_encrypted"]) if new_config["api_key_encrypted"] else None
+    password = None
+    username = None
+
+    if service in SERVICES_WITH_BASIC_AUTH:
+        password = crypto_service.decrypt(new_config.get("password_encrypted", "")) if new_config.get("password_encrypted") else None
+        username = new_config.get("username", "")
 
     # For services without URL requirement, only check API key
     if service in SERVICES_WITHOUT_URL:
         is_configured = bool(new_config["api_key_encrypted"])
+    elif service in SERVICES_WITH_BASIC_AUTH:
+        # For services with basic auth, either username/password or api_key is valid
+        has_basic_auth = bool(username and new_config.get("password_encrypted"))
+        has_api_key = bool(new_config["api_key_encrypted"])
+        is_configured = bool(new_config["url"] and (has_basic_auth or has_api_key))
     else:
         is_configured = bool(new_config["url"] and new_config["api_key_encrypted"])
 
     return ServiceConfigResponse(
         url=new_config["url"],
         api_key_masked=_mask_api_key(api_key),
+        username=username if service in SERVICES_WITH_BASIC_AUTH else None,
+        password_masked=_mask_api_key(password) if service in SERVICES_WITH_BASIC_AUTH else None,
         is_configured=is_configured,
     )
 
@@ -177,6 +229,14 @@ async def test_service_connection(service: str, db: AsyncSession = Depends(get_d
     api_key_encrypted = config.get("api_key_encrypted", "")
     api_key = crypto_service.decrypt(api_key_encrypted) if api_key_encrypted else ""
 
+    # Get username/password for services with basic auth
+    username = ""
+    password = ""
+    if service in SERVICES_WITH_BASIC_AUTH:
+        username = config.get("username", "")
+        password_encrypted = config.get("password_encrypted", "")
+        password = crypto_service.decrypt(password_encrypted) if password_encrypted else ""
+
     # For services without URL requirement, only check API key
     if service in SERVICES_WITHOUT_URL:
         if not api_key:
@@ -184,6 +244,16 @@ async def test_service_connection(service: str, db: AsyncSession = Depends(get_d
                 service=service,
                 success=False,
                 message="Missing API key",
+            )
+    elif service in SERVICES_WITH_BASIC_AUTH:
+        # For services with basic auth, either username/password or api_key is valid
+        has_basic_auth = bool(username and password)
+        has_api_key = bool(api_key)
+        if not url or not (has_basic_auth or has_api_key):
+            return ServiceTestResult(
+                service=service,
+                success=False,
+                message="Missing URL or credentials (username/password or API key)",
             )
     elif not url or not api_key:
         return ServiceTestResult(
@@ -193,7 +263,7 @@ async def test_service_connection(service: str, db: AsyncSession = Depends(get_d
         )
 
     try:
-        integration = get_integration(service, url, api_key)
+        integration = get_integration(service, url, api_key, username=username, password=password)
         success, message, response_time = await integration.test_connection()
         await integration.close()
 

@@ -59,10 +59,21 @@ export default function Settings() {
   const updateService = useUpdateService();
   const testService = useTestService();
 
-  const handleSaveService = async (service: string, url: string, apiKey: string) => {
+  const handleSaveService = async (
+    service: string,
+    url: string,
+    apiKey: string,
+    username?: string,
+    password?: string
+  ) => {
     await updateService.mutateAsync({
       service,
-      config: { url, api_key: apiKey || undefined },
+      config: {
+        url,
+        api_key: apiKey || undefined,
+        username: username || undefined,
+        password: password || undefined,
+      },
     });
   };
 
@@ -126,7 +137,7 @@ export default function Settings() {
                   config={services?.[service.id]}
                   testResult={testResults[service.id]}
                   isTesting={testingService === service.id}
-                  onSave={(url, apiKey) => handleSaveService(service.id, url, apiKey)}
+                  onSave={(url, apiKey, username, password) => handleSaveService(service.id, url, apiKey, username, password)}
                   onTest={() => handleTestService(service.id)}
                   isSaving={
                     updateService.isPending &&

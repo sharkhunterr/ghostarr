@@ -20,6 +20,48 @@ from app.schemas.common import ErrorResponse, HealthResponse
 logger = get_logger(__name__)
 
 
+async def seed_default_templates():
+    """Seed default templates if they don't exist."""
+    from sqlalchemy import select
+    from app.database import AsyncSessionLocal
+    from app.models.template import Template
+
+    default_templates = [
+        {
+            "name": "Multimédia Complet",
+            "description": "Template complet avec films, séries, jeux, BD/comics et livres audio",
+            "file_path": "template_multimedia_complet.html",
+            "tags": ["multimedia", "complet", "films", "series", "jeux", "livres"],
+            "is_default": False,
+        },
+        {
+            "name": "Mixte (Films & Séries)",
+            "description": "Template moderne pour films et séries avec statistiques",
+            "file_path": "template_mixe.html",
+            "tags": ["films", "series", "statistiques"],
+            "is_default": False,
+        },
+    ]
+
+    async with AsyncSessionLocal() as db:
+        for template_data in default_templates:
+            # Check if template already exists by file_path
+            result = await db.execute(
+                select(Template).where(Template.file_path == template_data["file_path"])
+            )
+            existing = result.scalar_one_or_none()
+
+            if not existing:
+                # Check if template file exists
+                template_file = Path(settings.templates_dir) / template_data["file_path"]
+                if template_file.exists():
+                    template = Template(**template_data)
+                    db.add(template)
+                    logger.info(f"Seeded template: {template_data['name']}")
+
+        await db.commit()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan events."""
@@ -42,6 +84,9 @@ async def lifespan(app: FastAPI):
         async with async_engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
         logger.info("Database tables created (development mode)")
+
+    # Seed default templates
+    await seed_default_templates()
 
     # Start database logging handler
     start_db_logging()

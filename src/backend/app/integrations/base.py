@@ -117,6 +117,42 @@ class BaseIntegration(ABC, Generic[T]):
             await self._client.aclose()
             self._client = None
 
+    async def fetch_image_as_base64(self, image_url: str) -> str | None:
+        """Fetch an image and return it as a base64 data URL.
+
+        Args:
+            image_url: Full URL to the image
+
+        Returns:
+            Base64 data URL (e.g., data:image/jpeg;base64,...) or None if failed
+        """
+        import base64
+
+        if not image_url:
+            return None
+
+        try:
+            client = await self._get_client()
+            # Override Accept header for image requests
+            headers = {
+                "Accept": "image/webp,image/png,image/jpeg,image/*,*/*",
+            }
+            response = await client.get(image_url, headers=headers)
+            response.raise_for_status()
+
+            # Determine content type
+            content_type = response.headers.get("content-type", "image/jpeg")
+            if ";" in content_type:
+                content_type = content_type.split(";")[0].strip()
+
+            # Encode to base64
+            image_data = base64.b64encode(response.content).decode("utf-8")
+            return f"data:{content_type};base64,{image_data}"
+
+        except Exception as e:
+            logger.warning(f"Failed to fetch image {image_url}: {e}")
+            return None
+
     @abstractmethod
     async def test_connection(self) -> tuple[bool, str, int | None]:
         """Test connection to the service.

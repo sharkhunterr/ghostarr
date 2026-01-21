@@ -2,9 +2,9 @@
  * Manual generation form component.
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Play, Eye, Settings2 } from 'lucide-react';
+import { Play, Eye, Settings2, Loader2 } from 'lucide-react';
 import {
   Card,
   CardContent,
@@ -50,23 +50,23 @@ const defaultConfig: GenerationConfig = {
   ghost_newsletter_id: null,
   tautulli: {
     enabled: true,
-    days: 7,
+    days: 120,
     max_items: 10,
     featured_item: true,
   },
   romm: {
-    enabled: false,
-    days: 7,
+    enabled: true,
+    days: 120,
     max_items: 5,
   },
   komga: {
-    enabled: false,
-    days: 7,
+    enabled: true,
+    days: 120,
     max_items: 5,
   },
   audiobookshelf: {
-    enabled: false,
-    days: 7,
+    enabled: true,
+    days: 120,
     max_items: 5,
   },
   tunarr: {
@@ -109,6 +109,19 @@ export function ManualGeneration({
       template_id: defaultTemplate?.id || '',
     };
   });
+
+  // Update template_id when templates finish loading (if not already set)
+  useEffect(() => {
+    if (templates && templates.length > 0 && !config.template_id) {
+      const defaultTemplate = templates.find((t) => t.is_default) || templates[0];
+      if (defaultTemplate) {
+        setConfig((prev) => ({
+          ...prev,
+          template_id: defaultTemplate.id,
+        }));
+      }
+    }
+  }, [templates, config.template_id]);
 
   // Update template_id when templates load
   const handleTemplateChange = useCallback(
@@ -345,7 +358,11 @@ export function ManualGeneration({
             disabled={!isValid || isGenerating}
             className="flex-1"
           >
-            <Play className="h-4 w-4 mr-2" />
+            {isGenerating ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Play className="h-4 w-4 mr-2" />
+            )}
             {isGenerating
               ? t('dashboard.actions.generating')
               : t('dashboard.actions.generate')}

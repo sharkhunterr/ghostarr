@@ -22,7 +22,8 @@
     "error": "Error",
     "warning": "Warning",
     "info": "Information",
-    "unlimited": "Unlimited"
+    "unlimited": "Unlimited",
+    "optional": "optional"
   },
   "nav": {
     "manual": "Manual Generation",
@@ -279,6 +280,10 @@
       "error": "Connection error",
       "url": "URL",
       "apiKey": "API Key",
+      "username": "Username",
+      "usernamePlaceholder": "Enter your username",
+      "password": "Password",
+      "basicAuthHelp": "Use either username/password or API key for authentication",
       "tautulli": {
         "name": "Tautulli",
         "description": "Media server statistics and history"

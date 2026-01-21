@@ -118,11 +118,15 @@ export interface PreviewResponse {
 export interface ServiceConfig {
   url?: string;
   api_key?: string;
+  username?: string;
+  password?: string;
 }
 
 export interface ServiceConfigResponse {
   url?: string;
   api_key_masked?: string;
+  username?: string;
+  password_masked?: string;
   is_configured: boolean;
 }
 

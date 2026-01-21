@@ -36,7 +36,7 @@ class KomgaIntegration(BaseIntegration[BookItem]):
     def _get_default_headers(self) -> dict[str, str]:
         return {
             "Accept": "application/json",
-            "Authorization": f"Bearer {self.api_key}",
+            "X-API-Key": self.api_key,
             "User-Agent": "Ghostarr/1.0",
         }
 

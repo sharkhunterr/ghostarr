@@ -45,6 +45,23 @@ async def get_service_credentials(db: AsyncSession, service: str) -> tuple[str, 
     return url, api_key
 
 
+async def get_service_credentials_full(db: AsyncSession, service: str) -> dict[str, str]:
+    """Get all decrypted service credentials including username/password."""
+    setting = await db.get(Setting, f"services.{service}")
+    if not setting:
+        return {"url": "", "api_key": "", "username": "", "password": ""}
+
+    config = setting.value
+    url = config.get("url", "")
+    api_key_encrypted = config.get("api_key_encrypted", "")
+    api_key = crypto_service.decrypt(api_key_encrypted) if api_key_encrypted else ""
+    username = config.get("username", "")
+    password_encrypted = config.get("password_encrypted", "")
+    password = crypto_service.decrypt(password_encrypted) if password_encrypted else ""
+
+    return {"url": url, "api_key": api_key, "username": username, "password": password}
+
+
 class NewsletterGenerator:
     """Orchestrates newsletter generation pipeline."""
 
@@ -374,12 +391,19 @@ class NewsletterGenerator:
         await self.tracker.start_step("fetch_romm", "Fetching games from ROMM...")
 
         try:
-            url, api_key = await get_service_credentials(self.db, "romm")
-            if not url or not api_key:
+            creds = await get_service_credentials_full(self.db, "romm")
+            url = creds["url"]
+            api_key = creds["api_key"]
+            username = creds["username"]
+            password = creds["password"]
+
+            # ROMM can use either username/password or api_key
+            has_auth = bool(username and password) or bool(api_key)
+            if not url or not has_auth:
                 await self.tracker.skip_step("fetch_romm", "Not configured")
                 return
 
-            integration = ROMMIntegration(url=url, api_key=api_key)
+            integration = ROMMIntegration(url=url, api_key=api_key, username=username, password=password)
             items = await integration.fetch_data(
                 days=self.config.romm.days,
                 max_items=self.config.romm.max_items,
@@ -417,9 +441,19 @@ class NewsletterGenerator:
                 days=self.config.komga.days,
                 max_items=self.config.komga.max_items,
             )
-            await integration.close()
 
-            self.books = [item.model_dump() for item in items]
+            # Convert items and fetch images as base64 for external accessibility
+            self.books = []
+            for item in items:
+                book_dict = item.model_dump()
+                # Convert thumbnail URL to base64
+                if book_dict.get("thumbnail_url"):
+                    base64_image = await integration.fetch_image_as_base64(book_dict["thumbnail_url"])
+                    if base64_image:
+                        book_dict["thumbnail_url"] = base64_image
+                self.books.append(book_dict)
+
+            await integration.close()
 
             await self.tracker.complete_step(
                 "fetch_komga",
@@ -450,9 +484,19 @@ class NewsletterGenerator:
                 days=self.config.audiobookshelf.days,
                 max_items=self.config.audiobookshelf.max_items,
             )
-            await integration.close()
 
-            self.audiobooks = [item.model_dump() for item in items]
+            # Convert items and fetch images as base64 for external accessibility
+            self.audiobooks = []
+            for item in items:
+                audiobook_dict = item.model_dump()
+                # Convert cover URL to base64
+                if audiobook_dict.get("cover_url"):
+                    base64_image = await integration.fetch_image_as_base64(audiobook_dict["cover_url"])
+                    if base64_image:
+                        audiobook_dict["cover_url"] = base64_image
+                self.audiobooks.append(audiobook_dict)
+
+            await integration.close()
 
             await self.tracker.complete_step(
                 "fetch_audiobookshelf",

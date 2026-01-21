@@ -30,7 +30,7 @@ class ContentSourceConfig(BaseModel):
     """Base configuration for content sources."""
 
     enabled: bool = False
-    days: int = Field(default=7, ge=1, le=90, description="Number of days to fetch")
+    days: int = Field(default=7, ge=1, le=365, description="Number of days to fetch")
     max_items: int = Field(default=-1, ge=-1, description="Max items (-1 = unlimited)")
 
 
@@ -52,7 +52,7 @@ class StatisticsConfig(BaseModel):
     """Statistics section configuration."""
 
     enabled: bool = False
-    days: int = Field(default=7, ge=1, le=90, description="Statistics period in days")
+    days: int = Field(default=7, ge=1, le=365, description="Statistics period in days")
     include_comparison: bool = Field(default=True, description="Include period comparison")
 
 

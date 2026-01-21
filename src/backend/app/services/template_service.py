@@ -46,6 +46,8 @@ class TemplateService:
             self._env.filters["number_format"] = self._filter_number_format
             self._env.filters["zfill"] = self._filter_zfill
             self._env.filters["unique"] = self._filter_unique
+            self._env.filters["strip_html"] = self._filter_strip_html
+            self._env.filters["clean_description"] = self._filter_strip_html
 
             # Add global functions available in templates
             self._env.globals["len"] = len
@@ -72,6 +74,8 @@ class TemplateService:
             self._env.globals["number_format"] = self._filter_number_format
             self._env.globals["zfill"] = self._filter_zfill
             self._env.globals["format_cast_list"] = self._format_cast_list
+            self._env.globals["strip_html"] = self._filter_strip_html
+            self._env.globals["clean_description"] = self._filter_strip_html
 
             # Add datetime.now as global (used as {{ now() }} in templates)
             self._env.globals["now"] = datetime.now
@@ -160,6 +164,49 @@ class TemplateService:
                 seen.add(key)
                 result.append(item)
         return result
+
+    @staticmethod
+    def _filter_strip_html(text: str | None) -> str:
+        """Strip HTML tags from text and convert to plain text."""
+        import re
+
+        if not text:
+            return ""
+
+        # Convert common HTML elements to their text equivalents
+        text = str(text)
+
+        # Replace <br>, <br/>, <br /> with newlines, then with spaces for single-line display
+        text = re.sub(r"<br\s*/?>", " ", text, flags=re.IGNORECASE)
+
+        # Replace paragraph and div tags with spaces
+        text = re.sub(r"</?(p|div)[^>]*>", " ", text, flags=re.IGNORECASE)
+
+        # Remove all other HTML tags
+        text = re.sub(r"<[^>]+>", "", text)
+
+        # Decode common HTML entities
+        html_entities = {
+            "&nbsp;": " ",
+            "&amp;": "&",
+            "&lt;": "<",
+            "&gt;": ">",
+            "&quot;": '"',
+            "&apos;": "'",
+            "&#39;": "'",
+            "&ndash;": "–",
+            "&mdash;": "—",
+            "&hellip;": "…",
+            "&laquo;": "«",
+            "&raquo;": "»",
+        }
+        for entity, char in html_entities.items():
+            text = text.replace(entity, char)
+
+        # Clean up extra whitespace
+        text = re.sub(r"\s+", " ", text).strip()
+
+        return text
 
     def validate_template(self, template_path: str) -> tuple[bool, str | None]:
         """Validate a template file.
