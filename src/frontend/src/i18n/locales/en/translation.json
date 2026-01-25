@@ -277,6 +277,30 @@
       "noNewDescription": "All templates in the folder are already imported"
     }
   },
+  "labels": {
+    "manager": {
+      "title": "Label Management",
+      "description": "Create and manage labels to organize your templates",
+      "create": "Create a label",
+      "empty": "No labels created"
+    },
+    "selector": {
+      "title": "Labels",
+      "button": "Labels",
+      "empty": "No labels available",
+      "createFirst": "Create a label"
+    },
+    "form": {
+      "name": "Label name",
+      "namePlaceholder": "My label",
+      "color": "Color",
+      "preview": "Preview"
+    },
+    "deleteConfirm": {
+      "title": "Delete label",
+      "message": "Are you sure you want to delete the label \"{{name}}\"? It will be removed from all associated templates."
+    }
+  },
   "settings": {
     "title": "Settings",
     "tabs": {

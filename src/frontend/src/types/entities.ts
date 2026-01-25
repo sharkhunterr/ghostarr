@@ -1,10 +1,19 @@
 export type UUID = string;
 
+export interface Label {
+  id: UUID;
+  name: string;
+  color: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface Template {
   id: UUID;
   name: string;
   description: string | null;
   tags: string[];
+  labels: Label[];
   file_path: string;
   preset_config: GenerationConfig;
   is_default: boolean;

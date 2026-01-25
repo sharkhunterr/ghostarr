@@ -20,7 +20,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useUpdateTemplate } from '@/api/templates';
-import type { Template, GenerationConfig } from '@/types';
+import { LabelSelector } from './LabelSelector';
+import type { Template, GenerationConfig, Label as LabelType } from '@/types';
 
 interface TemplateEditDialogProps {
   open: boolean;
@@ -41,6 +42,7 @@ export function TemplateEditDialog({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [tags, setTags] = useState('');
+  const [currentLabels, setCurrentLabels] = useState<LabelType[]>([]);
   const [isDefault, setIsDefault] = useState(false);
 
   // Reset form when template changes
@@ -49,6 +51,7 @@ export function TemplateEditDialog({
       setName(template.name);
       setDescription(template.description || '');
       setTags(template.tags?.join(', ') || '');
+      setCurrentLabels(template.labels || []);
       setIsDefault(template.is_default);
     }
   }, [template]);
@@ -121,21 +124,17 @@ export function TemplateEditDialog({
               />
             </div>
 
-            {/* Tags */}
-            <div className="space-y-2">
-              <Label htmlFor="edit-template-tags">
-                {t('templates.form.tags')}
-              </Label>
-              <Input
-                id="edit-template-tags"
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-                placeholder={t('templates.form.tagsPlaceholder')}
-              />
-              <p className="text-xs text-muted-foreground">
-                {t('templates.form.tagsHelp')}
-              </p>
-            </div>
+            {/* Labels */}
+            {template && (
+              <div className="space-y-2">
+                <Label>{t('labels.selector.title')}</Label>
+                <LabelSelector
+                  templateId={template.id}
+                  selectedLabels={currentLabels}
+                  onLabelsChange={setCurrentLabels}
+                />
+              </div>
+            )}
 
             <Separator />
 

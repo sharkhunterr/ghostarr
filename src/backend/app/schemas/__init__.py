@@ -29,6 +29,12 @@ from app.schemas.settings import (
     ServiceConfig,
     ServiceTestResult,
 )
+from app.schemas.label import (
+    LabelCreate,
+    LabelResponse,
+    LabelUpdate,
+    TemplateLabelAssignment,
+)
 from app.schemas.template import (
     TemplateCreate,
     TemplateResponse,
@@ -68,4 +74,9 @@ __all__ = [
     "TemplateCreate",
     "TemplateUpdate",
     "TemplateResponse",
+    # Label
+    "LabelCreate",
+    "LabelUpdate",
+    "LabelResponse",
+    "TemplateLabelAssignment",
 ]

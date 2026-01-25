@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderSearch } from 'lucide-react';
+import { FolderSearch, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -21,6 +21,7 @@ import {
   TemplatePreview,
   TemplateUploadDialog,
   TemplateEditDialog,
+  LabelManager,
 } from '@/components/templates';
 import { useTemplates, useDeleteTemplate, useUpdateTemplate, useScanTemplates } from '@/api/templates';
 import { useNotificationStore } from '@/stores/notificationStore';
@@ -38,6 +39,7 @@ export default function Templates() {
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
   const [editTemplate, setEditTemplate] = useState<Template | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Template | null>(null);
+  const [labelManagerOpen, setLabelManagerOpen] = useState(false);
 
   const handleScan = async () => {
     try {
@@ -105,21 +107,31 @@ export default function Templates() {
 
   return (
     <div className="space-y-6">
-      {/* Header with scan button */}
+      {/* Header with action buttons */}
       <div className="flex items-center justify-between">
         <p className="text-muted-foreground text-sm">
           {t('templates.subtitle')}
         </p>
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleScan}
-          disabled={scanTemplates.isPending}
-        >
-          <FolderSearch className="h-4 w-4 mr-2" />
-          {scanTemplates.isPending ? t('common.loading') : t('templates.scan.button')}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setLabelManagerOpen(true)}
+          >
+            <Tag className="h-4 w-4 mr-2" />
+            {t('labels.manager.title')}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleScan}
+            disabled={scanTemplates.isPending}
+          >
+            <FolderSearch className="h-4 w-4 mr-2" />
+            {scanTemplates.isPending ? t('common.loading') : t('templates.scan.button')}
+          </Button>
+        </div>
       </div>
 
       {/* Grid - Full width responsive */}
@@ -181,6 +193,12 @@ export default function Templates() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Label manager */}
+      <LabelManager
+        open={labelManagerOpen}
+        onOpenChange={setLabelManagerOpen}
+      />
     </div>
   );
 }

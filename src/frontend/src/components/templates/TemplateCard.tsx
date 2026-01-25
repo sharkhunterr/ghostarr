@@ -26,6 +26,24 @@ import {
 import { useTemplatePreview } from '@/api/templates';
 import type { Template } from '@/types';
 
+/**
+ * Calculate contrasting text color (black or white) based on background color.
+ */
+function getContrastColor(hexColor: string): string {
+  // Remove # if present
+  const hex = hexColor.replace('#', '');
+
+  // Parse RGB values
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  // Calculate relative luminance
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+
+  return luminance > 0.5 ? '#000000' : '#ffffff';
+}
+
 interface TemplateCardProps {
   template: Template;
   onPreview: (template: Template) => void;
@@ -168,17 +186,24 @@ export function TemplateCard({
               </p>
             )}
 
-            {/* Tags */}
-            {template.tags && template.tags.length > 0 && (
+            {/* Labels */}
+            {template.labels && template.labels.length > 0 && (
               <div className="flex flex-wrap gap-1 mt-2">
-                {template.tags.slice(0, 3).map((tag) => (
-                  <Badge key={tag} variant="outline" className="text-xs">
-                    {tag}
+                {template.labels.slice(0, 3).map((label) => (
+                  <Badge
+                    key={label.id}
+                    className="text-xs"
+                    style={{
+                      backgroundColor: label.color,
+                      color: getContrastColor(label.color),
+                    }}
+                  >
+                    {label.name}
                   </Badge>
                 ))}
-                {template.tags.length > 3 && (
+                {template.labels.length > 3 && (
                   <Badge variant="outline" className="text-xs">
-                    +{template.tags.length - 3}
+                    +{template.labels.length - 3}
                   </Badge>
                 )}
               </div>

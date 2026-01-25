@@ -5,6 +5,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 
 from app.schemas.generation import GenerationConfig
+from app.schemas.label import LabelResponse
 
 
 class TemplateBase(BaseModel):
@@ -12,7 +13,7 @@ class TemplateBase(BaseModel):
 
     name: str = Field(min_length=1, max_length=255, description="Template name")
     description: str | None = Field(default=None, description="Template description")
-    tags: list[str] = Field(default_factory=list, max_length=10, description="Template tags")
+    tags: list[str] = Field(default_factory=list, max_length=10, description="Legacy template tags")
 
 
 class TemplateCreate(TemplateBase):
@@ -40,6 +41,7 @@ class TemplateResponse(TemplateBase):
     file_path: str
     preset_config: dict
     is_default: bool
+    labels: list[LabelResponse] = Field(default_factory=list, description="Associated labels")
     created_at: datetime
     updated_at: datetime
 

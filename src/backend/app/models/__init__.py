@@ -2,6 +2,7 @@
 
 from app.database import Base
 from app.models.history import GenerationStatus, GenerationType, History
+from app.models.label import Label, template_labels
 from app.models.log import Log, LogLevel, LogSource
 from app.models.schedule import RunStatus, Schedule
 from app.models.setting import SETTING_KEYS, Setting
@@ -11,6 +12,8 @@ from app.models.user_preference import SUPPORTED_LANGUAGES, Theme, UserPreferenc
 __all__ = [
     "Base",
     "Template",
+    "Label",
+    "template_labels",
     "Schedule",
     "RunStatus",
     "History",

@@ -6,6 +6,7 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from app.config import settings
 from app.database import get_db
@@ -29,7 +30,9 @@ router = APIRouter()
 async def list_templates(db: AsyncSession = Depends(get_db)):
     """List all templates."""
     result = await db.execute(
-        select(Template).order_by(Template.is_default.desc(), Template.name)
+        select(Template)
+        .options(selectinload(Template.labels))
+        .order_by(Template.is_default.desc(), Template.name)
     )
     templates = result.scalars().all()
     return [TemplateResponse.model_validate(t) for t in templates]
@@ -38,7 +41,12 @@ async def list_templates(db: AsyncSession = Depends(get_db)):
 @router.get("/{template_id}", response_model=TemplateResponse)
 async def get_template(template_id: str, db: AsyncSession = Depends(get_db)):
     """Get a template by ID."""
-    template = await db.get(Template, template_id)
+    result = await db.execute(
+        select(Template)
+        .options(selectinload(Template.labels))
+        .where(Template.id == template_id)
+    )
+    template = result.scalar_one_or_none()
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
     return TemplateResponse.model_validate(template)
