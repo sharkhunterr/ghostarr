@@ -244,7 +244,7 @@ export function ManualGeneration({
 
         {/* Content sources tabs */}
         <Tabs defaultValue="media" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="media">
               {t('dashboard.tabs.media')}
             </TabsTrigger>
@@ -253,9 +253,6 @@ export function ManualGeneration({
             </TabsTrigger>
             <TabsTrigger value="statistics">
               {t('dashboard.tabs.statistics')}
-            </TabsTrigger>
-            <TabsTrigger value="maintenance">
-              {t('dashboard.tabs.maintenance')}
             </TabsTrigger>
           </TabsList>
 
@@ -303,19 +300,10 @@ export function ManualGeneration({
               onChange={(value) => updateConfig('statistics', value)}
             />
           </TabsContent>
-
-          <TabsContent value="maintenance" className="pt-4">
-            <MaintenanceConfig
-              config={config.maintenance}
-              onChange={(value) => updateConfig('maintenance', value)}
-            />
-          </TabsContent>
         </Tabs>
 
-        <Separator />
-
-        {/* Advanced options */}
-        <div className="space-y-4">
+        {/* Content options - applies to media/extras/statistics */}
+        <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label>{t('dashboard.config.maxItems')}</Label>
@@ -348,6 +336,14 @@ export function ManualGeneration({
             />
           </div>
         </div>
+
+        <Separator />
+
+        {/* Maintenance section - separate from content */}
+        <MaintenanceConfig
+          config={config.maintenance}
+          onChange={(value) => updateConfig('maintenance', value)}
+        />
 
         <Separator />
 

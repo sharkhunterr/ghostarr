@@ -83,8 +83,8 @@
       "days": "Period (days)",
       "maxItems": "Max items",
       "maxItemsHelp": "Limits the total number of items in the newsletter",
-      "skipEmpty": "Skip if empty",
-      "skipEmptyHelp": "Don't generate if no content is available",
+      "skipEmpty": "Skip if no media",
+      "skipEmptyHelp": "Don't generate if no movies, shows, games, books or TV programs are available (maintenance is not affected)",
       "featuredItem": "Feature an item",
       "channels": "Channels",
       "channelsHelp": "Select channels to include"
