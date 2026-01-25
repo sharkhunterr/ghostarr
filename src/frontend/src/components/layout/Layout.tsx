@@ -203,7 +203,7 @@ export function Layout() {
 
       {/* Persistent Progress Card (bottom-right) */}
       {showProgressCard && location.pathname !== '/manual' && (
-        <div className="fixed bottom-4 right-4 z-50 w-80 max-w-[calc(100vw-2rem)]">
+        <div className="fixed bottom-2 left-2 right-2 sm:left-auto sm:bottom-4 sm:right-4 z-50 sm:w-96 transition-all duration-300 ease-out">
           <ProgressCard
             progress={currentProgress}
             onCancel={handleCancel}

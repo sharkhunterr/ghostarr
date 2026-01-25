@@ -109,18 +109,54 @@ export function ProgressCard({
   ).length;
   const totalSteps = progress.steps.length;
 
+  // Determine card styling based on state
+  const cardClassName = compact
+    ? `shadow-xl border-2 ${
+        isActive
+          ? 'border-primary/50 ring-2 ring-primary/20 animate-pulse-subtle'
+          : hasError
+            ? 'border-destructive/50'
+            : progress.isComplete
+              ? 'border-green-500/50'
+              : 'border-border'
+      }`
+    : '';
+
   return (
-    <Card className={compact ? 'shadow-lg' : ''}>
+    <Card className={cardClassName}>
+      {/* Mini progress bar always visible at top when compact */}
+      {compact && (
+        <div className="h-1 bg-muted overflow-hidden rounded-t-lg">
+          <div
+            className={`h-full transition-all duration-300 ${
+              hasError
+                ? 'bg-destructive'
+                : progress.isComplete
+                  ? 'bg-green-500'
+                  : 'bg-primary'
+            }`}
+            style={{ width: `${progress.progress}%` }}
+          />
+        </div>
+      )}
       <CardHeader className="pb-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex-1">
             <CardTitle className="text-base sm:text-lg flex items-center gap-2">
               {t('dashboard.generation.progress')}
+              {/* Show percentage prominently when compact */}
+              {compact && (
+                <span className={`text-sm font-bold tabular-nums ${
+                  hasError ? 'text-destructive' : progress.isComplete ? 'text-green-500' : 'text-primary'
+                }`}>
+                  {progress.progress}%
+                </span>
+              )}
               {compact && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-6 w-6"
+                  className="h-6 w-6 ml-auto"
                   onClick={() => setExpanded(!expanded)}
                 >
                   {expanded ? (
