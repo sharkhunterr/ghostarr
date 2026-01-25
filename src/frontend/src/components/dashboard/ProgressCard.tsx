@@ -112,9 +112,9 @@ export function ProgressCard({
   return (
     <Card className={compact ? 'shadow-lg' : ''}>
       <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex-1">
-            <CardTitle className="text-lg flex items-center gap-2">
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
               {t('dashboard.generation.progress')}
               {compact && (
                 <Button
@@ -131,7 +131,7 @@ export function ProgressCard({
                 </Button>
               )}
             </CardTitle>
-            <CardDescription className="flex items-center gap-2 mt-1">
+            <CardDescription className="flex flex-wrap items-center gap-2 mt-1">
               {progress.isComplete && !hasError && (
                 <Badge variant="success">{t('dashboard.status.complete')}</Badge>
               )}
@@ -149,19 +149,19 @@ export function ProgressCard({
 
               {/* Elapsed time */}
               {(isActive || progress.isComplete) && (
-                <span className="text-xs text-muted-foreground flex items-center gap-1 ml-2">
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
                   <Clock className="h-3 w-3" />
                   {formatDuration(elapsedTime)}
                 </span>
               )}
 
               {/* Step counter */}
-              <span className="text-xs text-muted-foreground ml-auto">
+              <span className="text-xs text-muted-foreground sm:ml-auto">
                 {completedSteps}/{totalSteps} {t('progress.step')}
               </span>
             </CardDescription>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 self-end sm:self-auto">
             {isActive && onCancel && (
               <Button
                 variant="outline"
@@ -170,15 +170,15 @@ export function ProgressCard({
                 disabled={isCancelling}
               >
                 {isCancelling ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="h-4 w-4 sm:mr-2 animate-spin" />
                 ) : null}
-                {t('dashboard.actions.cancel')}
+                <span className="hidden sm:inline">{t('dashboard.actions.cancel')}</span>
               </Button>
             )}
             {!isActive && onViewHistory && (
               <Button variant="outline" size="sm" onClick={onViewHistory}>
-                <History className="h-4 w-4 mr-2" />
-                {t('nav.history')}
+                <History className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{t('nav.history')}</span>
               </Button>
             )}
             {!isActive && onClear && (

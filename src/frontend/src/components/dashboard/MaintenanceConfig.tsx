@@ -108,7 +108,7 @@ export function MaintenanceConfig({ config, onChange }: MaintenanceConfigProps) 
           {/* Duration */}
           <div className="space-y-2">
             <Label>{t('dashboard.maintenance.duration')}</Label>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <Input
                 type="number"
                 min={1}
@@ -116,7 +116,7 @@ export function MaintenanceConfig({ config, onChange }: MaintenanceConfigProps) 
                 onChange={(e) =>
                   updateConfig('duration_value', parseInt(e.target.value) || 1)
                 }
-                className="w-24"
+                className="w-full sm:w-24"
               />
               <Select
                 value={config.duration_unit}
@@ -124,7 +124,7 @@ export function MaintenanceConfig({ config, onChange }: MaintenanceConfigProps) 
                   updateConfig('duration_unit', value)
                 }
               >
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-full sm:w-32">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

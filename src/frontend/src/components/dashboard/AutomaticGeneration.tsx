@@ -4,14 +4,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Plus, CalendarClock } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScheduleList } from './ScheduleList';
 import { ScheduleForm } from './ScheduleForm';
@@ -40,35 +33,23 @@ export function AutomaticGeneration() {
   };
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                <CalendarClock className="h-5 w-5" />
-                {t('dashboard.automaticGeneration.title')}
-              </CardTitle>
-              <CardDescription>
-                {t('dashboard.automaticGeneration.description')}
-              </CardDescription>
-            </div>
-            <Button onClick={handleCreate}>
-              <Plus className="h-4 w-4 mr-2" />
-              {t('schedule.create')}
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent>
-          <ScheduleList onEdit={handleEdit} />
-        </CardContent>
-      </Card>
+    <div className="space-y-4">
+      {/* Actions bar */}
+      <div className="flex items-center gap-2">
+        <Button variant="outline" size="sm" onClick={handleCreate}>
+          <Plus className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">{t('schedule.create')}</span>
+        </Button>
+      </div>
+
+      {/* Schedule list */}
+      <ScheduleList onEdit={handleEdit} />
 
       <ScheduleForm
         open={isFormOpen}
         onOpenChange={handleFormClose}
         schedule={editingSchedule}
       />
-    </>
+    </div>
   );
 }

@@ -234,8 +234,8 @@ export function LogViewer() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" disabled={exportMutation.isPending}>
-                <Download className="h-4 w-4 mr-2" />
-                {t('common.export')}
+                <Download className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{t('common.export')}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
@@ -254,21 +254,21 @@ export function LogViewer() {
             size="sm"
             onClick={() => setShowPurgeDialog(true)}
           >
-            <Trash2 className="h-4 w-4 mr-2" />
-            {t('settings.logs.purge')}
+            <Trash2 className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">{t('settings.logs.purge')}</span>
           </Button>
         </div>
       </div>
 
       {/* Logs table */}
-      <div className="rounded-lg border">
+      <div className="rounded-lg border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[180px]">{t('settings.logs.timestamp')}</TableHead>
-              <TableHead className="w-[100px]">{t('settings.logs.level')}</TableHead>
-              <TableHead className="w-[120px]">{t('settings.logs.source')}</TableHead>
-              <TableHead className="w-[120px]">{t('settings.logs.service')}</TableHead>
+              <TableHead className="w-[140px] sm:w-[180px]">{t('settings.logs.timestamp')}</TableHead>
+              <TableHead className="w-[80px] sm:w-[100px]">{t('settings.logs.level')}</TableHead>
+              <TableHead className="hidden md:table-cell w-[120px]">{t('settings.logs.source')}</TableHead>
+              <TableHead className="hidden lg:table-cell w-[120px]">{t('settings.logs.service')}</TableHead>
               <TableHead>{t('settings.logs.message')}</TableHead>
             </TableRow>
           </TableHeader>
@@ -292,22 +292,22 @@ export function LogViewer() {
                   className="cursor-pointer hover:bg-muted/50"
                   onClick={() => setSelectedLog(log)}
                 >
-                  <TableCell className="font-mono text-xs">
-                    {format(new Date(log.created_at), 'yyyy-MM-dd HH:mm:ss')}
+                  <TableCell className="font-mono text-[10px] sm:text-xs">
+                    {format(new Date(log.created_at), 'MM-dd HH:mm:ss')}
                   </TableCell>
                   <TableCell>
-                    <Badge className={levelColors[log.level]}>
-                      <span className="mr-1">{levelIcons[log.level]}</span>
-                      {t(`settings.logs.levels.${log.level}`)}
+                    <Badge className={`${levelColors[log.level]} text-xs`}>
+                      <span className="sm:mr-1">{levelIcons[log.level]}</span>
+                      <span className="hidden sm:inline">{t(`settings.logs.levels.${log.level}`)}</span>
                     </Badge>
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden md:table-cell">
                     <Badge variant="outline">{log.source}</Badge>
                   </TableCell>
-                  <TableCell className="text-sm">
+                  <TableCell className="hidden lg:table-cell text-sm">
                     {log.service || '-'}
                   </TableCell>
-                  <TableCell className="max-w-md truncate" title={log.message}>
+                  <TableCell className="max-w-[150px] sm:max-w-md truncate text-xs sm:text-sm" title={log.message}>
                     {log.message}
                   </TableCell>
                 </TableRow>

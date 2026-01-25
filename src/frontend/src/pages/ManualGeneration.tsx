@@ -62,13 +62,8 @@ export default function ManualGeneration() {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Page description */}
-      <p className="text-muted-foreground text-sm">
-        {t('manualGeneration.subtitle')}
-      </p>
-
-      <div className="grid gap-6 xl:grid-cols-2">
+    <div className="space-y-4">
+      <div className="grid gap-4 xl:grid-cols-2">
         {/* Manual Generation Form */}
         <ManualGenerationForm
           onGenerate={handleGenerate}

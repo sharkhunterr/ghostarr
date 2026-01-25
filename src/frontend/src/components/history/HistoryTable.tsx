@@ -149,7 +149,7 @@ export function HistoryTable({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[50px]">
+            <TableHead className="w-[40px] sm:w-[50px]">
               <Checkbox
                 checked={allSelected}
                 ref={(el) => {
@@ -162,15 +162,15 @@ export function HistoryTable({
               />
             </TableHead>
             <TableHead>{t('history.columns.date')}</TableHead>
-            <TableHead>{t('history.columns.type')}</TableHead>
+            <TableHead className="hidden sm:table-cell">{t('history.columns.type')}</TableHead>
             <TableHead>{t('history.columns.status')}</TableHead>
-            <TableHead className="text-right">
+            <TableHead className="hidden md:table-cell text-right">
               {t('history.columns.items')}
             </TableHead>
-            <TableHead className="text-right">
+            <TableHead className="hidden md:table-cell text-right">
               {t('history.columns.duration')}
             </TableHead>
-            <TableHead className="w-[100px]">
+            <TableHead className="w-[50px] sm:w-[100px]">
               {t('history.columns.actions')}
             </TableHead>
           </TableRow>
@@ -188,26 +188,26 @@ export function HistoryTable({
                   aria-label={t('history.bulk.selectRow')}
                 />
               </TableCell>
-              <TableCell className="font-medium">
+              <TableCell className="font-medium text-xs sm:text-sm">
                 {formatDate(entry.created_at)}
               </TableCell>
-              <TableCell>
+              <TableCell className="hidden sm:table-cell">
                 <Badge variant="outline">
                   {t(`history.types.${entry.type}`)}
                 </Badge>
               </TableCell>
               <TableCell>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2">
                   {getStatusIcon(entry.status)}
-                  <Badge variant={getStatusVariant(entry.status)}>
+                  <Badge variant={getStatusVariant(entry.status)} className="text-xs">
                     {t(`history.status.${entry.status}`)}
                   </Badge>
                 </div>
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="hidden md:table-cell text-right">
                 {entry.items_count || '-'}
               </TableCell>
-              <TableCell className="text-right">
+              <TableCell className="hidden md:table-cell text-right">
                 {formatDuration(entry.duration_seconds)}
               </TableCell>
               <TableCell>

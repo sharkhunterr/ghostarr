@@ -241,38 +241,35 @@ export function ScheduleList({ onEdit }: ScheduleListProps) {
             key={schedule.id}
             className={!schedule.is_active ? 'opacity-60' : ''}
           >
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between gap-4">
+            <CardContent className="p-2 sm:p-4">
+              <div className="flex items-center justify-between gap-2">
                 {/* Left: Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <h4 className="font-medium truncate">{schedule.name}</h4>
+                    <h4 className="font-medium truncate text-sm sm:text-base">{schedule.name}</h4>
                     {!schedule.is_active && (
-                      <Badge variant="secondary" className="text-xs">
-                        <Pause className="h-3 w-3 mr-1" />
-                        {t('schedule.status.paused')}
+                      <Badge variant="secondary" className="text-xs px-1">
+                        <Pause className="h-3 w-3" />
                       </Badge>
                     )}
                   </div>
 
-                  <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground">
-                    <span className="flex items-center gap-1">
+                  <div className="flex items-center gap-2 sm:gap-4 mt-0.5 text-xs text-muted-foreground overflow-hidden">
+                    <span className="flex items-center gap-1 shrink-0">
                       <Clock className="h-3 w-3" />
-                      {schedule.cron_expression}
+                      <span className="hidden sm:inline">{schedule.cron_expression}</span>
                     </span>
 
                     {schedule.next_run_at && schedule.is_active && (
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {t('schedule.nextRun')}:{' '}
+                      <span className="flex items-center gap-1 truncate">
+                        <Calendar className="h-3 w-3 shrink-0" />
                         {formatRelativeTime(schedule.next_run_at, t)}
                       </span>
                     )}
 
                     {schedule.last_run_at && (
-                      <span className="flex items-center gap-1">
+                      <span className="hidden sm:flex items-center gap-1">
                         {getStatusIcon(schedule.last_run_status)}
-                        {t('schedule.lastRun')}:{' '}
                         {formatRelativeTime(schedule.last_run_at, t)}
                       </span>
                     )}
@@ -280,7 +277,7 @@ export function ScheduleList({ onEdit }: ScheduleListProps) {
                 </div>
 
                 {/* Right: Actions */}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                   <Switch
                     checked={schedule.is_active}
                     onCheckedChange={() => handleToggle(schedule)}

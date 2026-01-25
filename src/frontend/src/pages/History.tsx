@@ -193,19 +193,19 @@ export default function History() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header with export */}
-      <div className="flex items-center justify-between">
-        <p className="text-muted-foreground text-sm">{t('history.subtitle')}</p>
+    <div className="space-y-4">
+      {/* Actions bar */}
+      <div className="flex items-center gap-2">
+        <HistoryFilters filters={filters} onChange={setFilters} />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" disabled={exportHistory.isPending}>
-              <Download className="h-4 w-4 mr-2" />
-              {t('common.export')}
+              <Download className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{t('common.export')}</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="start">
             <DropdownMenuItem onClick={() => handleExport('json')}>
               JSON
             </DropdownMenuItem>
@@ -216,42 +216,41 @@ export default function History() {
         </DropdownMenu>
       </div>
 
-      {/* Filters */}
-      <HistoryFilters filters={filters} onChange={setFilters} />
-
       {/* Bulk action bar */}
       {selectedIds.size > 0 && (
-        <div className="flex items-center gap-4 p-3 bg-muted rounded-lg">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 p-3 bg-muted rounded-lg">
           <span className="text-sm font-medium">
             {t('history.bulk.selected', { count: selectedIds.size })}
           </span>
-          <div className="flex-1" />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={clearSelection}
-          >
-            <X className="h-4 w-4 mr-2" />
-            {t('history.bulk.clearSelection')}
-          </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={handleBulkDelete}
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            {t('history.bulk.deleteHistory')}
-          </Button>
-          {selectedWithGhost > 0 && (
+          <div className="hidden sm:block flex-1" />
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearSelection}
+            >
+              <X className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{t('history.bulk.clearSelection')}</span>
+            </Button>
             <Button
               variant="destructive"
               size="sm"
-              onClick={handleBulkDeleteWithGhost}
+              onClick={handleBulkDelete}
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              {t('history.bulk.deleteWithGhost')}
+              <Trash2 className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{t('history.bulk.deleteHistory')}</span>
             </Button>
-          )}
+            {selectedWithGhost > 0 && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleBulkDeleteWithGhost}
+              >
+                <Trash2 className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">{t('history.bulk.deleteWithGhost')}</span>
+              </Button>
+            )}
+          </div>
         </div>
       )}
 

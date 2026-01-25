@@ -336,17 +336,17 @@ export function ScheduleForm({
 
             {/* Content sources */}
             <Tabs defaultValue="media" className="w-full">
-              <TabsList className="grid w-full grid-cols-4">
-                <TabsTrigger value="media">
+              <TabsList className="w-full flex overflow-x-auto">
+                <TabsTrigger value="media" className="flex-1 text-xs sm:text-sm min-w-0">
                   {t('dashboard.tabs.media')}
                 </TabsTrigger>
-                <TabsTrigger value="extras">
+                <TabsTrigger value="extras" className="flex-1 text-xs sm:text-sm min-w-0">
                   {t('dashboard.tabs.extras')}
                 </TabsTrigger>
-                <TabsTrigger value="statistics">
+                <TabsTrigger value="statistics" className="flex-1 text-xs sm:text-sm min-w-0">
                   {t('dashboard.tabs.statistics')}
                 </TabsTrigger>
-                <TabsTrigger value="maintenance">
+                <TabsTrigger value="maintenance" className="flex-1 text-xs sm:text-sm min-w-0">
                   {t('dashboard.tabs.maintenance')}
                 </TabsTrigger>
               </TabsList>
@@ -408,7 +408,7 @@ export function ScheduleForm({
 
             {/* Advanced options */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="space-y-0.5">
                   <Label>{t('dashboard.config.maxItems')}</Label>
                   <p className="text-xs text-muted-foreground">
@@ -427,8 +427,8 @@ export function ScheduleForm({
                 />
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="space-y-0.5 flex-1">
                   <Label>{t('dashboard.config.skipEmpty')}</Label>
                   <p className="text-xs text-muted-foreground">
                     {t('dashboard.config.skipEmptyHelp')}
@@ -442,18 +442,19 @@ export function ScheduleForm({
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
+              className="w-full sm:w-auto"
             >
-              <X className="h-4 w-4 mr-2" />
-              {t('common.cancel')}
+              <X className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{t('common.cancel')}</span>
             </Button>
-            <Button type="submit" disabled={!isValid || isLoading}>
-              <Save className="h-4 w-4 mr-2" />
-              {isLoading ? t('common.loading') : t('common.save')}
+            <Button type="submit" disabled={!isValid || isLoading} className="w-full sm:w-auto">
+              <Save className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">{isLoading ? t('common.loading') : t('common.save')}</span>
             </Button>
           </DialogFooter>
         </form>

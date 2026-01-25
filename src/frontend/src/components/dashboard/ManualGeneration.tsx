@@ -158,16 +158,16 @@ export function ManualGeneration({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Settings2 className="h-5 w-5" />
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <Settings2 className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
           {t('dashboard.manualGeneration.title')}
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="hidden sm:block">
           {t('dashboard.manualGeneration.description')}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-4 sm:space-y-6 p-4 sm:p-6 pt-0 sm:pt-0">
         {/* Basic settings */}
         <div className="space-y-4">
           {/* Template selection */}
@@ -290,8 +290,8 @@ export function ManualGeneration({
         </Tabs>
 
         {/* Content options - applies to media/extras/statistics */}
-        <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-          <div className="flex items-center justify-between">
+        <div className="space-y-4 p-3 sm:p-4 bg-muted/50 rounded-lg">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="space-y-0.5">
               <Label>{t('dashboard.config.maxItems')}</Label>
               <p className="text-xs text-muted-foreground">
@@ -310,8 +310,8 @@ export function ManualGeneration({
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
+          <div className="flex items-center justify-between gap-2">
+            <div className="space-y-0.5 flex-1">
               <Label>{t('dashboard.config.skipEmpty')}</Label>
               <p className="text-xs text-muted-foreground">
                 {t('dashboard.config.skipEmptyHelp')}
@@ -335,30 +335,34 @@ export function ManualGeneration({
         <Separator />
 
         {/* Actions */}
-        <div className="flex gap-3">
+        <div className="flex gap-2 sm:gap-3">
           <Button
             onClick={handleGenerate}
             disabled={!isValid || isGenerating}
             className="flex-1"
           >
             {isGenerating ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              <Loader2 className="h-4 w-4 sm:mr-2 animate-spin" />
             ) : (
-              <Play className="h-4 w-4 mr-2" />
+              <Play className="h-4 w-4 sm:mr-2" />
             )}
-            {isGenerating
-              ? t('dashboard.actions.generating')
-              : t('dashboard.actions.generate')}
+            <span className="hidden sm:inline">
+              {isGenerating
+                ? t('dashboard.actions.generating')
+                : t('dashboard.actions.generate')}
+            </span>
           </Button>
           <Button
             variant="outline"
             onClick={handlePreview}
             disabled={!isValid || isPreviewing}
           >
-            <Eye className="h-4 w-4 mr-2" />
-            {isPreviewing
-              ? t('dashboard.actions.previewing')
-              : t('dashboard.actions.preview')}
+            <Eye className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">
+              {isPreviewing
+                ? t('dashboard.actions.previewing')
+                : t('dashboard.actions.preview')}
+            </span>
           </Button>
         </div>
       </CardContent>

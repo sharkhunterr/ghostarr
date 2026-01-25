@@ -274,7 +274,7 @@ export function CronInput({
                   updateSimpleConfig('hour', parseInt(val))
                 }
               >
-                <SelectTrigger className="w-24">
+                <SelectTrigger className="w-20 sm:w-24">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -292,7 +292,7 @@ export function CronInput({
                   updateSimpleConfig('minute', parseInt(val))
                 }
               >
-                <SelectTrigger className="w-24">
+                <SelectTrigger className="w-20 sm:w-24">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

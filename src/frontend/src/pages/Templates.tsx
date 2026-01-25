@@ -108,32 +108,26 @@ export default function Templates() {
   }
 
   return (
-    <div className="space-y-6">
-      {/* Header with action buttons */}
-      <div className="flex items-center justify-between">
-        <p className="text-muted-foreground text-sm">
-          {t('templates.subtitle')}
-        </p>
-
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setLabelManagerOpen(true)}
-          >
-            <Tag className="h-4 w-4 mr-2" />
-            {t('labels.manager.title')}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleScan}
-            disabled={scanTemplates.isPending}
-          >
-            <FolderSearch className="h-4 w-4 mr-2" />
-            {scanTemplates.isPending ? t('common.loading') : t('templates.scan.button')}
-          </Button>
-        </div>
+    <div className="space-y-4">
+      {/* Actions bar */}
+      <div className="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setLabelManagerOpen(true)}
+        >
+          <Tag className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">{t('labels.manager.title')}</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleScan}
+          disabled={scanTemplates.isPending}
+        >
+          <FolderSearch className="h-4 w-4 sm:mr-2" />
+          <span className="hidden sm:inline">{scanTemplates.isPending ? t('common.loading') : t('templates.scan.button')}</span>
+        </Button>
       </div>
 
       {/* Grid - Full width responsive */}
