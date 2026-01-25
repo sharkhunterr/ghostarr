@@ -340,11 +340,8 @@ export function ScheduleForm({
                 <TabsTrigger value="media" className="flex-1 text-xs sm:text-sm min-w-0">
                   {t('dashboard.tabs.media')}
                 </TabsTrigger>
-                <TabsTrigger value="extras" className="flex-1 text-xs sm:text-sm min-w-0">
-                  {t('dashboard.tabs.extras')}
-                </TabsTrigger>
-                <TabsTrigger value="statistics" className="flex-1 text-xs sm:text-sm min-w-0">
-                  {t('dashboard.tabs.statistics')}
+                <TabsTrigger value="tvPrograms" className="flex-1 text-xs sm:text-sm min-w-0">
+                  {t('dashboard.tabs.tvPrograms')}
                 </TabsTrigger>
                 <TabsTrigger value="maintenance" className="flex-1 text-xs sm:text-sm min-w-0">
                   {t('dashboard.tabs.maintenance')}
@@ -352,6 +349,33 @@ export function ScheduleForm({
               </TabsList>
 
               <TabsContent value="media" className="space-y-4 pt-4">
+                {/* Master switch for all media */}
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  <div className="space-y-0.5">
+                    <Label className="font-medium">{t('dashboard.media.enableAll')}</Label>
+                    <p className="text-xs text-muted-foreground">
+                      {t('dashboard.media.enableAllHelp')}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={
+                      config.tautulli.enabled ||
+                      config.romm.enabled ||
+                      config.komga.enabled ||
+                      config.audiobookshelf.enabled ||
+                      config.statistics.enabled
+                    }
+                    onCheckedChange={(checked) => {
+                      updateConfig('tautulli', { ...config.tautulli, enabled: checked });
+                      updateConfig('romm', { ...config.romm, enabled: checked });
+                      updateConfig('komga', { ...config.komga, enabled: checked });
+                      updateConfig('audiobookshelf', { ...config.audiobookshelf, enabled: checked });
+                      updateConfig('statistics', { ...config.statistics, enabled: checked });
+                    }}
+                  />
+                </div>
+
+                {/* Films & Series */}
                 <ContentSourceConfig
                   title={t('dashboard.sources.tautulli')}
                   description={t('dashboard.sources.tautulliDesc')}
@@ -359,40 +383,65 @@ export function ScheduleForm({
                   onChange={(value) => updateConfig('tautulli', value)}
                   showFeatured
                 />
-              </TabsContent>
 
-              <TabsContent value="extras" className="space-y-4 pt-4">
+                {/* Statistics */}
+                <StatisticsConfig
+                  config={config.statistics}
+                  onChange={(value) => updateConfig('statistics', value)}
+                />
+
+                {/* Video Games */}
                 <ContentSourceConfig
                   title={t('dashboard.sources.romm')}
                   description={t('dashboard.sources.rommDesc')}
                   config={config.romm}
                   onChange={(value) => updateConfig('romm', value)}
                 />
+
+                {/* Comics & Books */}
                 <ContentSourceConfig
                   title={t('dashboard.sources.komga')}
                   description={t('dashboard.sources.komgaDesc')}
                   config={config.komga}
                   onChange={(value) => updateConfig('komga', value)}
                 />
+
+                {/* Audiobooks */}
                 <ContentSourceConfig
                   title={t('dashboard.sources.audiobookshelf')}
                   description={t('dashboard.sources.audiobookshelfDesc')}
                   config={config.audiobookshelf}
                   onChange={(value) => updateConfig('audiobookshelf', value)}
                 />
+
+                {/* Max items - only for media */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-muted/50 rounded-lg">
+                  <div className="space-y-0.5">
+                    <Label>{t('dashboard.config.maxItems')}</Label>
+                    <p className="text-xs text-muted-foreground">
+                      {t('dashboard.config.maxItemsHelp')}
+                    </p>
+                  </div>
+                  <Input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={config.max_total_items}
+                    onChange={(e) =>
+                      updateConfig('max_total_items', parseInt(e.target.value) || 20)
+                    }
+                    className="w-20"
+                  />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="tvPrograms" className="space-y-4 pt-4">
                 <ContentSourceConfig
                   title={t('dashboard.sources.tunarr')}
                   description={t('dashboard.sources.tunarrDesc')}
                   config={config.tunarr}
                   onChange={(value) => updateConfig('tunarr', value)}
                   showChannels
-                />
-              </TabsContent>
-
-              <TabsContent value="statistics" className="pt-4">
-                <StatisticsConfig
-                  config={config.statistics}
-                  onChange={(value) => updateConfig('statistics', value)}
                 />
               </TabsContent>
 
@@ -406,39 +455,18 @@ export function ScheduleForm({
 
             <Separator />
 
-            {/* Advanced options */}
-            <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="space-y-0.5">
-                  <Label>{t('dashboard.config.maxItems')}</Label>
-                  <p className="text-xs text-muted-foreground">
-                    {t('dashboard.config.maxItemsHelp')}
-                  </p>
-                </div>
-                <Input
-                  type="number"
-                  min={1}
-                  max={100}
-                  value={config.max_total_items}
-                  onChange={(e) =>
-                    updateConfig('max_total_items', parseInt(e.target.value) || 20)
-                  }
-                  className="w-20"
-                />
+            {/* Skip if empty option */}
+            <div className="flex items-center justify-between gap-2">
+              <div className="space-y-0.5 flex-1">
+                <Label>{t('dashboard.config.skipEmpty')}</Label>
+                <p className="text-xs text-muted-foreground">
+                  {t('dashboard.config.skipEmptyHelp')}
+                </p>
               </div>
-
-              <div className="flex items-center justify-between gap-2">
-                <div className="space-y-0.5 flex-1">
-                  <Label>{t('dashboard.config.skipEmpty')}</Label>
-                  <p className="text-xs text-muted-foreground">
-                    {t('dashboard.config.skipEmptyHelp')}
-                  </p>
-                </div>
-                <Switch
-                  checked={config.skip_if_empty}
-                  onCheckedChange={(checked) => updateConfig('skip_if_empty', checked)}
-                />
-              </div>
+              <Switch
+                checked={config.skip_if_empty}
+                onCheckedChange={(checked) => updateConfig('skip_if_empty', checked)}
+              />
             </div>
           </div>
 

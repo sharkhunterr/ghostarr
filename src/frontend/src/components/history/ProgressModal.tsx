@@ -71,7 +71,7 @@ function ConfigSection({ config, t }: { config: GenerationConfig; t: (key: strin
       </div>
 
       {/* Media sources section */}
-      {(config.tautulli?.enabled || config.romm?.enabled || config.komga?.enabled || config.audiobookshelf?.enabled) && (
+      {(config.tautulli?.enabled || config.romm?.enabled || config.komga?.enabled || config.audiobookshelf?.enabled || config.statistics?.enabled) && (
         <div className="space-y-2">
           <span className="font-medium">{t('dashboard.tabs.media')}</span>
 
@@ -90,6 +90,23 @@ function ConfigSection({ config, t }: { config: GenerationConfig; t: (key: strin
               {config.tautulli.featured_item && (
                 <div className="flex justify-between items-center">
                   <span className="text-muted-foreground">{t('dashboard.config.featuredItem')}</span>
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Statistics */}
+          {config.statistics?.enabled && (
+            <div className="pl-3 space-y-1 border-l-2 border-primary/30">
+              <div className="font-medium text-primary">{t('dashboard.statistics.title')}</div>
+              <div className="flex justify-between">
+                <span className="text-muted-foreground">{t('dashboard.statistics.days')}</span>
+                <span>{config.statistics.days}</span>
+              </div>
+              {config.statistics.include_comparison && (
+                <div className="flex justify-between items-center">
+                  <span className="text-muted-foreground">{t('dashboard.statistics.includeComparison')}</span>
                   <CheckCircle className="h-4 w-4 text-green-500" />
                 </div>
               )}
@@ -143,10 +160,10 @@ function ConfigSection({ config, t }: { config: GenerationConfig; t: (key: strin
         </div>
       )}
 
-      {/* Extras section (Tunarr) */}
+      {/* TV Programs section (Tunarr) */}
       {config.tunarr?.enabled && (
         <div className="space-y-2">
-          <span className="font-medium">{t('dashboard.tabs.extras')}</span>
+          <span className="font-medium">{t('dashboard.tabs.tvPrograms')}</span>
           <div className="pl-3 space-y-1 border-l-2 border-primary/30">
             <div className="font-medium text-primary">{t('dashboard.sources.tunarr')}</div>
             <div className="flex justify-between">
@@ -157,25 +174,6 @@ function ConfigSection({ config, t }: { config: GenerationConfig; t: (key: strin
               <span className="text-muted-foreground">{t('dashboard.config.maxItems')}</span>
               <span>{config.tunarr.max_items === -1 ? t('common.unlimited') : config.tunarr.max_items}</span>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Statistics section */}
-      {config.statistics?.enabled && (
-        <div className="space-y-2">
-          <span className="font-medium">{t('dashboard.tabs.statistics')}</span>
-          <div className="pl-3 space-y-1 border-l-2 border-primary/30">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">{t('dashboard.statistics.days')}</span>
-              <span>{config.statistics.days}</span>
-            </div>
-            {config.statistics.include_comparison && (
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">{t('dashboard.statistics.includeComparison')}</span>
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              </div>
-            )}
           </div>
         </div>
       )}

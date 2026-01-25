@@ -72,9 +72,12 @@
     },
     "tabs": {
       "media": "Media",
-      "extras": "Extra",
-      "statistics": "Statistiche",
+      "tvPrograms": "Programmi TV",
       "maintenance": "Manutenzione"
+    },
+    "media": {
+      "enableAll": "Attiva tutti i media",
+      "enableAllHelp": "Attiva/disattiva tutte le fonti media"
     },
     "config": {
       "template": "Modello",
