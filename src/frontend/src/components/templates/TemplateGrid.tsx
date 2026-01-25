@@ -14,6 +14,7 @@ interface TemplateGridProps {
   onUpload: () => void;
   onPreview: (template: Template) => void;
   onEdit: (template: Template) => void;
+  onConfigurePreset: (template: Template) => void;
   onDelete: (template: Template) => void;
   onSetDefault: (template: Template) => void;
 }
@@ -24,6 +25,7 @@ export function TemplateGrid({
   onUpload,
   onPreview,
   onEdit,
+  onConfigurePreset,
   onDelete,
   onSetDefault,
 }: TemplateGridProps) {
@@ -71,6 +73,7 @@ export function TemplateGrid({
           template={template}
           onPreview={onPreview}
           onEdit={onEdit}
+          onConfigurePreset={onConfigurePreset}
           onDelete={onDelete}
           onSetDefault={onSetDefault}
         />

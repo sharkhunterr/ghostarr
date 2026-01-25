@@ -2,6 +2,8 @@ export { TemplateCard } from './TemplateCard';
 export { TemplateEditDialog } from './TemplateEditDialog';
 export { TemplateGrid } from './TemplateGrid';
 export { TemplatePreview } from './TemplatePreview';
+export { TemplatePresetConfigDialog } from './TemplatePresetConfigDialog';
+export { TemplateSelect } from './TemplateSelect';
 export { TemplateUploadDialog } from './TemplateUploadDialog';
 export { LabelManager } from './LabelManager';
 export { LabelSelector } from './LabelSelector';

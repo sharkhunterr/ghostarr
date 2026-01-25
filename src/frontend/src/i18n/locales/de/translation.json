@@ -21,7 +21,18 @@
     "success": "Erfolg",
     "error": "Fehler",
     "warning": "Warnung",
-    "info": "Information"
+    "info": "Information",
+    "unlimited": "Unbegrenzt",
+    "optional": "optional",
+    "changeLanguage": "Sprache ändern",
+    "time": {
+      "minutesAgo": "vor {{count}} Min",
+      "hoursAgo": "vor {{count}}h",
+      "daysAgo": "vor {{count}}T",
+      "inMinutes": "in {{count}} Min",
+      "inHours": "in {{count}}h",
+      "inDays": "in {{count}}T"
+    }
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -75,7 +86,8 @@
         "draft": "Entwurf",
         "publish": "Veröffentlichen",
         "email": "Nur E-Mail",
-        "emailPublish": "E-Mail + Veröffentlichen"
+        "emailPublish": "E-Mail + Veröffentlichen",
+        "email+publish": "E-Mail + Veröffentlichen"
       },
       "days": "Zeitraum (Tage)",
       "maxItems": "Max. Elemente",
@@ -264,6 +276,14 @@
       "error": "Verbindungsfehler",
       "url": "URL",
       "apiKey": "API-Schlüssel",
+      "username": "Benutzername",
+      "usernamePlaceholder": "Benutzername eingeben",
+      "password": "Passwort",
+      "basicAuthHelp": "Für ROMM können Sie Benutzername/Passwort oder API-Schlüssel verwenden",
+      "urlHelp": {
+        "tautulli": "Basis-URL ohne /api/v2",
+        "ghost": "Basis-URL ohne /ghost/api/admin"
+      },
       "tautulli": {
         "name": "Tautulli",
         "description": "Medienserver-Statistiken und Verlauf"

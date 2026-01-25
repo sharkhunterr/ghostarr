@@ -26,10 +26,8 @@ const URL_PLACEHOLDERS: Record<string, string> = {
   tunarr: "http://192.168.1.x:8000",
 };
 
-const URL_HELP: Record<string, string> = {
-  tautulli: "URL de base sans /api/v2",
-  ghost: "URL de base sans /ghost/api/admin",
-};
+// Services that have URL help text (keys in translation file)
+const SERVICES_WITH_URL_HELP = ["tautulli", "ghost"];
 
 // Services that don't require URL configuration
 const SERVICES_WITHOUT_URL = ["tmdb"];
@@ -156,8 +154,8 @@ export function ServiceCard({
               placeholder={URL_PLACEHOLDERS[service] || "http://localhost:8080"}
               className="mt-1 w-full rounded-md border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             />
-            {URL_HELP[service] && (
-              <p className="mt-1 text-xs text-muted-foreground">{URL_HELP[service]}</p>
+            {SERVICES_WITH_URL_HELP.includes(service) && (
+              <p className="mt-1 text-xs text-muted-foreground">{t(`settings.services.urlHelp.${service}`)}</p>
             )}
           </div>
         )}

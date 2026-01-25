@@ -23,7 +23,16 @@
     "warning": "Warning",
     "info": "Information",
     "unlimited": "Unlimited",
-    "optional": "optional"
+    "optional": "optional",
+    "changeLanguage": "Change language",
+    "time": {
+      "minutesAgo": "{{count}} min ago",
+      "hoursAgo": "{{count}}h ago",
+      "daysAgo": "{{count}}d ago",
+      "inMinutes": "in {{count}} min",
+      "inHours": "in {{count}}h",
+      "inDays": "in {{count}}d"
+    }
   },
   "nav": {
     "manual": "Manual Generation",
@@ -78,7 +87,8 @@
         "draft": "Draft",
         "publish": "Publish",
         "email": "Email only",
-        "emailPublish": "Email + Publish"
+        "emailPublish": "Email + Publish",
+        "email+publish": "Email + Publish"
       },
       "days": "Period (days)",
       "maxItems": "Max items",
@@ -241,8 +251,18 @@
     "actions": {
       "preview": "Preview",
       "edit": "Edit",
+      "configurePreset": "Default settings",
       "delete": "Delete",
       "setDefault": "Set as default"
+    },
+    "presetConfig": {
+      "title": "Default Settings",
+      "description": "Configure default generation settings for the template \"{{name}}\"",
+      "clear": "Clear settings",
+      "clearConfirm": {
+        "title": "Clear default settings",
+        "message": "Are you sure you want to clear the default settings for this template? The template will use global default settings instead."
+      }
     },
     "deleteConfirm": {
       "title": "Delete template",
@@ -331,6 +351,10 @@
       "usernamePlaceholder": "Enter your username",
       "password": "Password",
       "basicAuthHelp": "Use either username/password or API key for authentication",
+      "urlHelp": {
+        "tautulli": "Base URL without /api/v2",
+        "ghost": "Base URL without /ghost/api/admin"
+      },
       "tautulli": {
         "name": "Tautulli",
         "description": "Media server statistics and history"

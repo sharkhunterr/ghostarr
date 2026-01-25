@@ -21,6 +21,7 @@ import {
   TemplatePreview,
   TemplateUploadDialog,
   TemplateEditDialog,
+  TemplatePresetConfigDialog,
   LabelManager,
 } from '@/components/templates';
 import { useTemplates, useDeleteTemplate, useUpdateTemplate, useScanTemplates } from '@/api/templates';
@@ -38,6 +39,7 @@ export default function Templates() {
   const [uploadOpen, setUploadOpen] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState<Template | null>(null);
   const [editTemplate, setEditTemplate] = useState<Template | null>(null);
+  const [presetConfigTemplate, setPresetConfigTemplate] = useState<Template | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Template | null>(null);
   const [labelManagerOpen, setLabelManagerOpen] = useState(false);
 
@@ -141,6 +143,7 @@ export default function Templates() {
         onUpload={() => setUploadOpen(true)}
         onPreview={handlePreview}
         onEdit={handleEdit}
+        onConfigurePreset={setPresetConfigTemplate}
         onDelete={setDeleteTarget}
         onSetDefault={handleSetDefault}
       />
@@ -164,6 +167,13 @@ export default function Templates() {
         open={!!editTemplate}
         onOpenChange={(open) => !open && setEditTemplate(null)}
         template={editTemplate}
+      />
+
+      {/* Preset config dialog */}
+      <TemplatePresetConfigDialog
+        open={!!presetConfigTemplate}
+        onOpenChange={(open) => !open && setPresetConfigTemplate(null)}
+        template={presetConfigTemplate}
       />
 
       {/* Delete confirmation */}

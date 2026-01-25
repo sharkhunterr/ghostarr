@@ -21,7 +21,18 @@
     "success": "Éxito",
     "error": "Error",
     "warning": "Advertencia",
-    "info": "Información"
+    "info": "Información",
+    "unlimited": "Ilimitado",
+    "optional": "opcional",
+    "changeLanguage": "Cambiar idioma",
+    "time": {
+      "minutesAgo": "hace {{count}} min",
+      "hoursAgo": "hace {{count}}h",
+      "daysAgo": "hace {{count}}d",
+      "inMinutes": "en {{count}} min",
+      "inHours": "en {{count}}h",
+      "inDays": "en {{count}}d"
+    }
   },
   "nav": {
     "dashboard": "Panel",
@@ -75,7 +86,8 @@
         "draft": "Borrador",
         "publish": "Publicar",
         "email": "Solo email",
-        "emailPublish": "Email + Publicar"
+        "emailPublish": "Email + Publicar",
+        "email+publish": "Email + Publicar"
       },
       "days": "Período (días)",
       "maxItems": "Elementos máx.",
@@ -264,6 +276,14 @@
       "error": "Error de conexión",
       "url": "URL",
       "apiKey": "Clave API",
+      "username": "Nombre de usuario",
+      "usernamePlaceholder": "Ingresa nombre de usuario",
+      "password": "Contraseña",
+      "basicAuthHelp": "Para ROMM, puedes usar nombre de usuario/contraseña o clave API",
+      "urlHelp": {
+        "tautulli": "URL base sin /api/v2",
+        "ghost": "URL base sin /ghost/api/admin"
+      },
       "tautulli": {
         "name": "Tautulli",
         "description": "Estadísticas e historial del servidor de medios"

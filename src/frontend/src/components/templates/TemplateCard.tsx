@@ -12,6 +12,7 @@ import {
   MoreVertical,
   FileText,
   Loader2,
+  Settings2,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,6 +49,7 @@ interface TemplateCardProps {
   template: Template;
   onPreview: (template: Template) => void;
   onEdit: (template: Template) => void;
+  onConfigurePreset: (template: Template) => void;
   onDelete: (template: Template) => void;
   onSetDefault: (template: Template) => void;
 }
@@ -56,6 +58,7 @@ export function TemplateCard({
   template,
   onPreview,
   onEdit,
+  onConfigurePreset,
   onDelete,
   onSetDefault,
 }: TemplateCardProps) {
@@ -224,6 +227,10 @@ export function TemplateCard({
               <DropdownMenuItem onClick={() => onEdit(template)}>
                 <Edit className="h-4 w-4 mr-2" />
                 {t('templates.actions.edit')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onConfigurePreset(template)}>
+                <Settings2 className="h-4 w-4 mr-2" />
+                {t('templates.actions.configurePreset')}
               </DropdownMenuItem>
               {!template.is_default && (
                 <DropdownMenuItem onClick={() => onSetDefault(template)}>

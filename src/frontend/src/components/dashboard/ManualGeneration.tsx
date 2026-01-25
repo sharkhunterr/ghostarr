@@ -33,6 +33,7 @@ import {
 import { ContentSourceConfig } from './ContentSourceConfig';
 import { MaintenanceConfig } from './MaintenanceConfig';
 import { StatisticsConfig } from './StatisticsConfig';
+import { TemplateSelect } from '@/components/templates';
 import { useTemplates } from '@/api/templates';
 import type { GenerationConfig, PublicationMode, Template } from '@/types';
 
@@ -123,10 +124,9 @@ export function ManualGeneration({
     }
   }, [templates, config.template_id]);
 
-  // Update template_id when templates load
+  // Handle template selection with preset config loading
   const handleTemplateChange = useCallback(
-    (templateId: string) => {
-      const template = templates?.find((t) => t.id === templateId);
+    (templateId: string, template: Template | undefined) => {
       setConfig((prev) => ({
         ...prev,
         template_id: templateId,
@@ -134,7 +134,7 @@ export function ManualGeneration({
         ...(template?.preset_config || {}),
       }));
     },
-    [templates]
+    []
   );
 
   const updateConfig = useCallback(
@@ -173,25 +173,12 @@ export function ManualGeneration({
           {/* Template selection */}
           <div className="space-y-2">
             <Label htmlFor="template">{t('dashboard.config.template')}</Label>
-            <Select
+            <TemplateSelect
+              id="template"
               value={config.template_id}
               onValueChange={handleTemplateChange}
               disabled={isLoadingTemplates}
-            >
-              <SelectTrigger id="template">
-                <SelectValue
-                  placeholder={t('dashboard.config.selectTemplate')}
-                />
-              </SelectTrigger>
-              <SelectContent>
-                {templates?.map((template: Template) => (
-                  <SelectItem key={template.id} value={template.id}>
-                    {template.name}
-                    {template.is_default && ' (default)'}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            />
           </div>
 
           {/* Title */}

@@ -35,6 +35,7 @@ import { CronInput } from './CronInput';
 import { ContentSourceConfig } from './ContentSourceConfig';
 import { MaintenanceConfig } from './MaintenanceConfig';
 import { StatisticsConfig } from './StatisticsConfig';
+import { TemplateSelect } from '@/components/templates';
 import { useTemplates } from '@/api/templates';
 import {
   useCreateSchedule,
@@ -144,15 +145,14 @@ export function ScheduleForm({
   }, [open, schedule, templates]);
 
   const handleTemplateChange = useCallback(
-    (templateId: string) => {
-      const template = templates?.find((t) => t.id === templateId);
+    (templateId: string, template: Template | undefined) => {
       setConfig((prev) => ({
         ...prev,
         template_id: templateId,
         ...(template?.preset_config || {}),
       }));
     },
-    [templates]
+    []
   );
 
   const updateConfig = useCallback(
@@ -280,24 +280,13 @@ export function ScheduleForm({
 
               {/* Template */}
               <div className="space-y-2">
-                <Label htmlFor="template">{t('dashboard.config.template')}</Label>
-                <Select
+                <Label htmlFor="schedule-template">{t('dashboard.config.template')}</Label>
+                <TemplateSelect
+                  id="schedule-template"
                   value={config.template_id}
                   onValueChange={handleTemplateChange}
                   disabled={isLoadingTemplates}
-                >
-                  <SelectTrigger id="template">
-                    <SelectValue placeholder={t('dashboard.config.selectTemplate')} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {templates?.map((template: Template) => (
-                      <SelectItem key={template.id} value={template.id}>
-                        {template.name}
-                        {template.is_default && ' (default)'}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                />
               </div>
 
               {/* Title */}

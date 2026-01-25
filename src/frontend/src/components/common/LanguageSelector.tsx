@@ -29,7 +29,7 @@ const languages: LanguageOption[] = [
 ];
 
 export function LanguageSelector() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const { language, setLanguage } = usePreferencesStore();
 
   const currentLanguage = languages.find((l) => l.code === language);
@@ -44,7 +44,7 @@ export function LanguageSelector() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="h-9 w-9">
           <span className="text-base">{currentLanguage?.flag || '🌐'}</span>
-          <span className="sr-only">Change language</span>
+          <span className="sr-only">{t('common.changeLanguage')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">

@@ -67,7 +67,7 @@ function ConfigSection({ config, t }: { config: GenerationConfig; t: (key: strin
       {/* Publication mode */}
       <div className="flex justify-between items-center">
         <span className="text-muted-foreground">{t('dashboard.config.publicationMode')}</span>
-        <Badge variant="outline">{t(`dashboard.publicationModes.${config.publication_mode}`)}</Badge>
+        <Badge variant="outline">{t(`dashboard.config.modes.${config.publication_mode}`)}</Badge>
       </div>
 
       {/* Media sources section */}
@@ -209,7 +209,7 @@ function ConfigSection({ config, t }: { config: GenerationConfig; t: (key: strin
       {/* Skip if empty */}
       {config.skip_if_empty && (
         <div className="flex justify-between items-center">
-          <span className="text-muted-foreground">{t('dashboard.config.skipIfEmpty')}</span>
+          <span className="text-muted-foreground">{t('dashboard.config.skipEmpty')}</span>
           <CheckCircle className="h-4 w-4 text-green-500" />
         </div>
       )}
@@ -223,7 +223,7 @@ export function ProgressModal({
   history,
 }: ProgressModalProps) {
   const { t } = useTranslation();
-  const [configOpen, setConfigOpen] = useState(true);
+  const [configOpen, setConfigOpen] = useState(false);
 
   if (!history) return null;
 

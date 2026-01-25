@@ -23,7 +23,16 @@
     "warning": "Attention",
     "info": "Information",
     "unlimited": "Illimité",
-    "optional": "optionnel"
+    "optional": "optionnel",
+    "changeLanguage": "Changer de langue",
+    "time": {
+      "minutesAgo": "il y a {{count}} min",
+      "hoursAgo": "il y a {{count}}h",
+      "daysAgo": "il y a {{count}}j",
+      "inMinutes": "dans {{count}} min",
+      "inHours": "dans {{count}}h",
+      "inDays": "dans {{count}}j"
+    }
   },
   "nav": {
     "manual": "Génération manuelle",
@@ -78,7 +87,8 @@
         "draft": "Brouillon",
         "publish": "Publier",
         "email": "Email uniquement",
-        "emailPublish": "Email + Publication"
+        "emailPublish": "Email + Publication",
+        "email+publish": "Email + Publication"
       },
       "days": "Période (jours)",
       "maxItems": "Nombre max d'éléments",
@@ -241,8 +251,18 @@
     "actions": {
       "preview": "Aperçu",
       "edit": "Modifier",
+      "configurePreset": "Paramètres par défaut",
       "delete": "Supprimer",
       "setDefault": "Définir par défaut"
+    },
+    "presetConfig": {
+      "title": "Paramètres par défaut",
+      "description": "Configurez les paramètres de génération par défaut pour le template \"{{name}}\"",
+      "clear": "Effacer les paramètres",
+      "clearConfirm": {
+        "title": "Effacer les paramètres par défaut",
+        "message": "Êtes-vous sûr de vouloir effacer les paramètres par défaut de ce template ? Le template utilisera les paramètres globaux par défaut."
+      }
     },
     "deleteConfirm": {
       "title": "Supprimer le template",
@@ -331,6 +351,10 @@
       "usernamePlaceholder": "Entrez votre nom d'utilisateur",
       "password": "Mot de passe",
       "basicAuthHelp": "Utilisez soit nom d'utilisateur/mot de passe, soit une clé API pour l'authentification",
+      "urlHelp": {
+        "tautulli": "URL de base sans /api/v2",
+        "ghost": "URL de base sans /ghost/api/admin"
+      },
       "tautulli": {
         "name": "Tautulli",
         "description": "Statistiques et historique de votre serveur multimédia"

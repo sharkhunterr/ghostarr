@@ -76,7 +76,7 @@ function getStatusIcon(status: RunStatus | null) {
   }
 }
 
-function formatRelativeTime(dateStr: string | null): string {
+function formatRelativeTime(dateStr: string | null, t: (key: string, params?: Record<string, unknown>) => string): string {
   if (!dateStr) return '-';
 
   const date = new Date(dateStr);
@@ -92,14 +92,14 @@ function formatRelativeTime(dateStr: string | null): string {
     const absHours = Math.abs(diffHours);
     const absDays = Math.abs(diffDays);
 
-    if (absMins < 60) return `${absMins}min ago`;
-    if (absHours < 24) return `${absHours}h ago`;
-    return `${absDays}d ago`;
+    if (absMins < 60) return t('common.time.minutesAgo', { count: absMins });
+    if (absHours < 24) return t('common.time.hoursAgo', { count: absHours });
+    return t('common.time.daysAgo', { count: absDays });
   } else {
     // Future
-    if (diffMins < 60) return `in ${diffMins}min`;
-    if (diffHours < 24) return `in ${diffHours}h`;
-    return `in ${diffDays}d`;
+    if (diffMins < 60) return t('common.time.inMinutes', { count: diffMins });
+    if (diffHours < 24) return t('common.time.inHours', { count: diffHours });
+    return t('common.time.inDays', { count: diffDays });
   }
 }
 
@@ -265,7 +265,7 @@ export function ScheduleList({ onEdit }: ScheduleListProps) {
                       <span className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         {t('schedule.nextRun')}:{' '}
-                        {formatRelativeTime(schedule.next_run_at)}
+                        {formatRelativeTime(schedule.next_run_at, t)}
                       </span>
                     )}
 
@@ -273,7 +273,7 @@ export function ScheduleList({ onEdit }: ScheduleListProps) {
                       <span className="flex items-center gap-1">
                         {getStatusIcon(schedule.last_run_status)}
                         {t('schedule.lastRun')}:{' '}
-                        {formatRelativeTime(schedule.last_run_at)}
+                        {formatRelativeTime(schedule.last_run_at, t)}
                       </span>
                     )}
                   </div>
