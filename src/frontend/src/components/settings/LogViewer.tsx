@@ -57,7 +57,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useLogs, usePurgeLogs, useExportLogs, type LogFilters } from '@/api/logs';
-import type { LogLevel, LogSource } from '@/types';
+import type { Log, LogLevel, LogSource } from '@/types';
 
 const LOG_LEVELS: LogLevel[] = ['debug', 'info', 'warning', 'error'];
 const LOG_SOURCES: LogSource[] = ['backend', 'frontend', 'integration'];
@@ -84,6 +84,7 @@ export function LogViewer() {
   });
   const [showPurgeDialog, setShowPurgeDialog] = useState(false);
   const [purgeDays, setPurgeDays] = useState(30);
+  const [selectedLog, setSelectedLog] = useState<Log | null>(null);
 
   const { data, isLoading, refetch } = useLogs(filters);
   const purgeMutation = usePurgeLogs();
@@ -286,7 +287,11 @@ export function LogViewer() {
               </TableRow>
             ) : (
               data?.items.map((log) => (
-                <TableRow key={log.id}>
+                <TableRow
+                  key={log.id}
+                  className="cursor-pointer hover:bg-muted/50"
+                  onClick={() => setSelectedLog(log)}
+                >
                   <TableCell className="font-mono text-xs">
                     {format(new Date(log.created_at), 'yyyy-MM-dd HH:mm:ss')}
                   </TableCell>
@@ -373,6 +378,74 @@ export function LogViewer() {
               disabled={purgeMutation.isPending}
             >
               {purgeMutation.isPending ? t('common.loading') : t('common.delete')}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Log detail modal */}
+      <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>{t('settings.logs.detail.title')}</DialogTitle>
+          </DialogHeader>
+          {selectedLog && (
+            <div className="space-y-4 overflow-y-auto">
+              {/* Timestamp and Level */}
+              <div className="flex items-center justify-between">
+                <span className="font-mono text-sm">
+                  {format(new Date(selectedLog.created_at), 'yyyy-MM-dd HH:mm:ss.SSS')}
+                </span>
+                <Badge className={levelColors[selectedLog.level]}>
+                  <span className="mr-1">{levelIcons[selectedLog.level]}</span>
+                  {t(`settings.logs.levels.${selectedLog.level}`)}
+                </Badge>
+              </div>
+
+              {/* Source and Service */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-muted-foreground">{t('settings.logs.source')}</Label>
+                  <p className="mt-1">
+                    <Badge variant="outline">{selectedLog.source}</Badge>
+                  </p>
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">{t('settings.logs.service')}</Label>
+                  <p className="mt-1">{selectedLog.service || '-'}</p>
+                </div>
+              </div>
+
+              {/* Message */}
+              <div>
+                <Label className="text-muted-foreground">{t('settings.logs.message')}</Label>
+                <div className="mt-1 p-3 rounded-md bg-muted font-mono text-sm whitespace-pre-wrap break-words">
+                  {selectedLog.message}
+                </div>
+              </div>
+
+              {/* Correlation ID */}
+              {selectedLog.correlation_id && (
+                <div>
+                  <Label className="text-muted-foreground">{t('settings.logs.detail.correlationId')}</Label>
+                  <p className="mt-1 font-mono text-sm">{selectedLog.correlation_id}</p>
+                </div>
+              )}
+
+              {/* Context */}
+              {selectedLog.context && Object.keys(selectedLog.context).length > 0 && (
+                <div>
+                  <Label className="text-muted-foreground">{t('settings.logs.detail.context')}</Label>
+                  <pre className="mt-1 p-3 rounded-md bg-muted font-mono text-xs overflow-x-auto">
+                    {JSON.stringify(selectedLog.context, null, 2)}
+                  </pre>
+                </div>
+              )}
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setSelectedLog(null)}>
+              {t('common.close')}
             </Button>
           </DialogFooter>
         </DialogContent>

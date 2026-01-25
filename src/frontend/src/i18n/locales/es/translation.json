@@ -326,6 +326,11 @@
         "info": "Info",
         "warning": "Advertencia",
         "error": "Error"
+      },
+      "detail": {
+        "title": "Detalles del registro",
+        "correlationId": "ID de correlación",
+        "context": "Contexto"
       }
     },
     "theme": {

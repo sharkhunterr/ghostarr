@@ -397,6 +397,11 @@
         "info": "Info",
         "warning": "Warning",
         "error": "Error"
+      },
+      "detail": {
+        "title": "Log details",
+        "correlationId": "Correlation ID",
+        "context": "Context"
       }
     },
     "theme": {
