@@ -341,24 +341,6 @@ flowchart LR
 
 ---
 
-## 📅 Scheduling
-
-Create automated schedules using CRON expressions:
-
-| Expression | Description |
-|------------|-------------|
-| `0 9 * * 1` | Every Monday at 9:00 AM |
-| `0 18 * * 5` | Every Friday at 6:00 PM |
-| `0 10 1 * *` | First day of month at 10:00 AM |
-| `0 8 * * *` | Every day at 8:00 AM |
-
-### Schedule Types
-
-- **Generation** - Create and publish newsletters
-- **Cleanup** - Delete old history entries (with optional Ghost post removal)
-
----
-
 ## 🌐 Multi-Language Support
 
 Ghostarr is fully translated into **5 languages**:
@@ -397,36 +379,6 @@ Ghostarr supports full configuration export including:
 - Service configurations (with encrypted credentials)
 
 Go to **Settings → General → Export/Import**
-
----
-
-## 🔒 Security
-
-- All API keys and passwords are **encrypted** in the database
-- Configurable CORS origins
-- Request logging with correlation IDs
-- Sensitive data masking in logs
-
-> **Important**: Set a strong `APP_SECRET_KEY` in production!
-
----
-
-## 🐛 Troubleshooting
-
-### Service Connection Failed
-1. Verify the URL is correct and accessible
-2. Check API key is valid
-3. Ensure Ghostarr can reach the service (check firewalls)
-4. Use the **Test** button to diagnose issues
-
-### Newsletter Not Sending
-1. Check Ghost integration is configured
-2. Verify Ghost Admin API key has correct permissions
-3. Check publication mode (Draft, Site, Email, or both)
-
-### Database Locked
-- SQLite WAL mode is enabled by default
-- Ensure only one Ghostarr instance accesses the database
 
 ---
 

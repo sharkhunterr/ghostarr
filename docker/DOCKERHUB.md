@@ -1,101 +1,103 @@
-# Ghostarr Newsletter Generator
+# 👻 Ghostarr - Newsletter Generator
 
 [![GitHub](https://img.shields.io/github/v/tag/sharkhunterr/ghostarr?label=version&color=blue)](https://github.com/sharkhunterr/ghostarr/releases)
 [![Docker Pulls](https://img.shields.io/docker/pulls/sharkhunterr/ghostarr?color=2496ED)](https://hub.docker.com/r/sharkhunterr/ghostarr)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/sharkhunterr/ghostarr/blob/master/LICENSE)
 
-**Newsletter generator for media server administrators** — Automatically create beautiful newsletters showcasing your latest media additions from Plex, Tautulli, Overseerr, and more.
+**Automated newsletter generator for media server administrators** — Collect statistics from your homelab services and publish beautiful newsletters to Ghost CMS.
 
 ---
 
-## Quick Start
-
-```bash
-# Pull the image
-docker pull sharkhunterr/ghostarr:latest
-
-# Run with Docker Compose
-curl -o docker-compose.yml https://raw.githubusercontent.com/sharkhunterr/ghostarr/master/docker/docker-compose.yml
-docker compose up -d
-```
-
-**Access**: http://localhost:3000
-
----
-
-## What You Get
-
-| Component | Port | Description |
-|-----------|------|-------------|
-| **Web UI** | 3000 | Modern React interface |
-| **API** | 8000 | FastAPI REST API |
-| **Database** | - | SQLite |
-
-**Platforms**: `linux/amd64`, `linux/arm64`
-
----
-
-## Features
-
-- **Multi-Source Integration** — Plex, Tautulli, Overseerr, Radarr, Sonarr, and more
-- **Ghost CMS Publishing** — Direct newsletter publishing to Ghost
-- **Customizable Templates** — Jinja2-based HTML templates
-- **Scheduled Generation** — Automatic newsletter creation via CRON
-- **Multi-language** — 5 languages (EN, FR, DE, ES, IT)
-- **Export/Import** — Full configuration backup and restore
-- **Preview Mode** — Preview newsletters before publishing
-
----
-
-## Configuration
-
-### Basic Deployment
+## 🚀 Quick Start
 
 ```yaml
 services:
   ghostarr:
     image: sharkhunterr/ghostarr:latest
-    container_name: ghostarr
     ports:
-      - "3000:3000"   # Web UI
-      - "8000:8000"   # API
+      - "8080:8080"
     volumes:
-      - ghostarr-data:/app/data
+      - ./config:/config
     environment:
-      - LOG_LEVEL=INFO
-      - DATABASE_URL=sqlite+aiosqlite:////app/data/ghostarr.db
+      - TZ=Europe/Paris
+      - APP_SECRET_KEY=your-secret-key-minimum-32-characters
     restart: unless-stopped
-
-volumes:
-  ghostarr-data:
 ```
+
+```bash
+docker compose up -d
+```
+
+**Access**: http://localhost:8080
+
+---
+
+## ✨ Features
+
+**🔌 7 Service Integrations**
+- **Tautulli** - Plex viewing statistics, top movies and shows
+- **Ghost CMS** - Newsletter publishing with multiple modes
+- **TMDB** - Rich metadata, ratings, and artwork
+- **ROMM** - Video game library
+- **Komga** - Comics and manga
+- **Audiobookshelf** - Audiobooks
+- **Tunarr** - TV programming guide
+
+**📅 Smart Scheduling**
+- CRON-based scheduling with timezone support
+- Newsletter generation & automated cleanup
+- Real-time progress tracking
+- Manual execution with live progress
+
+**📰 Beautiful Newsletters**
+- Jinja2 template customization
+- Ranking evolution badges
+- Play statistics comparison
+- Mobile-responsive design
+- Preview before sending
+
+**🖥️ Modern Interface**
+- 5 languages (EN, FR, DE, ES, IT)
+- Light/Dark/System themes
+- Export/Import configuration
+- Complete history tracking
+
+---
+
+## ⚙️ Configuration
 
 ### Environment Variables
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `LOG_LEVEL` | `INFO` | `DEBUG`, `INFO`, `WARNING`, `ERROR` |
-| `DATABASE_URL` | `sqlite+aiosqlite:////app/data/ghostarr.db` | Database connection |
-| `CORS_ORIGINS` | `*` | Allowed CORS origins |
+| `APP_SECRET_KEY` | *required* | Encryption key (min 32 chars) |
+| `TZ` | `UTC` | Container timezone |
+| `APP_LOG_LEVEL` | `INFO` | Log level |
+| `PORT` | `8080` | Server port |
+
+### Volumes
+
+| Path | Description |
+|------|-------------|
+| `/config/data.db` | SQLite database |
+| `/config/templates/` | Custom templates |
 
 ---
 
-## Available Tags
+## 🏷️ Available Tags
 
 | Tag | Description |
 |-----|-------------|
 | `latest` | Latest stable release |
-| `v1.0.0` | Specific version |
-| `v1.x.x` | Version pinning |
+| `v1.x.x` | Specific version |
 
 ```bash
-# Pin to specific version
-docker pull sharkhunterr/ghostarr:v1.0.0
+docker pull sharkhunterr/ghostarr:latest
 ```
 
 ---
 
-## Update
+## 🔄 Update
 
 ```bash
 docker compose pull
@@ -105,39 +107,34 @@ docker image prune -f
 
 ---
 
-## Documentation
+## 🛠️ Technical Stack
 
-- **[Docker Guide](https://github.com/sharkhunterr/ghostarr/blob/master/docker/README.md)** — Complete deployment guide
-- **[GitHub](https://github.com/sharkhunterr/ghostarr)** — Source code and docs
+| Layer | Technologies |
+|-------|--------------|
+| Backend | Python 3.11, FastAPI, SQLAlchemy, APScheduler |
+| Frontend | React 18, TypeScript, Tailwind CSS, Radix UI |
+| Data | SQLite, Zustand, React Query |
 
----
-
-## Technology Stack
-
-**Backend**: Python 3.11 - FastAPI - SQLAlchemy - APScheduler
-
-**Frontend**: React 18 - TypeScript - Tailwind CSS - i18next
-
-**DevOps**: Docker - GitLab CI - GitHub Actions
+**Platforms**: `linux/amd64`, `linux/arm64`
 
 ---
 
-## Built With
+## 🔗 Links
 
-- **[Claude Code](https://claude.ai/claude-code)** — 100% vibe coded
+- [📖 Documentation](https://github.com/sharkhunterr/ghostarr#readme)
+- [🐛 Report Issues](https://github.com/sharkhunterr/ghostarr/issues)
+- [⭐ Star on GitHub](https://github.com/sharkhunterr/ghostarr)
 
 ---
 
-## License
+## 📄 License
 
-MIT License - see [LICENSE](https://github.com/sharkhunterr/ghostarr/blob/master/LICENSE)
+MIT License - [LICENSE](https://github.com/sharkhunterr/ghostarr/blob/master/LICENSE)
 
 ---
 
 <div align="center">
 
-**Built with Claude Code for the homelab community**
-
-[Star on GitHub](https://github.com/sharkhunterr/ghostarr) - [Report Bug](https://github.com/sharkhunterr/ghostarr/issues) - [Request Feature](https://github.com/sharkhunterr/ghostarr/issues)
+**Built with Claude Code 🤖 for the homelab community 🏠**
 
 </div>
