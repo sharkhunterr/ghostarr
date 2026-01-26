@@ -451,6 +451,100 @@
       "gettingstartedIntro": "New to Ghostarr? Start here to learn the basics.",
       "troubleshootingTitle": "Troubleshooting",
       "troubleshootingIntro": "Having issues? Find solutions to common problems."
+    },
+    "articles": {
+      "manualgeneration": {
+        "configureSources": {
+          "title": "Configuring content sources",
+          "summary": "Learn how to enable and configure the different content sources for your newsletter.",
+          "content": "## Content Sources\n\nGhostarr can fetch content from multiple sources:\n\n- **Tautulli**: Movies and TV shows recently added to your media server\n- **ROMM**: Video games from your game library\n- **Komga**: Comics and books\n- **Audiobookshelf**: Audiobooks\n- **Tunarr**: TV programming schedule\n\n### Enabling sources\n\nToggle each source on or off using the switches. You can also use the \"Enable all media\" toggle to quickly enable or disable all sources.\n\n### Max items\n\nSet a limit on the number of items per source to control the newsletter length."
+        },
+        "publicationModes": {
+          "title": "Publication modes",
+          "summary": "Understand the different publication options: draft, publish, email, or email + publish.",
+          "content": "## Publication Modes\n\nWhen generating a newsletter, you can choose how it will be published:\n\n- **Draft**: Creates a draft post in Ghost. You can review and edit before publishing.\n- **Publish**: Publishes the post immediately on your Ghost blog.\n- **Email only**: Sends the newsletter by email to your subscribers without publishing it on the blog.\n- **Email + Publish**: Both publishes the post and sends it by email to subscribers.\n\n### Recommendation\n\nStart with Draft mode to review your newsletters before publishing."
+        },
+        "preview": {
+          "title": "Preview before publishing",
+          "summary": "How to preview your newsletter before generating it.",
+          "content": "## Newsletter Preview\n\nBefore generating your newsletter, you can preview what it will look like:\n\n1. Configure all your options (sources, template, title, etc.)\n2. Click the **Preview** button\n3. A modal will open showing how your newsletter will appear\n4. Check the content and layout\n5. If satisfied, close the preview and click **Generate**\n\n### Preview vs Final\n\nThe preview shows real data fetched from your sources. The final newsletter will be identical unless the source data changes."
+        }
+      },
+      "scheduling": {
+        "createSchedule": {
+          "title": "Creating a schedule",
+          "summary": "Step-by-step guide to setting up automatic newsletter generation.",
+          "content": "## Creating a Schedule\n\nAutomate your newsletter generation by creating schedules:\n\n1. Click **Create schedule**\n2. Enter a name (e.g., \"Weekly Newsletter\")\n3. Choose the frequency (daily, weekly, or monthly)\n4. Set the time and day (for weekly/monthly)\n5. Configure the generation settings\n6. Toggle **Active** to enable the schedule\n7. Click **Save**\n\n### Next runs\n\nAfter saving, you'll see the next scheduled execution times."
+        },
+        "cronExpressions": {
+          "title": "Advanced: CRON expressions",
+          "summary": "Use CRON expressions for complex scheduling patterns.",
+          "content": "## CRON Expressions\n\nFor advanced scheduling, switch to **Advanced mode** and use CRON expressions:\n\n### Format\n\n`minute hour day-of-month month day-of-week`\n\n### Examples\n\n- `0 8 * * 1` - Every Monday at 8:00 AM\n- `0 9 1 * *` - First day of each month at 9:00 AM\n- `0 18 * * 5` - Every Friday at 6:00 PM\n- `0 0 * * *` - Every day at midnight\n\n### Tip\n\nUse the simple mode for common patterns, and CRON only when needed."
+        },
+        "manageSchedules": {
+          "title": "Managing schedules",
+          "summary": "Edit, pause, delete, or execute schedules manually.",
+          "content": "## Managing Schedules\n\n### Pause/Resume\n\nClick the toggle switch to pause or resume a schedule without deleting it.\n\n### Execute now\n\nClick **Execute now** to run a scheduled generation immediately, regardless of its scheduled time.\n\n### Edit\n\nClick the edit button to modify the schedule settings.\n\n### Delete\n\nClick delete to permanently remove a schedule. This won't affect past generations."
+        }
+      },
+      "templates": {
+        "uploadTemplate": {
+          "title": "Uploading templates",
+          "summary": "How to import HTML templates for your newsletters.",
+          "content": "## Uploading Templates\n\nGhostarr uses HTML templates to render your newsletters.\n\n### Supported formats\n\n- Single HTML file (.html, .htm)\n- ZIP archive containing HTML and assets\n\n### How to upload\n\n1. Click **Upload template**\n2. Drag and drop your file or click to browse\n3. Fill in the template name and description\n4. Optionally set as default\n5. Click **Save**\n\n### Scan folder\n\nYou can also use **Scan folder** to automatically import all templates from the configured template directory."
+        },
+        "customizeTemplate": {
+          "title": "Template variables",
+          "summary": "Available variables and placeholders you can use in templates.",
+          "content": "## Template Variables\n\nTemplates can use various placeholders that will be replaced with actual content:\n\n### Available variables\n\n- `{{title}}` - Newsletter title\n- `{{date}}` - Current date\n- `{{movies}}` - List of movies\n- `{{shows}}` - List of TV shows\n- `{{games}}` - List of games\n- `{{books}}` - List of comics/books\n- `{{audiobooks}}` - List of audiobooks\n- `{{tv_schedule}}` - TV programming\n- `{{statistics}}` - Viewing statistics\n- `{{maintenance}}` - Maintenance notice"
+        },
+        "presetConfig": {
+          "title": "Template presets",
+          "summary": "Configure default generation settings for each template.",
+          "content": "## Template Presets\n\nEach template can have its own default settings:\n\n1. Click the menu button on a template card\n2. Select **Default settings**\n3. Configure the desired options\n4. Click **Save**\n\n### How presets work\n\nWhen you select a template for generation, its preset settings are automatically loaded. You can still modify them for individual generations.\n\n### Clear settings\n\nClick **Clear settings** to remove the preset and use global defaults."
+        }
+      },
+      "troubleshooting": {
+        "connectionIssues": {
+          "title": "Connection issues",
+          "summary": "Solving problems connecting to external services.",
+          "content": "## Connection Issues\n\nIf you can't connect to a service:\n\n### Check the basics\n\n1. Verify the URL is correct and accessible\n2. Make sure the API key is valid\n3. Check if the service is running\n\n### Common problems\n\n- **Wrong URL format**: Don't include trailing slashes or API paths\n- **Invalid API key**: Regenerate the key in the service settings\n- **Network issues**: Ensure Ghostarr can reach the service (check firewalls)\n- **SSL errors**: Make sure HTTPS is properly configured\n\n### Test connection\n\nUse the **Test** button to diagnose connection issues."
+        },
+        "generationErrors": {
+          "title": "Generation errors",
+          "summary": "Common causes and solutions for newsletter generation failures.",
+          "content": "## Generation Errors\n\n### No content generated\n\nIf your newsletter is empty:\n- Check that sources are enabled and configured\n- Verify the date range includes recent content\n- Make sure services are connected\n\n### Template errors\n\n- Ensure the template syntax is valid\n- Check for missing required variables\n- Verify the template file isn't corrupted\n\n### Publishing errors\n\n- Check Ghost connection\n- Verify Ghost API permissions\n- Check Ghost storage space"
+        },
+        "commonProblems": {
+          "title": "Common problems",
+          "summary": "Solutions to frequently encountered issues.",
+          "content": "## Common Problems\n\n### Images not showing\n\n- Check that image URLs are accessible\n- Verify CORS settings if using external images\n- Ensure sufficient storage space\n\n### Wrong timezone\n\n- Configure the correct timezone in Settings > General\n- Restart Ghostarr after changing timezone\n\n### Missing translations\n\n- Some content may not be available in all languages\n- Check your language settings\n\n### Slow generation\n\n- Reduce the number of items per source\n- Check service response times\n- Consider network latency"
+        }
+      },
+      "settings": {
+        "configureServices": {
+          "title": "Configuring services",
+          "summary": "How to set up connections to Tautulli, Ghost, and other services.",
+          "content": "## Configuring Services\n\nGhostarr integrates with several external services:\n\n### Tautulli\n\n1. Enter your Tautulli URL (e.g., http://localhost:8181)\n2. Enter your API key (found in Tautulli Settings > Web Interface)\n3. Click Test, then Save\n\n### Ghost\n\n1. Enter your Ghost admin URL\n2. Create an integration in Ghost Admin > Settings > Integrations\n3. Copy the Admin API key\n4. Click Test, then Save\n\n### Other services\n\nFollow similar steps for ROMM, Komga, Audiobookshelf, and Tunarr."
+        },
+        "apiKeys": {
+          "title": "Finding API keys",
+          "summary": "Where to find API keys for each supported service.",
+          "content": "## Finding API Keys\n\n### Tautulli\n\nSettings > Web Interface > API Key\n\n### Ghost\n\nSettings > Integrations > Add custom integration > Admin API Key\n\n### TMDB\n\nCreate an account at themoviedb.org and generate an API key in your account settings.\n\n### ROMM\n\nSettings > Security > API Key (or use username/password)\n\n### Komga\n\nSettings > Users > Select user > API Key\n\n### Audiobookshelf\n\nSettings > Users > Select user > Copy API Token\n\n### Tunarr\n\nNo API key required, just the URL."
+        }
+      },
+      "history": {
+        "viewHistory": {
+          "title": "Viewing history",
+          "summary": "How to browse and filter your newsletter generation history.",
+          "content": "## Viewing History\n\nThe history page shows all past newsletter generations:\n\n### Columns\n\n- **Date**: When the generation occurred\n- **Type**: Manual or automatic\n- **Template**: Which template was used\n- **Status**: Success, failed, or cancelled\n- **Duration**: How long it took\n- **Items**: Number of items included\n\n### Filtering\n\nUse the filters to narrow down results:\n- Filter by date range\n- Filter by type (manual/automatic)\n- Filter by status\n- Filter by template"
+        },
+        "manageHistory": {
+          "title": "Managing history",
+          "summary": "Delete entries, regenerate newsletters, or view on Ghost.",
+          "content": "## Managing History\n\n### View on Ghost\n\nClick the Ghost icon to open the published newsletter in Ghost.\n\n### View details\n\nClick the details button to see generation steps and configuration.\n\n### Regenerate\n\nClick regenerate to create a new newsletter with the same settings.\n\n### Delete\n\nYou can delete entries from history only, or also delete the associated Ghost post.\n\n### Bulk actions\n\nSelect multiple entries using checkboxes, then use bulk delete options."
+        }
+      }
     }
   },
   "progress": {

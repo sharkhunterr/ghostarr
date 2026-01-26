@@ -451,6 +451,100 @@
       "gettingstartedIntro": "Nouveau sur Ghostarr ? Commencez ici pour apprendre les bases.",
       "troubleshootingTitle": "Dépannage",
       "troubleshootingIntro": "Des problèmes ? Trouvez des solutions aux problèmes courants."
+    },
+    "articles": {
+      "manualgeneration": {
+        "configureSources": {
+          "title": "Configurer les sources de contenu",
+          "summary": "Découvrez comment activer et configurer les différentes sources de contenu pour votre newsletter.",
+          "content": "## Sources de contenu\n\nGhostarr peut récupérer du contenu de plusieurs sources :\n\n- **Tautulli** : Films et séries récemment ajoutés à votre serveur multimédia\n- **ROMM** : Jeux vidéo de votre bibliothèque\n- **Komga** : BD et comics\n- **Audiobookshelf** : Livres audio\n- **Tunarr** : Programme TV\n\n### Activer les sources\n\nActivez ou désactivez chaque source avec les interrupteurs. Vous pouvez aussi utiliser \"Activer tous les médias\" pour tout activer ou désactiver rapidement.\n\n### Nombre max d'éléments\n\nDéfinissez une limite par source pour contrôler la longueur de la newsletter."
+        },
+        "publicationModes": {
+          "title": "Modes de publication",
+          "summary": "Comprendre les différentes options de publication : brouillon, publier, email ou email + publication.",
+          "content": "## Modes de publication\n\nLors de la génération d'une newsletter, vous pouvez choisir comment elle sera publiée :\n\n- **Brouillon** : Crée un brouillon dans Ghost. Vous pouvez relire et modifier avant de publier.\n- **Publier** : Publie immédiatement l'article sur votre blog Ghost.\n- **Email uniquement** : Envoie la newsletter par email aux abonnés sans la publier sur le blog.\n- **Email + Publication** : Publie l'article et l'envoie par email aux abonnés.\n\n### Recommandation\n\nCommencez en mode Brouillon pour relire vos newsletters avant publication."
+        },
+        "preview": {
+          "title": "Prévisualiser avant publication",
+          "summary": "Comment prévisualiser votre newsletter avant de la générer.",
+          "content": "## Aperçu de la newsletter\n\nAvant de générer votre newsletter, vous pouvez voir à quoi elle ressemblera :\n\n1. Configurez toutes vos options (sources, template, titre, etc.)\n2. Cliquez sur le bouton **Aperçu**\n3. Une fenêtre s'ouvrira montrant l'apparence de votre newsletter\n4. Vérifiez le contenu et la mise en page\n5. Si satisfait, fermez l'aperçu et cliquez sur **Générer**\n\n### Aperçu vs Final\n\nL'aperçu montre les vraies données récupérées de vos sources. La newsletter finale sera identique sauf si les données changent."
+        }
+      },
+      "scheduling": {
+        "createSchedule": {
+          "title": "Créer une planification",
+          "summary": "Guide étape par étape pour configurer la génération automatique de newsletters.",
+          "content": "## Créer une planification\n\nAutomatisez la génération de vos newsletters en créant des planifications :\n\n1. Cliquez sur **Créer une planification**\n2. Entrez un nom (ex: \"Newsletter hebdomadaire\")\n3. Choisissez la fréquence (quotidien, hebdomadaire ou mensuel)\n4. Définissez l'heure et le jour (pour hebdo/mensuel)\n5. Configurez les paramètres de génération\n6. Activez **Actif** pour activer la planification\n7. Cliquez sur **Enregistrer**\n\n### Prochaines exécutions\n\nAprès l'enregistrement, vous verrez les prochaines dates d'exécution prévues."
+        },
+        "cronExpressions": {
+          "title": "Avancé : expressions CRON",
+          "summary": "Utilisez les expressions CRON pour des planifications complexes.",
+          "content": "## Expressions CRON\n\nPour une planification avancée, passez en **Mode avancé** et utilisez des expressions CRON :\n\n### Format\n\n`minute heure jour-du-mois mois jour-de-la-semaine`\n\n### Exemples\n\n- `0 8 * * 1` - Chaque lundi à 8h00\n- `0 9 1 * *` - Premier jour de chaque mois à 9h00\n- `0 18 * * 5` - Chaque vendredi à 18h00\n- `0 0 * * *` - Chaque jour à minuit\n\n### Conseil\n\nUtilisez le mode simple pour les cas courants, et CRON uniquement si nécessaire."
+        },
+        "manageSchedules": {
+          "title": "Gérer les planifications",
+          "summary": "Modifier, mettre en pause, supprimer ou exécuter manuellement des planifications.",
+          "content": "## Gérer les planifications\n\n### Pause/Reprise\n\nCliquez sur l'interrupteur pour mettre en pause ou reprendre une planification sans la supprimer.\n\n### Exécuter maintenant\n\nCliquez sur **Exécuter maintenant** pour lancer une génération immédiatement, peu importe l'heure prévue.\n\n### Modifier\n\nCliquez sur le bouton modifier pour changer les paramètres de la planification.\n\n### Supprimer\n\nCliquez sur supprimer pour retirer définitivement une planification. Cela n'affecte pas les générations passées."
+        }
+      },
+      "templates": {
+        "uploadTemplate": {
+          "title": "Importer des templates",
+          "summary": "Comment importer des templates HTML pour vos newsletters.",
+          "content": "## Importer des templates\n\nGhostarr utilise des templates HTML pour générer vos newsletters.\n\n### Formats supportés\n\n- Fichier HTML simple (.html, .htm)\n- Archive ZIP contenant HTML et ressources\n\n### Comment importer\n\n1. Cliquez sur **Importer un template**\n2. Glissez-déposez votre fichier ou cliquez pour parcourir\n3. Remplissez le nom et la description du template\n4. Optionnellement, définissez-le par défaut\n5. Cliquez sur **Enregistrer**\n\n### Scanner le dossier\n\nVous pouvez aussi utiliser **Scanner le dossier** pour importer automatiquement tous les templates du répertoire configuré."
+        },
+        "customizeTemplate": {
+          "title": "Variables de template",
+          "summary": "Variables et placeholders disponibles dans les templates.",
+          "content": "## Variables de template\n\nLes templates peuvent utiliser des placeholders qui seront remplacés par le contenu réel :\n\n### Variables disponibles\n\n- `{{title}}` - Titre de la newsletter\n- `{{date}}` - Date actuelle\n- `{{movies}}` - Liste des films\n- `{{shows}}` - Liste des séries\n- `{{games}}` - Liste des jeux\n- `{{books}}` - Liste des BD/comics\n- `{{audiobooks}}` - Liste des livres audio\n- `{{tv_schedule}}` - Programme TV\n- `{{statistics}}` - Statistiques de visionnage\n- `{{maintenance}}` - Avis de maintenance"
+        },
+        "presetConfig": {
+          "title": "Paramètres par défaut des templates",
+          "summary": "Configurer les paramètres de génération par défaut pour chaque template.",
+          "content": "## Paramètres par défaut des templates\n\nChaque template peut avoir ses propres paramètres par défaut :\n\n1. Cliquez sur le menu du template\n2. Sélectionnez **Paramètres par défaut**\n3. Configurez les options souhaitées\n4. Cliquez sur **Enregistrer**\n\n### Fonctionnement des paramètres\n\nQuand vous sélectionnez un template pour une génération, ses paramètres par défaut sont automatiquement chargés. Vous pouvez toujours les modifier pour une génération spécifique.\n\n### Effacer les paramètres\n\nCliquez sur **Effacer les paramètres** pour supprimer les préréglages et utiliser les valeurs par défaut globales."
+        }
+      },
+      "troubleshooting": {
+        "connectionIssues": {
+          "title": "Problèmes de connexion",
+          "summary": "Résoudre les problèmes de connexion aux services externes.",
+          "content": "## Problèmes de connexion\n\nSi vous ne pouvez pas vous connecter à un service :\n\n### Vérifier les bases\n\n1. Vérifiez que l'URL est correcte et accessible\n2. Assurez-vous que la clé API est valide\n3. Vérifiez que le service est en cours d'exécution\n\n### Problèmes courants\n\n- **Mauvais format d'URL** : N'incluez pas de slash final ni de chemins API\n- **Clé API invalide** : Régénérez la clé dans les paramètres du service\n- **Problèmes réseau** : Vérifiez que Ghostarr peut atteindre le service (pare-feu)\n- **Erreurs SSL** : Assurez-vous que HTTPS est correctement configuré\n\n### Tester la connexion\n\nUtilisez le bouton **Tester** pour diagnostiquer les problèmes de connexion."
+        },
+        "generationErrors": {
+          "title": "Erreurs de génération",
+          "summary": "Causes courantes et solutions pour les échecs de génération de newsletters.",
+          "content": "## Erreurs de génération\n\n### Aucun contenu généré\n\nSi votre newsletter est vide :\n- Vérifiez que les sources sont activées et configurées\n- Vérifiez que la période inclut du contenu récent\n- Assurez-vous que les services sont connectés\n\n### Erreurs de template\n\n- Vérifiez que la syntaxe du template est valide\n- Vérifiez les variables requises manquantes\n- Vérifiez que le fichier template n'est pas corrompu\n\n### Erreurs de publication\n\n- Vérifiez la connexion Ghost\n- Vérifiez les permissions de l'API Ghost\n- Vérifiez l'espace de stockage Ghost"
+        },
+        "commonProblems": {
+          "title": "Problèmes courants",
+          "summary": "Solutions aux problèmes fréquemment rencontrés.",
+          "content": "## Problèmes courants\n\n### Images non affichées\n\n- Vérifiez que les URLs des images sont accessibles\n- Vérifiez les paramètres CORS si vous utilisez des images externes\n- Assurez-vous d'avoir assez d'espace de stockage\n\n### Mauvais fuseau horaire\n\n- Configurez le bon fuseau horaire dans Paramètres > Général\n- Redémarrez Ghostarr après avoir changé le fuseau horaire\n\n### Traductions manquantes\n\n- Certains contenus peuvent ne pas être disponibles dans toutes les langues\n- Vérifiez vos paramètres de langue\n\n### Génération lente\n\n- Réduisez le nombre d'éléments par source\n- Vérifiez les temps de réponse des services\n- Considérez la latence réseau"
+        }
+      },
+      "settings": {
+        "configureServices": {
+          "title": "Configurer les services",
+          "summary": "Comment configurer les connexions à Tautulli, Ghost et autres services.",
+          "content": "## Configurer les services\n\nGhostarr s'intègre avec plusieurs services externes :\n\n### Tautulli\n\n1. Entrez l'URL de Tautulli (ex: http://localhost:8181)\n2. Entrez votre clé API (trouvée dans Paramètres Tautulli > Interface Web)\n3. Cliquez sur Tester, puis Enregistrer\n\n### Ghost\n\n1. Entrez l'URL d'administration Ghost\n2. Créez une intégration dans Ghost Admin > Paramètres > Intégrations\n3. Copiez la clé API Admin\n4. Cliquez sur Tester, puis Enregistrer\n\n### Autres services\n\nSuivez des étapes similaires pour ROMM, Komga, Audiobookshelf et Tunarr."
+        },
+        "apiKeys": {
+          "title": "Trouver les clés API",
+          "summary": "Où trouver les clés API pour chaque service supporté.",
+          "content": "## Trouver les clés API\n\n### Tautulli\n\nParamètres > Interface Web > Clé API\n\n### Ghost\n\nParamètres > Intégrations > Ajouter une intégration personnalisée > Clé API Admin\n\n### TMDB\n\nCréez un compte sur themoviedb.org et générez une clé API dans les paramètres de votre compte.\n\n### ROMM\n\nParamètres > Sécurité > Clé API (ou utilisez nom d'utilisateur/mot de passe)\n\n### Komga\n\nParamètres > Utilisateurs > Sélectionner utilisateur > Clé API\n\n### Audiobookshelf\n\nParamètres > Utilisateurs > Sélectionner utilisateur > Copier le token API\n\n### Tunarr\n\nPas de clé API requise, juste l'URL."
+        }
+      },
+      "history": {
+        "viewHistory": {
+          "title": "Consulter l'historique",
+          "summary": "Comment parcourir et filtrer l'historique de vos générations de newsletters.",
+          "content": "## Consulter l'historique\n\nLa page d'historique affiche toutes les générations passées :\n\n### Colonnes\n\n- **Date** : Quand la génération a eu lieu\n- **Type** : Manuelle ou automatique\n- **Template** : Quel template a été utilisé\n- **Statut** : Réussi, échoué ou annulé\n- **Durée** : Temps de génération\n- **Éléments** : Nombre d'éléments inclus\n\n### Filtrage\n\nUtilisez les filtres pour affiner les résultats :\n- Filtrer par période\n- Filtrer par type (manuel/automatique)\n- Filtrer par statut\n- Filtrer par template"
+        },
+        "manageHistory": {
+          "title": "Gérer l'historique",
+          "summary": "Supprimer des entrées, régénérer des newsletters ou voir sur Ghost.",
+          "content": "## Gérer l'historique\n\n### Voir sur Ghost\n\nCliquez sur l'icône Ghost pour ouvrir la newsletter publiée dans Ghost.\n\n### Voir les détails\n\nCliquez sur le bouton détails pour voir les étapes de génération et la configuration.\n\n### Régénérer\n\nCliquez sur régénérer pour créer une nouvelle newsletter avec les mêmes paramètres.\n\n### Supprimer\n\nVous pouvez supprimer les entrées de l'historique uniquement, ou aussi supprimer l'article Ghost associé.\n\n### Actions groupées\n\nSélectionnez plusieurs entrées avec les cases à cocher, puis utilisez les options de suppression groupée."
+        }
+      }
     }
   },
   "progress": {

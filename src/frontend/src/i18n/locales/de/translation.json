@@ -380,6 +380,100 @@
       "gettingstartedIntro": "Neu bei Ghostarr? Beginnen Sie hier, um die Grundlagen zu lernen.",
       "troubleshootingTitle": "Fehlerbehebung",
       "troubleshootingIntro": "Probleme? Finden Sie Lösungen für häufige Probleme."
+    },
+    "articles": {
+      "manualgeneration": {
+        "configureSources": {
+          "title": "Inhaltsquellen konfigurieren",
+          "summary": "Erfahren Sie, wie Sie die verschiedenen Inhaltsquellen für Ihren Newsletter aktivieren und konfigurieren.",
+          "content": "## Inhaltsquellen\n\nGhostarr kann Inhalte aus mehreren Quellen abrufen:\n\n- **Tautulli**: Kürzlich hinzugefügte Filme und Serien auf Ihrem Medienserver\n- **ROMM**: Videospiele aus Ihrer Spielebibliothek\n- **Komga**: Comics und Bücher\n- **Audiobookshelf**: Hörbücher\n- **Tunarr**: TV-Programm\n\n### Quellen aktivieren\n\nAktivieren oder deaktivieren Sie jede Quelle mit den Schaltern. Sie können auch \"Alle Medien aktivieren\" verwenden, um alle Quellen schnell zu aktivieren oder zu deaktivieren.\n\n### Max. Elemente\n\nLegen Sie ein Limit pro Quelle fest, um die Länge des Newsletters zu steuern."
+        },
+        "publicationModes": {
+          "title": "Veröffentlichungsmodi",
+          "summary": "Verstehen Sie die verschiedenen Veröffentlichungsoptionen: Entwurf, Veröffentlichen, E-Mail oder E-Mail + Veröffentlichen.",
+          "content": "## Veröffentlichungsmodi\n\nBeim Generieren eines Newsletters können Sie wählen, wie er veröffentlicht wird:\n\n- **Entwurf**: Erstellt einen Entwurf in Ghost. Sie können ihn vor der Veröffentlichung überprüfen und bearbeiten.\n- **Veröffentlichen**: Veröffentlicht den Beitrag sofort auf Ihrem Ghost-Blog.\n- **Nur E-Mail**: Sendet den Newsletter per E-Mail an Ihre Abonnenten, ohne ihn im Blog zu veröffentlichen.\n- **E-Mail + Veröffentlichen**: Veröffentlicht den Beitrag und sendet ihn per E-Mail an die Abonnenten.\n\n### Empfehlung\n\nBeginnen Sie mit dem Entwurfsmodus, um Ihre Newsletter vor der Veröffentlichung zu überprüfen."
+        },
+        "preview": {
+          "title": "Vorschau vor dem Veröffentlichen",
+          "summary": "So sehen Sie eine Vorschau Ihres Newsletters vor der Generierung.",
+          "content": "## Newsletter-Vorschau\n\nBevor Sie Ihren Newsletter generieren, können Sie eine Vorschau sehen:\n\n1. Konfigurieren Sie alle Optionen (Quellen, Vorlage, Titel usw.)\n2. Klicken Sie auf **Vorschau**\n3. Ein Fenster zeigt, wie Ihr Newsletter aussehen wird\n4. Überprüfen Sie Inhalt und Layout\n5. Wenn zufrieden, schließen Sie die Vorschau und klicken Sie auf **Generieren**\n\n### Vorschau vs. Endversion\n\nDie Vorschau zeigt echte Daten aus Ihren Quellen. Der endgültige Newsletter wird identisch sein, es sei denn, die Quelldaten ändern sich."
+        }
+      },
+      "scheduling": {
+        "createSchedule": {
+          "title": "Einen Zeitplan erstellen",
+          "summary": "Schritt-für-Schritt-Anleitung zur Einrichtung der automatischen Newsletter-Generierung.",
+          "content": "## Einen Zeitplan erstellen\n\nAutomatisieren Sie Ihre Newsletter-Generierung durch Erstellen von Zeitplänen:\n\n1. Klicken Sie auf **Zeitplan erstellen**\n2. Geben Sie einen Namen ein (z.B. \"Wöchentlicher Newsletter\")\n3. Wählen Sie die Häufigkeit (täglich, wöchentlich oder monatlich)\n4. Legen Sie Zeit und Tag fest (für wöchentlich/monatlich)\n5. Konfigurieren Sie die Generierungseinstellungen\n6. Aktivieren Sie **Aktiv**, um den Zeitplan zu aktivieren\n7. Klicken Sie auf **Speichern**\n\n### Nächste Ausführungen\n\nNach dem Speichern sehen Sie die nächsten geplanten Ausführungszeiten."
+        },
+        "cronExpressions": {
+          "title": "Erweitert: CRON-Ausdrücke",
+          "summary": "Verwenden Sie CRON-Ausdrücke für komplexe Zeitplanungsmuster.",
+          "content": "## CRON-Ausdrücke\n\nFür erweiterte Zeitplanung wechseln Sie in den **Erweiterten Modus** und verwenden Sie CRON-Ausdrücke:\n\n### Format\n\n`Minute Stunde Tag-des-Monats Monat Wochentag`\n\n### Beispiele\n\n- `0 8 * * 1` - Jeden Montag um 8:00 Uhr\n- `0 9 1 * *` - Erster Tag jedes Monats um 9:00 Uhr\n- `0 18 * * 5` - Jeden Freitag um 18:00 Uhr\n- `0 0 * * *` - Jeden Tag um Mitternacht\n\n### Tipp\n\nVerwenden Sie den einfachen Modus für gängige Muster und CRON nur bei Bedarf."
+        },
+        "manageSchedules": {
+          "title": "Zeitpläne verwalten",
+          "summary": "Bearbeiten, pausieren, löschen oder manuell ausführen von Zeitplänen.",
+          "content": "## Zeitpläne verwalten\n\n### Pausieren/Fortsetzen\n\nKlicken Sie auf den Schalter, um einen Zeitplan zu pausieren oder fortzusetzen, ohne ihn zu löschen.\n\n### Jetzt ausführen\n\nKlicken Sie auf **Jetzt ausführen**, um eine geplante Generierung sofort zu starten, unabhängig von der geplanten Zeit.\n\n### Bearbeiten\n\nKlicken Sie auf Bearbeiten, um die Zeitplaneinstellungen zu ändern.\n\n### Löschen\n\nKlicken Sie auf Löschen, um einen Zeitplan dauerhaft zu entfernen. Dies wirkt sich nicht auf vergangene Generierungen aus."
+        }
+      },
+      "templates": {
+        "uploadTemplate": {
+          "title": "Vorlagen hochladen",
+          "summary": "So importieren Sie HTML-Vorlagen für Ihre Newsletter.",
+          "content": "## Vorlagen hochladen\n\nGhostarr verwendet HTML-Vorlagen, um Ihre Newsletter zu generieren.\n\n### Unterstützte Formate\n\n- Einzelne HTML-Datei (.html, .htm)\n- ZIP-Archiv mit HTML und Assets\n\n### So laden Sie hoch\n\n1. Klicken Sie auf **Vorlage hochladen**\n2. Ziehen Sie Ihre Datei per Drag & Drop oder klicken Sie zum Durchsuchen\n3. Geben Sie Namen und Beschreibung der Vorlage ein\n4. Optional als Standard festlegen\n5. Klicken Sie auf **Speichern**\n\n### Ordner scannen\n\nSie können auch **Ordner scannen** verwenden, um automatisch alle Vorlagen aus dem konfigurierten Verzeichnis zu importieren."
+        },
+        "customizeTemplate": {
+          "title": "Vorlagenvariablen",
+          "summary": "Verfügbare Variablen und Platzhalter, die Sie in Vorlagen verwenden können.",
+          "content": "## Vorlagenvariablen\n\nVorlagen können verschiedene Platzhalter verwenden, die durch tatsächliche Inhalte ersetzt werden:\n\n### Verfügbare Variablen\n\n- `{{title}}` - Newsletter-Titel\n- `{{date}}` - Aktuelles Datum\n- `{{movies}}` - Liste der Filme\n- `{{shows}}` - Liste der Serien\n- `{{games}}` - Liste der Spiele\n- `{{books}}` - Liste der Comics/Bücher\n- `{{audiobooks}}` - Liste der Hörbücher\n- `{{tv_schedule}}` - TV-Programm\n- `{{statistics}}` - Wiedergabestatistiken\n- `{{maintenance}}` - Wartungshinweis"
+        },
+        "presetConfig": {
+          "title": "Vorlagen-Voreinstellungen",
+          "summary": "Konfigurieren Sie Standardgenerierungseinstellungen für jede Vorlage.",
+          "content": "## Vorlagen-Voreinstellungen\n\nJede Vorlage kann eigene Standardeinstellungen haben:\n\n1. Klicken Sie auf das Menü einer Vorlagenkarte\n2. Wählen Sie **Standardeinstellungen**\n3. Konfigurieren Sie die gewünschten Optionen\n4. Klicken Sie auf **Speichern**\n\n### Wie Voreinstellungen funktionieren\n\nWenn Sie eine Vorlage für die Generierung auswählen, werden ihre Voreinstellungen automatisch geladen. Sie können sie für einzelne Generierungen noch anpassen.\n\n### Einstellungen löschen\n\nKlicken Sie auf **Einstellungen löschen**, um die Voreinstellung zu entfernen und globale Standardwerte zu verwenden."
+        }
+      },
+      "troubleshooting": {
+        "connectionIssues": {
+          "title": "Verbindungsprobleme",
+          "summary": "Lösung von Problemen bei der Verbindung zu externen Diensten.",
+          "content": "## Verbindungsprobleme\n\nWenn Sie keine Verbindung zu einem Dienst herstellen können:\n\n### Grundlagen prüfen\n\n1. Überprüfen Sie, ob die URL korrekt und erreichbar ist\n2. Stellen Sie sicher, dass der API-Schlüssel gültig ist\n3. Prüfen Sie, ob der Dienst läuft\n\n### Häufige Probleme\n\n- **Falsches URL-Format**: Keine abschließenden Schrägstriche oder API-Pfade einfügen\n- **Ungültiger API-Schlüssel**: Generieren Sie den Schlüssel in den Diensteinstellungen neu\n- **Netzwerkprobleme**: Stellen Sie sicher, dass Ghostarr den Dienst erreichen kann (Firewall prüfen)\n- **SSL-Fehler**: Stellen Sie sicher, dass HTTPS richtig konfiguriert ist\n\n### Verbindung testen\n\nVerwenden Sie die Schaltfläche **Testen**, um Verbindungsprobleme zu diagnostizieren."
+        },
+        "generationErrors": {
+          "title": "Generierungsfehler",
+          "summary": "Häufige Ursachen und Lösungen für Newsletter-Generierungsfehler.",
+          "content": "## Generierungsfehler\n\n### Kein Inhalt generiert\n\nWenn Ihr Newsletter leer ist:\n- Prüfen Sie, ob Quellen aktiviert und konfiguriert sind\n- Überprüfen Sie, ob der Zeitraum aktuelle Inhalte enthält\n- Stellen Sie sicher, dass Dienste verbunden sind\n\n### Vorlagenfehler\n\n- Stellen Sie sicher, dass die Vorlagensyntax gültig ist\n- Prüfen Sie auf fehlende erforderliche Variablen\n- Überprüfen Sie, ob die Vorlagendatei nicht beschädigt ist\n\n### Veröffentlichungsfehler\n\n- Prüfen Sie die Ghost-Verbindung\n- Überprüfen Sie die Ghost-API-Berechtigungen\n- Prüfen Sie den Ghost-Speicherplatz"
+        },
+        "commonProblems": {
+          "title": "Häufige Probleme",
+          "summary": "Lösungen für häufig auftretende Probleme.",
+          "content": "## Häufige Probleme\n\n### Bilder werden nicht angezeigt\n\n- Prüfen Sie, ob Bild-URLs erreichbar sind\n- Überprüfen Sie CORS-Einstellungen bei externen Bildern\n- Stellen Sie ausreichend Speicherplatz sicher\n\n### Falsche Zeitzone\n\n- Konfigurieren Sie die richtige Zeitzone unter Einstellungen > Allgemein\n- Starten Sie Ghostarr nach der Zeitzonenänderung neu\n\n### Fehlende Übersetzungen\n\n- Einige Inhalte sind möglicherweise nicht in allen Sprachen verfügbar\n- Überprüfen Sie Ihre Spracheinstellungen\n\n### Langsame Generierung\n\n- Reduzieren Sie die Anzahl der Elemente pro Quelle\n- Prüfen Sie die Antwortzeiten der Dienste\n- Berücksichtigen Sie die Netzwerklatenz"
+        }
+      },
+      "settings": {
+        "configureServices": {
+          "title": "Dienste konfigurieren",
+          "summary": "So richten Sie Verbindungen zu Tautulli, Ghost und anderen Diensten ein.",
+          "content": "## Dienste konfigurieren\n\nGhostarr integriert sich mit mehreren externen Diensten:\n\n### Tautulli\n\n1. Geben Sie Ihre Tautulli-URL ein (z.B. http://localhost:8181)\n2. Geben Sie Ihren API-Schlüssel ein (zu finden unter Tautulli Einstellungen > Weboberfläche)\n3. Klicken Sie auf Testen, dann Speichern\n\n### Ghost\n\n1. Geben Sie Ihre Ghost-Admin-URL ein\n2. Erstellen Sie eine Integration unter Ghost Admin > Einstellungen > Integrationen\n3. Kopieren Sie den Admin-API-Schlüssel\n4. Klicken Sie auf Testen, dann Speichern\n\n### Andere Dienste\n\nFolgen Sie ähnlichen Schritten für ROMM, Komga, Audiobookshelf und Tunarr."
+        },
+        "apiKeys": {
+          "title": "API-Schlüssel finden",
+          "summary": "Wo Sie API-Schlüssel für jeden unterstützten Dienst finden.",
+          "content": "## API-Schlüssel finden\n\n### Tautulli\n\nEinstellungen > Weboberfläche > API-Schlüssel\n\n### Ghost\n\nEinstellungen > Integrationen > Benutzerdefinierte Integration hinzufügen > Admin-API-Schlüssel\n\n### TMDB\n\nErstellen Sie ein Konto auf themoviedb.org und generieren Sie einen API-Schlüssel in Ihren Kontoeinstellungen.\n\n### ROMM\n\nEinstellungen > Sicherheit > API-Schlüssel (oder Benutzername/Passwort verwenden)\n\n### Komga\n\nEinstellungen > Benutzer > Benutzer auswählen > API-Schlüssel\n\n### Audiobookshelf\n\nEinstellungen > Benutzer > Benutzer auswählen > API-Token kopieren\n\n### Tunarr\n\nKein API-Schlüssel erforderlich, nur die URL."
+        }
+      },
+      "history": {
+        "viewHistory": {
+          "title": "Verlauf anzeigen",
+          "summary": "So durchsuchen und filtern Sie Ihren Newsletter-Generierungsverlauf.",
+          "content": "## Verlauf anzeigen\n\nDie Verlaufsseite zeigt alle vergangenen Newsletter-Generierungen:\n\n### Spalten\n\n- **Datum**: Wann die Generierung stattfand\n- **Typ**: Manuell oder automatisch\n- **Vorlage**: Welche Vorlage verwendet wurde\n- **Status**: Erfolg, fehlgeschlagen oder abgebrochen\n- **Dauer**: Wie lange es gedauert hat\n- **Elemente**: Anzahl der enthaltenen Elemente\n\n### Filtern\n\nVerwenden Sie die Filter, um die Ergebnisse einzugrenzen:\n- Nach Zeitraum filtern\n- Nach Typ filtern (manuell/automatisch)\n- Nach Status filtern\n- Nach Vorlage filtern"
+        },
+        "manageHistory": {
+          "title": "Verlauf verwalten",
+          "summary": "Einträge löschen, Newsletter neu generieren oder auf Ghost anzeigen.",
+          "content": "## Verlauf verwalten\n\n### Auf Ghost anzeigen\n\nKlicken Sie auf das Ghost-Symbol, um den veröffentlichten Newsletter in Ghost zu öffnen.\n\n### Details anzeigen\n\nKlicken Sie auf Details, um Generierungsschritte und Konfiguration zu sehen.\n\n### Neu generieren\n\nKlicken Sie auf Neu generieren, um einen neuen Newsletter mit denselben Einstellungen zu erstellen.\n\n### Löschen\n\nSie können Einträge nur aus dem Verlauf löschen oder auch den zugehörigen Ghost-Beitrag löschen.\n\n### Massenaktionen\n\nWählen Sie mehrere Einträge mit Kontrollkästchen aus und verwenden Sie dann die Massenlöschoptionen."
+        }
+      }
     }
   },
   "progress": {

@@ -1,6 +1,7 @@
 /**
  * Contextual help panel component.
  * Displays a floating help button that opens a panel with page-specific help.
+ * Uses translations for all content to support multiple languages.
  */
 
 import { useState, useMemo } from 'react';
@@ -11,11 +12,9 @@ import {
   ChevronRight,
   ArrowLeft,
   ExternalLink,
-  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useHelpArticles, useHelpArticle, type HelpArticle } from '@/api/help';
 import { cn } from '@/lib/utils';
 
 // Help category mapping for each page
@@ -34,6 +33,17 @@ interface HelpPanelProps {
   /** Additional CSS classes */
   className?: string;
 }
+
+// Article IDs for each category
+const CATEGORY_ARTICLES: Record<HelpCategory, string[]> = {
+  'getting-started': ['quickStart', 'requirements'],
+  'manual-generation': ['configureSources', 'publicationModes', 'preview'],
+  'scheduling': ['createSchedule', 'cronExpressions', 'manageSchedules'],
+  'templates': ['uploadTemplate', 'customizeTemplate', 'presetConfig'],
+  'troubleshooting': ['connectionIssues', 'generationErrors', 'commonProblems'],
+  'settings': ['configureServices', 'apiKeys'],
+  'history': ['viewHistory', 'manageHistory'],
+};
 
 // Simple markdown renderer
 function renderMarkdown(content: string): string {
@@ -60,11 +70,18 @@ function renderMarkdown(content: string): string {
     .replace(/^(?!<[huplo])(.+)$/gm, '<p class="mb-3">$1</p>');
 }
 
+interface LocalArticle {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+}
+
 function ArticleListItem({
   article,
   onClick,
 }: {
-  article: HelpArticle;
+  article: LocalArticle;
   onClick: () => void;
 }) {
   return (
@@ -86,30 +103,13 @@ function ArticleListItem({
 }
 
 function ArticleContent({
-  articleId,
+  article,
   onBack,
 }: {
-  articleId: string;
+  article: LocalArticle;
   onBack: () => void;
 }) {
   const { t } = useTranslation();
-  const { data: article, isLoading } = useHelpArticle(articleId);
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-8">
-        <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  if (!article) {
-    return (
-      <div className="text-center py-8 text-muted-foreground text-sm">
-        {t('errors.notFound')}
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-3">
@@ -135,39 +135,61 @@ function ArticleContent({
 export function HelpPanel({ category, className }: HelpPanelProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState<string | null>(null);
+  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
 
-  // Fetch articles for this category
-  const { data: articles = [], isLoading } = useHelpArticles(category);
+  // Get translated articles for this category
+  const articles = useMemo(() => {
+    const articleIds = CATEGORY_ARTICLES[category] || [];
+    const categoryKey = category.replace(/-/g, '');
+
+    return articleIds.map((id): LocalArticle => ({
+      id,
+      title: t(`help.articles.${categoryKey}.${id}.title`),
+      summary: t(`help.articles.${categoryKey}.${id}.summary`),
+      content: t(`help.articles.${categoryKey}.${id}.content`),
+    })).filter(article =>
+      // Filter out articles where translation key is returned (missing translation)
+      !article.title.startsWith('help.articles.')
+    );
+  }, [category, t]);
 
   // Also get general troubleshooting articles if not already in troubleshooting
-  const { data: troubleshootingArticles = [] } = useHelpArticles('troubleshooting');
+  const troubleshootingArticles = useMemo(() => {
+    if (category === 'troubleshooting') return [];
+
+    const articleIds = CATEGORY_ARTICLES['troubleshooting'] || [];
+    return articleIds.slice(0, 2).map((id): LocalArticle => ({
+      id: `troubleshooting-${id}`,
+      title: t(`help.articles.troubleshooting.${id}.title`),
+      summary: t(`help.articles.troubleshooting.${id}.summary`),
+      content: t(`help.articles.troubleshooting.${id}.content`),
+    })).filter(article =>
+      !article.title.startsWith('help.articles.')
+    );
+  }, [category, t]);
 
   // Combine relevant articles
   const allArticles = useMemo(() => {
-    if (category === 'troubleshooting') {
-      return articles;
-    }
-    // Show category articles first, then add some troubleshooting articles
-    const combined = [...articles];
-    // Add max 2 troubleshooting articles that aren't duplicates
-    const troubleshootingToAdd = troubleshootingArticles
-      .filter((a) => !combined.some((c) => c.id === a.id))
-      .slice(0, 2);
-    return [...combined, ...troubleshootingToAdd];
-  }, [articles, troubleshootingArticles, category]);
+    return [...articles, ...troubleshootingArticles];
+  }, [articles, troubleshootingArticles]);
+
+  // Get selected article
+  const selectedArticle = useMemo(() => {
+    if (!selectedArticleId) return null;
+    return allArticles.find(a => a.id === selectedArticleId) || null;
+  }, [selectedArticleId, allArticles]);
 
   const handleClose = () => {
     setIsOpen(false);
-    setSelectedArticle(null);
+    setSelectedArticleId(null);
   };
 
   const handleArticleClick = (articleId: string) => {
-    setSelectedArticle(articleId);
+    setSelectedArticleId(articleId);
   };
 
   const handleBack = () => {
-    setSelectedArticle(null);
+    setSelectedArticleId(null);
   };
 
   return (
@@ -203,7 +225,7 @@ export function HelpPanel({ category, className }: HelpPanelProps) {
               <div className="flex items-center gap-2">
                 <HelpCircle className="h-5 w-5 text-primary" />
                 <h3 className="font-semibold">
-                  {t(`help.contextual.${category.replace('-', '')}Title`, t('help.title'))}
+                  {t(`help.contextual.${category.replace(/-/g, '')}Title`, t('help.title'))}
                 </h3>
               </div>
               <div className="flex items-center gap-1">
@@ -232,20 +254,16 @@ export function HelpPanel({ category, className }: HelpPanelProps) {
             {/* Content */}
             <div className="p-4">
               {selectedArticle ? (
-                <ArticleContent articleId={selectedArticle} onBack={handleBack} />
+                <ArticleContent article={selectedArticle} onBack={handleBack} />
               ) : (
                 <div className="space-y-3">
                   {/* Quick intro */}
                   <p className="text-sm text-muted-foreground">
-                    {t(`help.contextual.${category.replace('-', '')}Intro`, t('help.contextual.defaultIntro'))}
+                    {t(`help.contextual.${category.replace(/-/g, '')}Intro`, t('help.contextual.defaultIntro'))}
                   </p>
 
                   {/* Articles list */}
-                  {isLoading ? (
-                    <div className="flex items-center justify-center py-8">
-                      <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
-                    </div>
-                  ) : allArticles.length === 0 ? (
+                  {allArticles.length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-4">
                       {t('help.noArticles')}
                     </p>
