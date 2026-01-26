@@ -171,7 +171,7 @@ export function HistoryTable({
               />
             </TableHead>
             <TableHead>{t('history.columns.date')}</TableHead>
-            <TableHead className="hidden sm:table-cell">{t('history.columns.type')}</TableHead>
+            <TableHead>{t('history.columns.type')}</TableHead>
             <TableHead>{t('history.columns.status')}</TableHead>
             <TableHead className="hidden md:table-cell text-right">
               {t('history.columns.items')}
@@ -200,10 +200,10 @@ export function HistoryTable({
               <TableCell className="font-medium text-xs sm:text-sm">
                 {formatDate(entry.created_at)}
               </TableCell>
-              <TableCell className="hidden sm:table-cell">
+              <TableCell>
                 <div className="flex items-center gap-1">
                   {getTypeIcon(entry.type)}
-                  <Badge variant={entry.type === 'deletion' ? 'secondary' : 'outline'}>
+                  <Badge variant={entry.type === 'deletion' ? 'secondary' : 'outline'} className="text-xs">
                     {t(`history.types.${entry.type}`)}
                   </Badge>
                 </div>
