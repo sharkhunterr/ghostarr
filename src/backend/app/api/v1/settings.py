@@ -30,6 +30,9 @@ SERVICES_WITHOUT_URL = ["tmdb"]
 # Services that support username/password authentication
 SERVICES_WITH_BASIC_AUTH = ["romm"]
 
+# Services that can work without authentication (API key is optional)
+SERVICES_WITHOUT_AUTH = ["tunarr"]
+
 
 def _mask_api_key(api_key: str | None) -> str | None:
     """Mask API key showing only last 4 characters."""
@@ -87,6 +90,9 @@ async def get_all_services(db: AsyncSession = Depends(get_db)):
                 has_basic_auth = bool(username and password_encrypted)
                 has_api_key = bool(api_key_encrypted)
                 is_configured = bool(config.get("url") and (has_basic_auth or has_api_key))
+            elif service in SERVICES_WITHOUT_AUTH:
+                # For services that can work without auth, only URL is required
+                is_configured = bool(config.get("url"))
             else:
                 is_configured = bool(config.get("url") and api_key_encrypted)
 
@@ -129,6 +135,9 @@ async def get_service_config(service: str, db: AsyncSession = Depends(get_db)):
         has_basic_auth = bool(username and password_encrypted)
         has_api_key = bool(api_key_encrypted)
         is_configured = bool(config.get("url") and (has_basic_auth or has_api_key))
+    elif service in SERVICES_WITHOUT_AUTH:
+        # For services that can work without auth, only URL is required
+        is_configured = bool(config.get("url"))
     else:
         is_configured = bool(config.get("url") and api_key_encrypted)
 
@@ -199,6 +208,9 @@ async def update_service_config(
         has_basic_auth = bool(username and new_config.get("password_encrypted"))
         has_api_key = bool(new_config["api_key_encrypted"])
         is_configured = bool(new_config["url"] and (has_basic_auth or has_api_key))
+    elif service in SERVICES_WITHOUT_AUTH:
+        # For services that can work without auth, only URL is required
+        is_configured = bool(new_config["url"])
     else:
         is_configured = bool(new_config["url"] and new_config["api_key_encrypted"])
 
@@ -254,6 +266,14 @@ async def test_service_connection(service: str, db: AsyncSession = Depends(get_d
                 service=service,
                 success=False,
                 message="Missing URL or credentials (username/password or API key)",
+            )
+    elif service in SERVICES_WITHOUT_AUTH:
+        # For services that can work without auth, only URL is required
+        if not url:
+            return ServiceTestResult(
+                service=service,
+                success=False,
+                message="Missing URL",
             )
     elif not url or not api_key:
         return ServiceTestResult(

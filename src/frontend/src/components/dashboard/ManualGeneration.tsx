@@ -320,7 +320,7 @@ export function ManualGeneration({
               <Input
                 type="number"
                 min={1}
-                max={100}
+                max={500}
                 value={config.max_total_items}
                 onChange={(e) =>
                   updateConfig('max_total_items', parseInt(e.target.value) || 20)

@@ -520,7 +520,7 @@ class NewsletterGenerator:
 
         try:
             url, api_key = await get_service_credentials(self.db, "tunarr")
-            if not url or not api_key:
+            if not url:  # Tunarr doesn't require API key
                 await self.tracker.skip_step("fetch_tunarr", "Not configured")
                 return
 

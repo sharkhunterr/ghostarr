@@ -42,12 +42,23 @@ class TunarrIntegration(BaseIntegration[ProgramItem]):
 
     SERVICE_NAME = "Tunarr"
 
+    @property
+    def is_configured(self) -> bool:
+        """Check if integration has required configuration.
+
+        Tunarr can work without authentication, so only URL is required.
+        """
+        return bool(self.url)
+
     def _get_default_headers(self) -> dict[str, str]:
-        return {
+        headers = {
             "Accept": "application/json",
-            "X-API-Key": self.api_key,
             "User-Agent": "Ghostarr/1.0",
         }
+        # Only add API key header if provided
+        if self.api_key:
+            headers["X-API-Key"] = self.api_key
+        return headers
 
     async def test_connection(self) -> tuple[bool, str, int | None]:
         """Test connection to Tunarr."""
@@ -79,12 +90,21 @@ class TunarrIntegration(BaseIntegration[ProgramItem]):
 
             channels = []
             for ch in response:
+                # Handle icon field - can be a string or a dict with 'path' key
+                icon = ch.get("icon")
+                if isinstance(icon, dict):
+                    icon_url = icon.get("path")
+                elif isinstance(icon, str):
+                    icon_url = icon
+                else:
+                    icon_url = None
+
                 channels.append(
                     TunarrChannel(
                         id=ch.get("id", ""),
                         number=ch.get("number", 0),
                         name=ch.get("name", "Unknown"),
-                        icon_url=ch.get("icon"),
+                        icon_url=icon_url,
                         group=ch.get("groupTitle"),
                     )
                 )
@@ -121,56 +141,117 @@ class TunarrIntegration(BaseIntegration[ProgramItem]):
             for ch in all_channels:
                 channel_map[ch.id] = ch.name
 
-            for channel_id in channels:
-                # Get schedule for channel
-                params = {
-                    "from": start_time.isoformat(),
-                    "to": end_time.isoformat(),
-                }
+            # First, try to get the guide/schedule data
+            # Tunarr uses Unix timestamps in milliseconds for the guide
+            start_ts = int(start_time.timestamp() * 1000)
+            end_ts = int(end_time.timestamp() * 1000)
 
+            try:
+                # Try the guide endpoint with channel filter
+                logger.info(f"Fetching guide for channels from {start_time} to {end_time}")
+                guide_response = await self._request(
+                    "GET",
+                    "/api/guide/debug",
+                )
+                logger.info(f"Guide debug response: type={type(guide_response).__name__}, keys={guide_response.keys() if isinstance(guide_response, dict) else 'N/A'}")
+                logger.info(f"Guide debug content: {str(guide_response)[:1000]}")
+            except Exception as e:
+                logger.warning(f"Guide debug failed: {e}")
+
+            for channel_id in channels:
                 try:
+                    # Use programming endpoint and extract schedule from there
+                    logger.info(f"Fetching programming for channel {channel_id}")
                     response = await self._request(
                         "GET",
-                        f"/api/channels/{channel_id}/programs",
-                        params=params,
+                        f"/api/channels/{channel_id}/programming",
                     )
 
-                    programs = response if isinstance(response, list) else response.get("programs", [])
+                    logger.info(f"Tunarr programming response: type={type(response).__name__}")
 
-                    for prog in programs:
-                        start_str = prog.get("start")
-                        stop_str = prog.get("stop")
+                    # The programming endpoint returns channel info with programs dict
+                    programs_data = response.get("programs", {}) if isinstance(response, dict) else {}
 
-                        if not start_str or not stop_str:
-                            continue
+                    # Convert dict to list
+                    if isinstance(programs_data, dict):
+                        programs = list(programs_data.values())
+                    else:
+                        programs = programs_data if isinstance(programs_data, list) else []
 
-                        try:
-                            prog_start = datetime.fromisoformat(start_str.replace("Z", "+00:00"))
-                            prog_end = datetime.fromisoformat(stop_str.replace("Z", "+00:00"))
-                        except (ValueError, TypeError):
-                            continue
+                    logger.info(f"Found {len(programs)} programs for channel {channel_id}")
 
-                        duration = int((prog_end - prog_start).total_seconds() / 60)
+                    if programs:
+                        logger.info(f"First program keys: {list(programs[0].keys())}")
 
-                        program = ProgramItem(
-                            id=prog.get("id", f"{channel_id}_{start_str}"),
-                            title=prog.get("title", "Unknown"),
-                            start_time=prog_start,
-                            end_time=prog_end,
-                            duration=duration,
-                            channel_id=channel_id,
-                            channel_name=channel_map.get(channel_id, "Unknown"),
-                            description=prog.get("description"),
-                            thumbnail_url=prog.get("icon"),
-                            type=prog.get("type", "program"),
-                        )
-                        items.append(program)
+                    # Calculate total cycle duration (sum of all program durations)
+                    cycle_duration_ms = sum(p.get("duration", 0) for p in programs)
+                    if cycle_duration_ms == 0:
+                        continue
 
-                        if max_items != -1 and len(items) >= max_items:
-                            return items
+                    logger.info(f"Channel {channel_id} cycle duration: {cycle_duration_ms / 1000 / 60 / 60:.1f} hours")
+
+                    # Loop through the schedule, repeating programs until we fill the time range
+                    current_time = start_time
+                    iteration = 0
+                    max_iterations = 100  # Safety limit
+
+                    while current_time < end_time and iteration < max_iterations:
+                        iteration += 1
+
+                        for prog in programs:
+                            # Get duration in milliseconds
+                            duration_ms = prog.get("duration", 0)
+                            if not duration_ms:
+                                continue
+
+                            # Calculate start and end times based on current position
+                            prog_start = current_time
+                            duration = int(duration_ms / 1000 / 60)  # Convert ms to minutes
+                            prog_end = prog_start + timedelta(milliseconds=duration_ms)
+
+                            # Move current time forward
+                            current_time = prog_end
+
+                            # Skip programs that end before our start time
+                            if prog_end < start_time:
+                                continue
+
+                            # Stop if we've passed the end time
+                            if prog_start > end_time:
+                                break
+
+                            # Handle icon field - can be a string or a dict with 'path' key
+                            icon = prog.get("icon") or prog.get("thumbnail")
+                            if isinstance(icon, dict):
+                                thumbnail_url = icon.get("path")
+                            elif isinstance(icon, str):
+                                thumbnail_url = icon
+                            else:
+                                thumbnail_url = None
+
+                            program = ProgramItem(
+                                id=f"{prog.get('id') or prog.get('uniqueId', 'prog')}_{iteration}_{prog_start.timestamp()}",
+                                title=prog.get("title") or prog.get("name", "Unknown"),
+                                start_time=prog_start,
+                                end_time=prog_end,
+                                duration=duration,
+                                channel_id=channel_id,
+                                channel_name=channel_map.get(channel_id, "Unknown"),
+                                description=prog.get("summary") or prog.get("description"),
+                                thumbnail_url=thumbnail_url,
+                                type=prog.get("subtype") or prog.get("type", "program"),
+                            )
+                            items.append(program)
+
+                            if max_items != -1 and len(items) >= max_items:
+                                return items
+
+                        # Check if we've passed the end time after completing a cycle
+                        if current_time >= end_time:
+                            break
 
                 except Exception as e:
-                    logger.warning(f"Failed to fetch schedule for channel {channel_id}: {e}")
+                    logger.warning(f"Failed to fetch schedule for channel {channel_id}: {type(e).__name__}: {e}")
 
         except Exception as e:
             logger.error(f"Failed to fetch Tunarr data: {e}")

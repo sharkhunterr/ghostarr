@@ -61,7 +61,8 @@ async def get_tunarr_channels(db: AsyncSession = Depends(get_db)):
     """Get available channels from Tunarr."""
     url, api_key = await _get_service_credentials(db, "tunarr")
 
-    if not url or not api_key:
+    # Tunarr can work without API key, only URL is required
+    if not url:
         raise HTTPException(status_code=400, detail="Tunarr not configured")
 
     try:
