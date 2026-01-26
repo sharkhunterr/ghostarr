@@ -231,7 +231,9 @@
       "selected": "{{count}} item(s) selected",
       "clearSelection": "Clear selection",
       "deleteHistory": "Delete from history",
+      "deleteHistoryShort": "History",
       "deleteWithGhost": "Delete with Ghost",
+      "deleteWithGhostShort": "+ Ghost",
       "deleteConfirm": {
         "title": "Delete selected entries",
         "message": "Are you sure you want to delete {{count}} history entry(ies)? This action cannot be undone."
@@ -464,6 +466,11 @@
           "summary": "Understand the different publication options: draft, publish, email, or email + publish.",
           "content": "## Publication Modes\n\nWhen generating a newsletter, you can choose how it will be published:\n\n- **Draft**: Creates a draft post in Ghost. You can review and edit before publishing.\n- **Publish**: Publishes the post immediately on your Ghost blog.\n- **Email only**: Sends the newsletter by email to your subscribers without publishing it on the blog.\n- **Email + Publish**: Both publishes the post and sends it by email to subscribers.\n\n### Recommendation\n\nStart with Draft mode to review your newsletters before publishing."
         },
+        "titleVariables": {
+          "title": "Newsletter title variables",
+          "summary": "Available variables you can use in the newsletter title.",
+          "content": "## Title Variables\n\nYou can use dynamic variables in your newsletter title that will be replaced with actual values at generation time.\n\n### Available variables\n\n- `{{date.week}}` - Current week number (1-52)\n- `{{date.year}}` - Current year (e.g., 2025)\n- `{{date.month}}` - Current month number (1-12)\n- `{{date.day}}` - Current day of month (1-31)\n\n### Examples\n\n- `Newsletter Week {{date.week}}` → \"Newsletter Week 4\"\n- `Media Update {{date.week}}/{{date.year}}` → \"Media Update 4/2025\"\n- `Weekly Digest - W{{date.week}} {{date.year}}` → \"Weekly Digest - W4 2025\"\n\n### Usage\n\nSimply type the variable in your title field. The variables work in both manual and scheduled generations."
+        },
         "preview": {
           "title": "Preview before publishing",
           "summary": "How to preview your newsletter before generating it.",
@@ -475,6 +482,11 @@
           "title": "Creating a schedule",
           "summary": "Step-by-step guide to setting up automatic newsletter generation.",
           "content": "## Creating a Schedule\n\nAutomate your newsletter generation by creating schedules:\n\n1. Click **Create schedule**\n2. Enter a name (e.g., \"Weekly Newsletter\")\n3. Choose the frequency (daily, weekly, or monthly)\n4. Set the time and day (for weekly/monthly)\n5. Configure the generation settings\n6. Toggle **Active** to enable the schedule\n7. Click **Save**\n\n### Next runs\n\nAfter saving, you'll see the next scheduled execution times."
+        },
+        "titleVariables": {
+          "title": "Newsletter title variables",
+          "summary": "Available variables you can use in the newsletter title.",
+          "content": "## Title Variables\n\nYou can use dynamic variables in your newsletter title that will be replaced with actual values at generation time.\n\n### Available variables\n\n- `{{date.week}}` - Current week number (1-52)\n- `{{date.year}}` - Current year (e.g., 2025)\n- `{{date.month}}` - Current month number (1-12)\n- `{{date.day}}` - Current day of month (1-31)\n\n### Examples\n\n- `Newsletter Week {{date.week}}` → \"Newsletter Week 4\"\n- `Media Update {{date.week}}/{{date.year}}` → \"Media Update 4/2025\"\n- `Weekly Digest - W{{date.week}} {{date.year}}` → \"Weekly Digest - W4 2025\"\n\n### Usage\n\nSimply type the variable in your title field. The variables work in both manual and scheduled generations."
         },
         "cronExpressions": {
           "title": "Advanced: CRON expressions",

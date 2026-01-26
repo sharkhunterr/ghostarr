@@ -231,7 +231,9 @@
       "selected": "{{count}} élément(s) sélectionné(s)",
       "clearSelection": "Désélectionner",
       "deleteHistory": "Supprimer de l'historique",
+      "deleteHistoryShort": "Historique",
       "deleteWithGhost": "Supprimer avec Ghost",
+      "deleteWithGhostShort": "+ Ghost",
       "deleteConfirm": {
         "title": "Supprimer les entrées sélectionnées",
         "message": "Êtes-vous sûr de vouloir supprimer {{count}} entrée(s) de l'historique ? Cette action est irréversible."
@@ -464,6 +466,11 @@
           "summary": "Comprendre les différentes options de publication : brouillon, publier, email ou email + publication.",
           "content": "## Modes de publication\n\nLors de la génération d'une newsletter, vous pouvez choisir comment elle sera publiée :\n\n- **Brouillon** : Crée un brouillon dans Ghost. Vous pouvez relire et modifier avant de publier.\n- **Publier** : Publie immédiatement l'article sur votre blog Ghost.\n- **Email uniquement** : Envoie la newsletter par email aux abonnés sans la publier sur le blog.\n- **Email + Publication** : Publie l'article et l'envoie par email aux abonnés.\n\n### Recommandation\n\nCommencez en mode Brouillon pour relire vos newsletters avant publication."
         },
+        "titleVariables": {
+          "title": "Variables du titre",
+          "summary": "Variables disponibles pour le titre de la newsletter.",
+          "content": "## Variables du titre\n\nVous pouvez utiliser des variables dynamiques dans le titre de votre newsletter qui seront remplacées par les valeurs réelles au moment de la génération.\n\n### Variables disponibles\n\n- `{{date.week}}` - Numéro de la semaine (1-52)\n- `{{date.year}}` - Année en cours (ex: 2025)\n- `{{date.month}}` - Numéro du mois (1-12)\n- `{{date.day}}` - Jour du mois (1-31)\n\n### Exemples\n\n- `Newsletter Semaine {{date.week}}` → \"Newsletter Semaine 4\"\n- `Actu Médias {{date.week}}/{{date.year}}` → \"Actu Médias 4/2025\"\n- `Digest Hebdo - S{{date.week}} {{date.year}}` → \"Digest Hebdo - S4 2025\"\n\n### Utilisation\n\nTapez simplement la variable dans le champ titre. Les variables fonctionnent en génération manuelle comme planifiée."
+        },
         "preview": {
           "title": "Prévisualiser avant publication",
           "summary": "Comment prévisualiser votre newsletter avant de la générer.",
@@ -475,6 +482,11 @@
           "title": "Créer une planification",
           "summary": "Guide étape par étape pour configurer la génération automatique de newsletters.",
           "content": "## Créer une planification\n\nAutomatisez la génération de vos newsletters en créant des planifications :\n\n1. Cliquez sur **Créer une planification**\n2. Entrez un nom (ex: \"Newsletter hebdomadaire\")\n3. Choisissez la fréquence (quotidien, hebdomadaire ou mensuel)\n4. Définissez l'heure et le jour (pour hebdo/mensuel)\n5. Configurez les paramètres de génération\n6. Activez **Actif** pour activer la planification\n7. Cliquez sur **Enregistrer**\n\n### Prochaines exécutions\n\nAprès l'enregistrement, vous verrez les prochaines dates d'exécution prévues."
+        },
+        "titleVariables": {
+          "title": "Variables du titre",
+          "summary": "Variables disponibles pour le titre de la newsletter.",
+          "content": "## Variables du titre\n\nVous pouvez utiliser des variables dynamiques dans le titre de votre newsletter qui seront remplacées par les valeurs réelles au moment de la génération.\n\n### Variables disponibles\n\n- `{{date.week}}` - Numéro de la semaine (1-52)\n- `{{date.year}}` - Année en cours (ex: 2025)\n- `{{date.month}}` - Numéro du mois (1-12)\n- `{{date.day}}` - Jour du mois (1-31)\n\n### Exemples\n\n- `Newsletter Semaine {{date.week}}` → \"Newsletter Semaine 4\"\n- `Actu Médias {{date.week}}/{{date.year}}` → \"Actu Médias 4/2025\"\n- `Digest Hebdo - S{{date.week}} {{date.year}}` → \"Digest Hebdo - S4 2025\"\n\n### Utilisation\n\nTapez simplement la variable dans le champ titre. Les variables fonctionnent en génération manuelle comme planifiée."
         },
         "cronExpressions": {
           "title": "Avancé : expressions CRON",

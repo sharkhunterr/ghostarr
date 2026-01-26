@@ -211,6 +211,36 @@
     "progressModal": {
       "title": "Generierungsdetails",
       "noSteps": "Keine Schrittinformationen verfügbar"
+    },
+    "config": {
+      "title": "Generierungsparameter",
+      "publicationMode": "Veröffentlichungsmodus",
+      "sources": "Aktive Quellen",
+      "days": "Tage",
+      "maxItems": "Max Elemente",
+      "featuredItem": "Hervorgehobenes Element",
+      "statistics": "Statistiken",
+      "comparison": "Vergleich",
+      "maintenance": "Wartung",
+      "maxTotalItems": "Max Gesamt"
+    },
+    "bulk": {
+      "selectAll": "Alle auswählen",
+      "selectRow": "Diese Zeile auswählen",
+      "selected": "{{count}} Element(e) ausgewählt",
+      "clearSelection": "Auswahl aufheben",
+      "deleteHistory": "Aus Verlauf löschen",
+      "deleteHistoryShort": "Verlauf",
+      "deleteWithGhost": "Mit Ghost löschen",
+      "deleteWithGhostShort": "+ Ghost",
+      "deleteConfirm": {
+        "title": "Ausgewählte Einträge löschen",
+        "message": "Sind Sie sicher, dass Sie {{count}} Verlaufseinträge löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+      },
+      "deleteWithGhostConfirm": {
+        "title": "Mit Ghost-Beiträgen löschen",
+        "message": "Sind Sie sicher, dass Sie {{count}} Verlaufseinträge und {{ghostCount}} zugehörige Ghost-Beiträge löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden."
+      }
     }
   },
   "templates": {
@@ -393,6 +423,11 @@
           "summary": "Verstehen Sie die verschiedenen Veröffentlichungsoptionen: Entwurf, Veröffentlichen, E-Mail oder E-Mail + Veröffentlichen.",
           "content": "## Veröffentlichungsmodi\n\nBeim Generieren eines Newsletters können Sie wählen, wie er veröffentlicht wird:\n\n- **Entwurf**: Erstellt einen Entwurf in Ghost. Sie können ihn vor der Veröffentlichung überprüfen und bearbeiten.\n- **Veröffentlichen**: Veröffentlicht den Beitrag sofort auf Ihrem Ghost-Blog.\n- **Nur E-Mail**: Sendet den Newsletter per E-Mail an Ihre Abonnenten, ohne ihn im Blog zu veröffentlichen.\n- **E-Mail + Veröffentlichen**: Veröffentlicht den Beitrag und sendet ihn per E-Mail an die Abonnenten.\n\n### Empfehlung\n\nBeginnen Sie mit dem Entwurfsmodus, um Ihre Newsletter vor der Veröffentlichung zu überprüfen."
         },
+        "titleVariables": {
+          "title": "Titel-Variablen",
+          "summary": "Verfügbare Variablen für den Newsletter-Titel.",
+          "content": "## Titel-Variablen\n\nSie können dynamische Variablen im Titel Ihres Newsletters verwenden, die bei der Generierung durch die tatsächlichen Werte ersetzt werden.\n\n### Verfügbare Variablen\n\n- `{{date.week}}` - Aktuelle Kalenderwoche (1-52)\n- `{{date.year}}` - Aktuelles Jahr (z.B. 2025)\n- `{{date.month}}` - Aktueller Monat (1-12)\n- `{{date.day}}` - Aktueller Tag des Monats (1-31)\n\n### Beispiele\n\n- `Newsletter Woche {{date.week}}` → \"Newsletter Woche 4\"\n- `Medien-Update {{date.week}}/{{date.year}}` → \"Medien-Update 4/2025\"\n- `Wöchentlicher Digest - KW{{date.week}} {{date.year}}` → \"Wöchentlicher Digest - KW4 2025\"\n\n### Verwendung\n\nGeben Sie die Variable einfach in das Titelfeld ein. Die Variablen funktionieren sowohl bei manueller als auch bei geplanter Generierung."
+        },
         "preview": {
           "title": "Vorschau vor dem Veröffentlichen",
           "summary": "So sehen Sie eine Vorschau Ihres Newsletters vor der Generierung.",
@@ -404,6 +439,11 @@
           "title": "Einen Zeitplan erstellen",
           "summary": "Schritt-für-Schritt-Anleitung zur Einrichtung der automatischen Newsletter-Generierung.",
           "content": "## Einen Zeitplan erstellen\n\nAutomatisieren Sie Ihre Newsletter-Generierung durch Erstellen von Zeitplänen:\n\n1. Klicken Sie auf **Zeitplan erstellen**\n2. Geben Sie einen Namen ein (z.B. \"Wöchentlicher Newsletter\")\n3. Wählen Sie die Häufigkeit (täglich, wöchentlich oder monatlich)\n4. Legen Sie Zeit und Tag fest (für wöchentlich/monatlich)\n5. Konfigurieren Sie die Generierungseinstellungen\n6. Aktivieren Sie **Aktiv**, um den Zeitplan zu aktivieren\n7. Klicken Sie auf **Speichern**\n\n### Nächste Ausführungen\n\nNach dem Speichern sehen Sie die nächsten geplanten Ausführungszeiten."
+        },
+        "titleVariables": {
+          "title": "Titel-Variablen",
+          "summary": "Verfügbare Variablen für den Newsletter-Titel.",
+          "content": "## Titel-Variablen\n\nSie können dynamische Variablen im Titel Ihres Newsletters verwenden, die bei der Generierung durch die tatsächlichen Werte ersetzt werden.\n\n### Verfügbare Variablen\n\n- `{{date.week}}` - Aktuelle Kalenderwoche (1-52)\n- `{{date.year}}` - Aktuelles Jahr (z.B. 2025)\n- `{{date.month}}` - Aktueller Monat (1-12)\n- `{{date.day}}` - Aktueller Tag des Monats (1-31)\n\n### Beispiele\n\n- `Newsletter Woche {{date.week}}` → \"Newsletter Woche 4\"\n- `Medien-Update {{date.week}}/{{date.year}}` → \"Medien-Update 4/2025\"\n- `Wöchentlicher Digest - KW{{date.week}} {{date.year}}` → \"Wöchentlicher Digest - KW4 2025\"\n\n### Verwendung\n\nGeben Sie die Variable einfach in das Titelfeld ein. Die Variablen funktionieren sowohl bei manueller als auch bei geplanter Generierung."
         },
         "cronExpressions": {
           "title": "Erweitert: CRON-Ausdrücke",

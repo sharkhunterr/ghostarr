@@ -211,6 +211,36 @@
     "progressModal": {
       "title": "Dettagli generazione",
       "noSteps": "Nessuna informazione sui passaggi disponibile"
+    },
+    "config": {
+      "title": "Parametri di generazione",
+      "publicationMode": "Modalità di pubblicazione",
+      "sources": "Fonti attive",
+      "days": "giorni",
+      "maxItems": "Max elementi",
+      "featuredItem": "Elemento in evidenza",
+      "statistics": "Statistiche",
+      "comparison": "confronto",
+      "maintenance": "Manutenzione",
+      "maxTotalItems": "Max totale"
+    },
+    "bulk": {
+      "selectAll": "Seleziona tutto",
+      "selectRow": "Seleziona questa riga",
+      "selected": "{{count}} elemento(i) selezionato(i)",
+      "clearSelection": "Cancella selezione",
+      "deleteHistory": "Elimina dalla cronologia",
+      "deleteHistoryShort": "Cronologia",
+      "deleteWithGhost": "Elimina con Ghost",
+      "deleteWithGhostShort": "+ Ghost",
+      "deleteConfirm": {
+        "title": "Elimina voci selezionate",
+        "message": "Sei sicuro di voler eliminare {{count}} voce(i) dalla cronologia? Questa azione non può essere annullata."
+      },
+      "deleteWithGhostConfirm": {
+        "title": "Elimina con post Ghost",
+        "message": "Sei sicuro di voler eliminare {{count}} voce(i) dalla cronologia e {{ghostCount}} post Ghost associato(i)? Questa azione non può essere annullata."
+      }
     }
   },
   "templates": {
@@ -393,6 +423,11 @@
           "summary": "Comprendi le diverse opzioni di pubblicazione: bozza, pubblica, email o email + pubblica.",
           "content": "## Modalità di pubblicazione\n\nQuando generi una newsletter, puoi scegliere come verrà pubblicata:\n\n- **Bozza**: Crea una bozza in Ghost. Puoi rivedere e modificare prima di pubblicare.\n- **Pubblica**: Pubblica immediatamente il post sul tuo blog Ghost.\n- **Solo email**: Invia la newsletter via email agli iscritti senza pubblicarla sul blog.\n- **Email + Pubblica**: Pubblica il post e lo invia via email agli iscritti.\n\n### Raccomandazione\n\nInizia con la modalità Bozza per rivedere le tue newsletter prima della pubblicazione."
         },
+        "titleVariables": {
+          "title": "Variabili del titolo",
+          "summary": "Variabili disponibili per il titolo della newsletter.",
+          "content": "## Variabili del titolo\n\nPuoi usare variabili dinamiche nel titolo della tua newsletter che verranno sostituite con i valori reali al momento della generazione.\n\n### Variabili disponibili\n\n- `{{date.week}}` - Numero della settimana corrente (1-52)\n- `{{date.year}}` - Anno corrente (es: 2025)\n- `{{date.month}}` - Numero del mese corrente (1-12)\n- `{{date.day}}` - Giorno del mese corrente (1-31)\n\n### Esempi\n\n- `Newsletter Settimana {{date.week}}` → \"Newsletter Settimana 4\"\n- `Aggiornamento Media {{date.week}}/{{date.year}}` → \"Aggiornamento Media 4/2025\"\n- `Digest Settimanale - S{{date.week}} {{date.year}}` → \"Digest Settimanale - S4 2025\"\n\n### Utilizzo\n\nScrivi semplicemente la variabile nel campo del titolo. Le variabili funzionano sia nella generazione manuale che programmata."
+        },
         "preview": {
           "title": "Anteprima prima della pubblicazione",
           "summary": "Come visualizzare l'anteprima della newsletter prima di generarla.",
@@ -404,6 +439,11 @@
           "title": "Creare una pianificazione",
           "summary": "Guida passo passo per configurare la generazione automatica di newsletter.",
           "content": "## Creare una pianificazione\n\nAutomatizza la generazione delle tue newsletter creando pianificazioni:\n\n1. Clicca su **Crea pianificazione**\n2. Inserisci un nome (es. \"Newsletter settimanale\")\n3. Scegli la frequenza (giornaliera, settimanale o mensile)\n4. Imposta l'ora e il giorno (per settimanale/mensile)\n5. Configura le impostazioni di generazione\n6. Attiva **Attivo** per abilitare la pianificazione\n7. Clicca su **Salva**\n\n### Prossime esecuzioni\n\nDopo il salvataggio, vedrai le prossime date di esecuzione programmate."
+        },
+        "titleVariables": {
+          "title": "Variabili del titolo",
+          "summary": "Variabili disponibili per il titolo della newsletter.",
+          "content": "## Variabili del titolo\n\nPuoi usare variabili dinamiche nel titolo della tua newsletter che verranno sostituite con i valori reali al momento della generazione.\n\n### Variabili disponibili\n\n- `{{date.week}}` - Numero della settimana corrente (1-52)\n- `{{date.year}}` - Anno corrente (es: 2025)\n- `{{date.month}}` - Numero del mese corrente (1-12)\n- `{{date.day}}` - Giorno del mese corrente (1-31)\n\n### Esempi\n\n- `Newsletter Settimana {{date.week}}` → \"Newsletter Settimana 4\"\n- `Aggiornamento Media {{date.week}}/{{date.year}}` → \"Aggiornamento Media 4/2025\"\n- `Digest Settimanale - S{{date.week}} {{date.year}}` → \"Digest Settimanale - S4 2025\"\n\n### Utilizzo\n\nScrivi semplicemente la variabile nel campo del titolo. Le variabili funzionano sia nella generazione manuale che programmata."
         },
         "cronExpressions": {
           "title": "Avanzato: espressioni CRON",

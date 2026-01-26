@@ -8,7 +8,6 @@ import {
   Monitor,
   Tablet,
   Smartphone,
-  X,
   Loader2,
   AlertCircle,
 } from 'lucide-react';
@@ -18,7 +17,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useTemplatePreview } from '@/api/templates';
 import { cn } from '@/lib/utils';
@@ -73,32 +71,22 @@ export function TemplatePreview({
             {templateName || t('templates.preview.title')}
           </DialogTitle>
 
-          <div className="flex items-center gap-4">
-            {/* Viewport toggles */}
-            <ToggleGroup
-              type="single"
-              value={viewport}
-              onValueChange={(value: Viewport) => value && setViewport(value)}
-            >
-              <ToggleGroupItem value="mobile" aria-label={t('templates.preview.mobile')}>
-                <Smartphone className="h-4 w-4" />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="tablet" aria-label={t('templates.preview.tablet')}>
-                <Tablet className="h-4 w-4" />
-              </ToggleGroupItem>
-              <ToggleGroupItem value="desktop" aria-label={t('templates.preview.desktop')}>
-                <Monitor className="h-4 w-4" />
-              </ToggleGroupItem>
-            </ToggleGroup>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => onOpenChange(false)}
-            >
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          {/* Viewport toggles */}
+          <ToggleGroup
+            type="single"
+            value={viewport}
+            onValueChange={(value: Viewport) => value && setViewport(value)}
+          >
+            <ToggleGroupItem value="mobile" aria-label={t('templates.preview.mobile')}>
+              <Smartphone className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="tablet" aria-label={t('templates.preview.tablet')}>
+              <Tablet className="h-4 w-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="desktop" aria-label={t('templates.preview.desktop')}>
+              <Monitor className="h-4 w-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
         </DialogHeader>
 
         {/* Preview content */}

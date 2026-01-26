@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Download, Trash2, X } from 'lucide-react';
+import { Download, Ghost, Trash2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -234,11 +234,12 @@ export default function History() {
               <span className="hidden sm:inline">{t('history.bulk.clearSelection')}</span>
             </Button>
             <Button
-              variant="destructive"
+              variant="outline"
               size="sm"
               onClick={handleBulkDelete}
             >
-              <Trash2 className="h-4 w-4 sm:mr-2" />
+              <Trash2 className="h-4 w-4 mr-1 sm:mr-2" />
+              <span className="sm:hidden">{t('history.bulk.deleteHistoryShort')}</span>
               <span className="hidden sm:inline">{t('history.bulk.deleteHistory')}</span>
             </Button>
             {selectedWithGhost > 0 && (
@@ -247,7 +248,8 @@ export default function History() {
                 size="sm"
                 onClick={handleBulkDeleteWithGhost}
               >
-                <Trash2 className="h-4 w-4 sm:mr-2" />
+                <Ghost className="h-4 w-4 mr-1 sm:mr-2" />
+                <span className="sm:hidden">{t('history.bulk.deleteWithGhostShort')}</span>
                 <span className="hidden sm:inline">{t('history.bulk.deleteWithGhost')}</span>
               </Button>
             )}

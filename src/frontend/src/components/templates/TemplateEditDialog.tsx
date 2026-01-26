@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Save, Loader2 } from 'lucide-react';
+import { Save, Loader2, Tag } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -16,12 +16,25 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useUpdateTemplate } from '@/api/templates';
 import { LabelSelector } from './LabelSelector';
 import type { Template, GenerationConfig, Label as LabelType } from '@/types';
+
+/**
+ * Calculate contrasting text color (black or white) based on background color.
+ */
+function getContrastColor(hexColor: string): string {
+  const hex = hexColor.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return luminance > 0.5 ? '#000000' : '#ffffff';
+}
 
 interface TemplateEditDialogProps {
   open: boolean;
@@ -126,13 +139,33 @@ export function TemplateEditDialog({
 
             {/* Labels */}
             {template && (
-              <div className="space-y-2">
-                <Label>{t('labels.selector.title')}</Label>
-                <LabelSelector
-                  templateId={template.id}
-                  selectedLabels={currentLabels}
-                  onLabelsChange={setCurrentLabels}
-                />
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="flex items-center gap-2">
+                    <Tag className="h-4 w-4 text-muted-foreground" />
+                    {t('labels.selector.title')}
+                  </Label>
+                  <LabelSelector
+                    templateId={template.id}
+                    selectedLabels={currentLabels}
+                    onLabelsChange={setCurrentLabels}
+                  />
+                </div>
+                {currentLabels.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 p-2 bg-muted/30 rounded-md">
+                    {currentLabels.map((label) => (
+                      <Badge
+                        key={label.id}
+                        style={{
+                          backgroundColor: label.color,
+                          color: getContrastColor(label.color),
+                        }}
+                      >
+                        {label.name}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
 

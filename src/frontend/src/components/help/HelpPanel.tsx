@@ -37,8 +37,8 @@ interface HelpPanelProps {
 // Article IDs for each category
 const CATEGORY_ARTICLES: Record<HelpCategory, string[]> = {
   'getting-started': ['quickStart', 'requirements'],
-  'manual-generation': ['configureSources', 'publicationModes', 'preview'],
-  'scheduling': ['createSchedule', 'cronExpressions', 'manageSchedules'],
+  'manual-generation': ['configureSources', 'publicationModes', 'titleVariables', 'preview'],
+  'scheduling': ['createSchedule', 'cronExpressions', 'titleVariables', 'manageSchedules'],
   'templates': ['uploadTemplate', 'customizeTemplate', 'presetConfig'],
   'troubleshooting': ['connectionIssues', 'generationErrors', 'commonProblems'],
   'settings': ['configureServices', 'apiKeys'],
