@@ -308,7 +308,48 @@
         "help": "Cuando está activado, las acciones de eliminación (manuales o programadas) se registrarán en el historial"
       },
       "export": "Exportar configuración",
-      "import": "Importar configuración"
+      "import": "Importar configuración",
+      "exportImportHelp": "Exporta o importa tu configuración de Ghostarr incluyendo las credenciales de los servicios"
+    },
+    "export": {
+      "title": "Exportar configuración",
+      "description": "Selecciona qué incluir en la exportación",
+      "options": {
+        "preferences": "Preferencias",
+        "preferencesDesc": "Zona horaria y configuración de visualización",
+        "retention": "Retención de datos",
+        "retentionDesc": "Configuración de retención de historial y registros",
+        "deletionLogging": "Registro de eliminaciones",
+        "deletionLoggingDesc": "Configuración del registro de eliminaciones",
+        "services": "Servicios",
+        "servicesDesc": "URLs de servicios y claves API"
+      },
+      "servicesWarning": "Advertencia: La exportación contendrá tus claves API y contraseñas en texto plano. Guarda este archivo de forma segura."
+    },
+    "import": {
+      "title": "Importar configuración",
+      "description": "Selecciona un archivo de configuración para importar",
+      "selectFile": "Seleccionar archivo...",
+      "options": {
+        "preferences": "Preferencias",
+        "preferencesDesc": "Zona horaria y configuración de visualización",
+        "retention": "Retención de datos",
+        "retentionDesc": "Configuración de retención de historial y registros",
+        "deletionLogging": "Registro de eliminaciones",
+        "deletionLoggingDesc": "Configuración del registro de eliminaciones",
+        "services": "Servicios",
+        "servicesDesc": "URLs de servicios y claves API"
+      },
+      "servicesWarning": "Advertencia: Esto sobrescribirá tus configuraciones de servicios existentes.",
+      "errors": {
+        "invalidFormat": "Formato de archivo inválido. Por favor selecciona un archivo de configuración de Ghostarr válido.",
+        "parseError": "No se puede leer el archivo. Verifica que sea un archivo JSON válido.",
+        "noData": "No se encontraron datos importables en este archivo."
+      },
+      "results": {
+        "title": "Resultados de la importación",
+        "services": "{{count}} servicio(s) importado(s)"
+      }
     },
     "services": {
       "title": "Servicios externos",

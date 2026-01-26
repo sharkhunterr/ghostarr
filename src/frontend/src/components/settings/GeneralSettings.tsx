@@ -25,6 +25,8 @@ import {
   useUpdateDeletionLoggingSettings,
 } from '@/api/settings';
 import { usePreferencesStore } from '@/stores/preferencesStore';
+import { ExportConfigDialog } from './ExportConfigDialog';
+import { ImportConfigDialog } from './ImportConfigDialog';
 
 // Common timezones grouped by region
 const TIMEZONES = [
@@ -62,6 +64,8 @@ export function GeneralSettings() {
   const [historyDays, setHistoryDays] = useState(90);
   const [logsDays, setLogsDays] = useState(30);
   const [logDeletions, setLogDeletions] = useState(true);
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   // Sync with API data
   useEffect(() => {
@@ -115,68 +119,12 @@ export function GeneralSettings() {
     }
   };
 
-  const handleExportConfig = async () => {
-    try {
-      const config = {
-        preferences: preferences,
-        retention: retention,
-        deletionLogging: deletionLogging,
-        exportedAt: new Date().toISOString(),
-        version: '1.1',
-      };
-      const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `ghostarr-config-${new Date().toISOString().split('T')[0]}.json`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Failed to export config:', error);
+  const handleImportSuccess = () => {
+    // Refresh local state from API after successful import
+    if (preferences?.timezone) {
+      setTimezone(preferences.timezone);
+      setStoreTimezone(preferences.timezone);
     }
-  };
-
-  const handleImportConfig = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = '.json';
-    input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-
-      try {
-        const text = await file.text();
-        const config = JSON.parse(text);
-
-        // Import preferences (timezone, theme, language)
-        if (config.preferences?.timezone) {
-          await updatePrefs.mutateAsync({ timezone: config.preferences.timezone });
-          setTimezone(config.preferences.timezone);
-          setStoreTimezone(config.preferences.timezone);
-        }
-
-        // Import retention settings
-        if (config.retention) {
-          await updateRetention.mutateAsync({
-            history_days: config.retention.history_days,
-            logs_days: config.retention.logs_days,
-          });
-          setHistoryDays(config.retention.history_days);
-          setLogsDays(config.retention.logs_days);
-        }
-
-        // Import deletion logging settings (v1.1+)
-        if (config.deletionLogging !== undefined) {
-          await updateDeletionLogging.mutateAsync({
-            log_deletions: config.deletionLogging.log_deletions,
-          });
-          setLogDeletions(config.deletionLogging.log_deletions);
-        }
-      } catch (error) {
-        console.error('Failed to import config:', error);
-      }
-    };
-    input.click();
   };
 
   if (prefsLoading || retentionLoading || deletionLoggingLoading) {
@@ -296,17 +244,33 @@ export function GeneralSettings() {
         <h2 className="text-lg font-semibold mb-4">
           {t('settings.general.export')} / {t('settings.general.import')}
         </h2>
+        <p className="text-sm text-muted-foreground mb-4">
+          {t('settings.general.exportImportHelp')}
+        </p>
         <div className="flex gap-4">
-          <Button variant="outline" onClick={handleExportConfig}>
+          <Button variant="outline" onClick={() => setExportDialogOpen(true)}>
             <Download className="h-4 w-4 mr-2" />
             {t('settings.general.export')}
           </Button>
-          <Button variant="outline" onClick={handleImportConfig}>
+          <Button variant="outline" onClick={() => setImportDialogOpen(true)}>
             <Upload className="h-4 w-4 mr-2" />
             {t('settings.general.import')}
           </Button>
         </div>
       </div>
+
+      {/* Export Dialog */}
+      <ExportConfigDialog
+        open={exportDialogOpen}
+        onOpenChange={setExportDialogOpen}
+      />
+
+      {/* Import Dialog */}
+      <ImportConfigDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onSuccess={handleImportSuccess}
+      />
     </div>
   );
 }

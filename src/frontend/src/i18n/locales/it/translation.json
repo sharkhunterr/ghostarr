@@ -308,7 +308,48 @@
         "help": "Quando attivo, le azioni di eliminazione (manuali o programmate) saranno registrate nella cronologia"
       },
       "export": "Esporta configurazione",
-      "import": "Importa configurazione"
+      "import": "Importa configurazione",
+      "exportImportHelp": "Esporta o importa la configurazione di Ghostarr incluse le credenziali dei servizi"
+    },
+    "export": {
+      "title": "Esporta configurazione",
+      "description": "Seleziona cosa includere nell'esportazione",
+      "options": {
+        "preferences": "Preferenze",
+        "preferencesDesc": "Fuso orario e impostazioni di visualizzazione",
+        "retention": "Conservazione dati",
+        "retentionDesc": "Impostazioni di conservazione cronologia e log",
+        "deletionLogging": "Registro eliminazioni",
+        "deletionLoggingDesc": "Impostazioni del registro eliminazioni",
+        "services": "Servizi",
+        "servicesDesc": "URL dei servizi e chiavi API"
+      },
+      "servicesWarning": "Attenzione: L'esportazione conterrà le tue chiavi API e password in chiaro. Conserva questo file in modo sicuro."
+    },
+    "import": {
+      "title": "Importa configurazione",
+      "description": "Seleziona un file di configurazione da importare",
+      "selectFile": "Seleziona file...",
+      "options": {
+        "preferences": "Preferenze",
+        "preferencesDesc": "Fuso orario e impostazioni di visualizzazione",
+        "retention": "Conservazione dati",
+        "retentionDesc": "Impostazioni di conservazione cronologia e log",
+        "deletionLogging": "Registro eliminazioni",
+        "deletionLoggingDesc": "Impostazioni del registro eliminazioni",
+        "services": "Servizi",
+        "servicesDesc": "URL dei servizi e chiavi API"
+      },
+      "servicesWarning": "Attenzione: Questo sovrascriverà le tue configurazioni di servizi esistenti.",
+      "errors": {
+        "invalidFormat": "Formato file non valido. Seleziona un file di configurazione Ghostarr valido.",
+        "parseError": "Impossibile leggere il file. Verifica che sia un file JSON valido.",
+        "noData": "Nessun dato importabile trovato in questo file."
+      },
+      "results": {
+        "title": "Risultati importazione",
+        "services": "{{count}} servizio/i importato/i"
+      }
     },
     "services": {
       "title": "Servizi esterni",

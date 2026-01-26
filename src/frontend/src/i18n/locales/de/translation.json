@@ -308,7 +308,48 @@
         "help": "Wenn aktiviert, werden Löschaktionen (manuell oder geplant) im Verlauf aufgezeichnet"
       },
       "export": "Konfiguration exportieren",
-      "import": "Konfiguration importieren"
+      "import": "Konfiguration importieren",
+      "exportImportHelp": "Exportieren oder importieren Sie Ihre Ghostarr-Konfiguration einschließlich Dienstanmeldedaten"
+    },
+    "export": {
+      "title": "Konfiguration exportieren",
+      "description": "Wählen Sie, was im Export enthalten sein soll",
+      "options": {
+        "preferences": "Einstellungen",
+        "preferencesDesc": "Zeitzone und Anzeigeeinstellungen",
+        "retention": "Datenaufbewahrung",
+        "retentionDesc": "Einstellungen zur Aufbewahrung von Verlauf und Protokollen",
+        "deletionLogging": "Löschprotokollierung",
+        "deletionLoggingDesc": "Einstellungen zur Löschprotokollierung",
+        "services": "Dienste",
+        "servicesDesc": "Dienst-URLs und API-Schlüssel"
+      },
+      "servicesWarning": "Warnung: Der Export enthält Ihre API-Schlüssel und Passwörter im Klartext. Bewahren Sie diese Datei sicher auf."
+    },
+    "import": {
+      "title": "Konfiguration importieren",
+      "description": "Wählen Sie eine Konfigurationsdatei zum Importieren",
+      "selectFile": "Datei auswählen...",
+      "options": {
+        "preferences": "Einstellungen",
+        "preferencesDesc": "Zeitzone und Anzeigeeinstellungen",
+        "retention": "Datenaufbewahrung",
+        "retentionDesc": "Einstellungen zur Aufbewahrung von Verlauf und Protokollen",
+        "deletionLogging": "Löschprotokollierung",
+        "deletionLoggingDesc": "Einstellungen zur Löschprotokollierung",
+        "services": "Dienste",
+        "servicesDesc": "Dienst-URLs und API-Schlüssel"
+      },
+      "servicesWarning": "Warnung: Dies überschreibt Ihre bestehenden Dienstkonfigurationen.",
+      "errors": {
+        "invalidFormat": "Ungültiges Dateiformat. Bitte wählen Sie eine gültige Ghostarr-Konfigurationsdatei.",
+        "parseError": "Die Datei konnte nicht gelesen werden. Überprüfen Sie, ob es sich um eine gültige JSON-Datei handelt.",
+        "noData": "Keine importierbaren Daten in dieser Datei gefunden."
+      },
+      "results": {
+        "title": "Import-Ergebnisse",
+        "services": "{{count}} Dienst(e) importiert"
+      }
     },
     "services": {
       "title": "Externe Dienste",

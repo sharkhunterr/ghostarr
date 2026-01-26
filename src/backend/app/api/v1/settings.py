@@ -110,6 +110,82 @@ async def get_all_services(db: AsyncSession = Depends(get_db)):
     return result
 
 
+# Export Services (with decrypted credentials)
+# NOTE: This route must be defined BEFORE /services/{service} to avoid path conflict
+@router.get("/services/export")
+async def export_services(db: AsyncSession = Depends(get_db)):
+    """Export all service configurations with decrypted credentials.
+
+    WARNING: This endpoint returns sensitive data (API keys, passwords).
+    Only use for configuration export/backup purposes.
+    """
+    result = {}
+
+    for service in SERVICES:
+        config = await _get_service_config(db, service)
+        if config:
+            # Decrypt API key
+            api_key_encrypted = config.get("api_key_encrypted", "")
+            api_key = crypto_service.decrypt(api_key_encrypted) if api_key_encrypted else None
+
+            service_export = {
+                "url": config.get("url", ""),
+                "api_key": api_key,
+            }
+
+            # Handle username/password for services with basic auth
+            if service in SERVICES_WITH_BASIC_AUTH:
+                password_encrypted = config.get("password_encrypted", "")
+                password = crypto_service.decrypt(password_encrypted) if password_encrypted else None
+                service_export["username"] = config.get("username", "")
+                service_export["password"] = password
+
+            result[service] = service_export
+
+    return result
+
+
+# Import Services
+# NOTE: This route must be defined BEFORE /services/{service} to avoid path conflict
+@router.put("/services/import")
+async def import_services(
+    services: dict,
+    db: AsyncSession = Depends(get_db),
+):
+    """Import service configurations.
+
+    Accepts a dictionary of service configurations with decrypted credentials.
+    """
+    imported = []
+
+    for service, config in services.items():
+        if service not in SERVICES:
+            continue
+
+        new_config = {}
+
+        # URL
+        if config.get("url"):
+            new_config["url"] = config["url"].rstrip("/")
+
+        # API key (encrypt it)
+        if config.get("api_key"):
+            new_config["api_key_encrypted"] = crypto_service.encrypt(config["api_key"])
+
+        # Username/password for services with basic auth
+        if service in SERVICES_WITH_BASIC_AUTH:
+            if config.get("username"):
+                new_config["username"] = config["username"]
+            if config.get("password"):
+                new_config["password_encrypted"] = crypto_service.encrypt(config["password"])
+
+        if new_config:
+            await _save_service_config(db, service, new_config)
+            imported.append(service)
+
+    return {"imported": imported, "count": len(imported)}
+
+
 @router.get("/services/{service}", response_model=ServiceConfigResponse)
 async def get_service_config(service: str, db: AsyncSession = Depends(get_db)):
     """Get configuration for a specific service."""

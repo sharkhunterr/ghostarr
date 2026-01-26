@@ -360,7 +360,48 @@
         "help": "When enabled, deletion actions (manual or scheduled) will be recorded in the history"
       },
       "export": "Export configuration",
-      "import": "Import configuration"
+      "import": "Import configuration",
+      "exportImportHelp": "Export or import your Ghostarr configuration including services credentials"
+    },
+    "export": {
+      "title": "Export Configuration",
+      "description": "Select what you want to include in the export",
+      "options": {
+        "preferences": "Preferences",
+        "preferencesDesc": "Timezone and display settings",
+        "retention": "Data Retention",
+        "retentionDesc": "History and logs retention settings",
+        "deletionLogging": "Deletion Logging",
+        "deletionLoggingDesc": "Deletion logging settings",
+        "services": "Services",
+        "servicesDesc": "Service URLs and API keys"
+      },
+      "servicesWarning": "Warning: The export will contain your API keys and passwords in plain text. Keep this file secure."
+    },
+    "import": {
+      "title": "Import Configuration",
+      "description": "Select a configuration file to import",
+      "selectFile": "Select a file...",
+      "options": {
+        "preferences": "Preferences",
+        "preferencesDesc": "Timezone and display settings",
+        "retention": "Data Retention",
+        "retentionDesc": "History and logs retention settings",
+        "deletionLogging": "Deletion Logging",
+        "deletionLoggingDesc": "Deletion logging settings",
+        "services": "Services",
+        "servicesDesc": "Service URLs and API keys"
+      },
+      "servicesWarning": "Warning: This will overwrite your existing service configurations.",
+      "errors": {
+        "invalidFormat": "Invalid file format. Please select a valid Ghostarr configuration file.",
+        "parseError": "Unable to parse the file. Please check it is a valid JSON file.",
+        "noData": "No importable data found in this file."
+      },
+      "results": {
+        "title": "Import Results",
+        "services": "{{count}} service(s) imported"
+      }
     },
     "services": {
       "title": "External Services",

@@ -360,7 +360,48 @@
         "help": "Quand activé, les actions de suppression (manuelles ou planifiées) seront enregistrées dans l'historique"
       },
       "export": "Exporter la configuration",
-      "import": "Importer une configuration"
+      "import": "Importer une configuration",
+      "exportImportHelp": "Exportez ou importez votre configuration Ghostarr, y compris les identifiants des services"
+    },
+    "export": {
+      "title": "Exporter la configuration",
+      "description": "Sélectionnez ce que vous souhaitez inclure dans l'export",
+      "options": {
+        "preferences": "Préférences",
+        "preferencesDesc": "Fuseau horaire et paramètres d'affichage",
+        "retention": "Rétention des données",
+        "retentionDesc": "Paramètres de rétention de l'historique et des logs",
+        "deletionLogging": "Journalisation des suppressions",
+        "deletionLoggingDesc": "Paramètres de journalisation des suppressions",
+        "services": "Services",
+        "servicesDesc": "URLs et clés API des services"
+      },
+      "servicesWarning": "Attention : L'export contiendra vos clés API et mots de passe en clair. Conservez ce fichier en lieu sûr."
+    },
+    "import": {
+      "title": "Importer une configuration",
+      "description": "Sélectionnez un fichier de configuration à importer",
+      "selectFile": "Sélectionner un fichier...",
+      "options": {
+        "preferences": "Préférences",
+        "preferencesDesc": "Fuseau horaire et paramètres d'affichage",
+        "retention": "Rétention des données",
+        "retentionDesc": "Paramètres de rétention de l'historique et des logs",
+        "deletionLogging": "Journalisation des suppressions",
+        "deletionLoggingDesc": "Paramètres de journalisation des suppressions",
+        "services": "Services",
+        "servicesDesc": "URLs et clés API des services"
+      },
+      "servicesWarning": "Attention : Cela écrasera vos configurations de services existantes.",
+      "errors": {
+        "invalidFormat": "Format de fichier invalide. Veuillez sélectionner un fichier de configuration Ghostarr valide.",
+        "parseError": "Impossible de lire le fichier. Vérifiez qu'il s'agit d'un fichier JSON valide.",
+        "noData": "Aucune donnée importable dans ce fichier."
+      },
+      "results": {
+        "title": "Résultats de l'import",
+        "services": "{{count}} service(s) importé(s)"
+      }
     },
     "services": {
       "title": "Services externes",

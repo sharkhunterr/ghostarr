@@ -176,3 +176,40 @@ export function useUpdateDeletionLoggingSettings() {
     },
   });
 }
+
+// Export services with decrypted credentials
+export interface ServiceExport {
+  url: string;
+  api_key: string | null;
+  username?: string;
+  password?: string | null;
+}
+
+export function useExportServices() {
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await apiClient.get<Record<string, ServiceExport>>(
+        "/settings/services/export"
+      );
+      return data;
+    },
+  });
+}
+
+// Import services
+export function useImportServices() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (services: Record<string, ServiceExport>) => {
+      const { data } = await apiClient.put<{ imported: string[]; count: number }>(
+        "/settings/services/import",
+        services
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: SERVICES_KEY });
+    },
+  });
+}
