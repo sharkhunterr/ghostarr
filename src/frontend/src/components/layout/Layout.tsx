@@ -147,13 +147,6 @@ export function Layout() {
           })}
         </nav>
 
-        {/* Bottom section - Theme & Language on desktop sidebar */}
-        <div className="p-3 border-t border-sidebar-border">
-          <div className="flex items-center justify-center gap-1">
-            <ThemeToggle />
-            <LanguageSelector />
-          </div>
-        </div>
       </aside>
 
       {/* Mobile overlay */}
@@ -185,8 +178,8 @@ export function Layout() {
               <h1 className="text-lg font-semibold">{getCurrentPageTitle()}</h1>
             </div>
 
-            {/* Right side - Theme & Language on mobile only (shown in sidebar on desktop) */}
-            <div className="flex items-center gap-1 lg:hidden">
+            {/* Right side - Theme & Language */}
+            <div className="flex items-center gap-1">
               <ThemeToggle />
               <LanguageSelector />
             </div>
