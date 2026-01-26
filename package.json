@@ -22,10 +22,15 @@
     "lint": "npm run lint:backend && npm run lint:frontend",
     "lint:backend": "cd src/backend && . .venv/bin/activate && ruff check .",
     "lint:frontend": "cd src/frontend && npm run lint",
-    "clean": "rm -rf src/backend/.venv src/frontend/node_modules src/frontend/dist"
+    "clean": "rm -rf src/backend/.venv src/frontend/node_modules src/frontend/dist",
+    "release": "node scripts/release.js",
+    "release:github": "node scripts/release.js --github",
+    "release:deploy": "node scripts/release.js --deploy",
+    "release:full": "node scripts/release.js --github --deploy"
   },
   "devDependencies": {
-    "concurrently": "^9.1.2"
+    "concurrently": "^9.1.2",
+    "standard-version": "^9.5.0"
   },
   "engines": {
     "node": ">=20.0.0",
