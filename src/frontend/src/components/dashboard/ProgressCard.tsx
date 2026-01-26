@@ -199,33 +199,33 @@ export function ProgressCard({
               </span>
             </CardDescription>
           </div>
-          <div className="flex gap-1 sm:gap-2 self-end sm:self-auto shrink-0">
+          <div className="flex gap-1 self-end sm:self-auto shrink-0">
             {isActive && onCancel && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={onCancel}
                 disabled={isCancelling}
-                className="px-2 sm:px-3"
+                className="px-2"
               >
                 {isCancelling ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
                   <X className="h-4 w-4" />
                 )}
-                <span className="hidden sm:inline sm:ml-2">{t('dashboard.actions.cancel')}</span>
+                {!compact && <span className="ml-2">{t('dashboard.actions.cancel')}</span>}
               </Button>
             )}
             {!isActive && onViewHistory && (
-              <Button variant="outline" size="sm" onClick={onViewHistory} className="px-2 sm:px-3">
+              <Button variant="outline" size="sm" onClick={onViewHistory} className="px-2">
                 <History className="h-4 w-4" />
-                <span className="hidden sm:inline sm:ml-2">{t('nav.history')}</span>
+                {!compact && <span className="ml-2">{t('nav.history')}</span>}
               </Button>
             )}
             {!isActive && onClear && (
-              <Button variant="ghost" size="sm" onClick={onClear} className="px-2 sm:px-3">
-                <Trash2 className="h-4 w-4 sm:hidden" />
-                <span className="hidden sm:inline">{t('dashboard.actions.clear')}</span>
+              <Button variant="ghost" size="sm" onClick={onClear} className="px-2">
+                <Trash2 className="h-4 w-4" />
+                {!compact && <span className="ml-2">{t('dashboard.actions.clear')}</span>}
               </Button>
             )}
           </div>
