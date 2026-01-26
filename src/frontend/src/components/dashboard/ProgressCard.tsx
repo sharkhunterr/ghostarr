@@ -16,6 +16,8 @@ import {
   ChevronUp,
   Clock,
   History,
+  X,
+  Trash2,
 } from 'lucide-react';
 import {
   Card,
@@ -197,29 +199,33 @@ export function ProgressCard({
               </span>
             </CardDescription>
           </div>
-          <div className="flex gap-2 self-end sm:self-auto">
+          <div className="flex gap-1 sm:gap-2 self-end sm:self-auto shrink-0">
             {isActive && onCancel && (
               <Button
                 variant="outline"
                 size="sm"
                 onClick={onCancel}
                 disabled={isCancelling}
+                className="px-2 sm:px-3"
               >
                 {isCancelling ? (
-                  <Loader2 className="h-4 w-4 sm:mr-2 animate-spin" />
-                ) : null}
-                <span className="hidden sm:inline">{t('dashboard.actions.cancel')}</span>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <X className="h-4 w-4" />
+                )}
+                <span className="hidden sm:inline sm:ml-2">{t('dashboard.actions.cancel')}</span>
               </Button>
             )}
             {!isActive && onViewHistory && (
-              <Button variant="outline" size="sm" onClick={onViewHistory}>
-                <History className="h-4 w-4 sm:mr-2" />
-                <span className="hidden sm:inline">{t('nav.history')}</span>
+              <Button variant="outline" size="sm" onClick={onViewHistory} className="px-2 sm:px-3">
+                <History className="h-4 w-4" />
+                <span className="hidden sm:inline sm:ml-2">{t('nav.history')}</span>
               </Button>
             )}
             {!isActive && onClear && (
-              <Button variant="ghost" size="sm" onClick={onClear}>
-                {t('dashboard.actions.clear')}
+              <Button variant="ghost" size="sm" onClick={onClear} className="px-2 sm:px-3">
+                <Trash2 className="h-4 w-4 sm:hidden" />
+                <span className="hidden sm:inline">{t('dashboard.actions.clear')}</span>
               </Button>
             )}
           </div>
