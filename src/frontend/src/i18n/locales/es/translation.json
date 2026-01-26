@@ -356,8 +356,8 @@
     "viewAll": "Ver toda la ayuda",
     "viewAllHelp": "Ver todos los artículos de ayuda",
     "categories": {
-      "gettingStarted": "Primeros pasos",
-      "manualGeneration": "Generación manual",
+      "gettingstarted": "Primeros pasos",
+      "manualgeneration": "Generación manual",
       "scheduling": "Programación",
       "templates": "Plantillas",
       "troubleshooting": "Solución de problemas",

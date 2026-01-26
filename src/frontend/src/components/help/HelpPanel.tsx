@@ -137,8 +137,8 @@ export function HelpPanel({ category, className }: HelpPanelProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
 
-  // Get translated articles for this category
-  const articles = useMemo(() => {
+  // Get translated articles for this category only (no mixing with other categories)
+  const allArticles = useMemo(() => {
     const articleIds = CATEGORY_ARTICLES[category] || [];
     const categoryKey = category.replace(/-/g, '');
 
@@ -152,26 +152,6 @@ export function HelpPanel({ category, className }: HelpPanelProps) {
       !article.title.startsWith('help.articles.')
     );
   }, [category, t]);
-
-  // Also get general troubleshooting articles if not already in troubleshooting
-  const troubleshootingArticles = useMemo(() => {
-    if (category === 'troubleshooting') return [];
-
-    const articleIds = CATEGORY_ARTICLES['troubleshooting'] || [];
-    return articleIds.slice(0, 2).map((id): LocalArticle => ({
-      id: `troubleshooting-${id}`,
-      title: t(`help.articles.troubleshooting.${id}.title`),
-      summary: t(`help.articles.troubleshooting.${id}.summary`),
-      content: t(`help.articles.troubleshooting.${id}.content`),
-    })).filter(article =>
-      !article.title.startsWith('help.articles.')
-    );
-  }, [category, t]);
-
-  // Combine relevant articles
-  const allArticles = useMemo(() => {
-    return [...articles, ...troubleshootingArticles];
-  }, [articles, troubleshootingArticles]);
 
   // Get selected article
   const selectedArticle = useMemo(() => {

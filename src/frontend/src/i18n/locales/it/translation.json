@@ -356,8 +356,8 @@
     "viewAll": "Vedi tutto l'aiuto",
     "viewAllHelp": "Vedi tutti gli articoli di aiuto",
     "categories": {
-      "gettingStarted": "Per iniziare",
-      "manualGeneration": "Generazione manuale",
+      "gettingstarted": "Per iniziare",
+      "manualgeneration": "Generazione manuale",
       "scheduling": "Pianificazione",
       "templates": "Modelli",
       "troubleshooting": "Risoluzione problemi",

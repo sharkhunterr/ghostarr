@@ -356,8 +356,8 @@
     "viewAll": "Alle Hilfe anzeigen",
     "viewAllHelp": "Alle Hilfeartikel anzeigen",
     "categories": {
-      "gettingStarted": "Erste Schritte",
-      "manualGeneration": "Manuelle Generierung",
+      "gettingstarted": "Erste Schritte",
+      "manualgeneration": "Manuelle Generierung",
       "scheduling": "Zeitplanung",
       "templates": "Vorlagen",
       "troubleshooting": "Fehlerbehebung",

@@ -427,8 +427,8 @@
     "viewAll": "Voir toute l'aide",
     "viewAllHelp": "Voir tous les articles d'aide",
     "categories": {
-      "gettingStarted": "Premiers pas",
-      "manualGeneration": "Génération manuelle",
+      "gettingstarted": "Premiers pas",
+      "manualgeneration": "Génération manuelle",
       "scheduling": "Planification",
       "templates": "Templates",
       "troubleshooting": "Dépannage",
