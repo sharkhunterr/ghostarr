@@ -120,8 +120,9 @@ export function GeneralSettings() {
       const config = {
         preferences: preferences,
         retention: retention,
+        deletionLogging: deletionLogging,
         exportedAt: new Date().toISOString(),
-        version: '1.0',
+        version: '1.1',
       };
       const blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
@@ -147,12 +148,14 @@ export function GeneralSettings() {
         const text = await file.text();
         const config = JSON.parse(text);
 
+        // Import preferences (timezone, theme, language)
         if (config.preferences?.timezone) {
           await updatePrefs.mutateAsync({ timezone: config.preferences.timezone });
           setTimezone(config.preferences.timezone);
           setStoreTimezone(config.preferences.timezone);
         }
 
+        // Import retention settings
         if (config.retention) {
           await updateRetention.mutateAsync({
             history_days: config.retention.history_days,
@@ -160,6 +163,14 @@ export function GeneralSettings() {
           });
           setHistoryDays(config.retention.history_days);
           setLogsDays(config.retention.logs_days);
+        }
+
+        // Import deletion logging settings (v1.1+)
+        if (config.deletionLogging !== undefined) {
+          await updateDeletionLogging.mutateAsync({
+            log_deletions: config.deletionLogging.log_deletions,
+          });
+          setLogDeletions(config.deletionLogging.log_deletions);
         }
       } catch (error) {
         console.error('Failed to import config:', error);
