@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.3](https://github.com/sharkhunterr/ghostarr/-/compare/v1.1.2...v1.1.3) (2026-01-26)
+
+
+### Bug Fixes
+
+* Optimize CI pipeline to only run on tags and MRs ([2b24a44](https://github.com/sharkhunterr/ghostarr/-/commit/2b24a442c5d1e4411addb55c1ec59282a2835f41))
+
 ### [1.1.2](https://github.com/sharkhunterr/ghostarr/-/compare/v1.1.1...v1.1.2) (2026-01-26)
 
 
