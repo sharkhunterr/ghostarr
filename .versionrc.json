@@ -23,7 +23,7 @@
       "type": "json"
     },
     {
-      "filename": "src/backend/src/version.py",
+      "filename": "src/backend/app/version.py",
       "updater": "scripts/version-updater.js"
     }
   ],
