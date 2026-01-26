@@ -9,6 +9,7 @@ import {
   ProgressCard,
   PreviewModal,
 } from '@/components/dashboard';
+import { HelpPanel } from '@/components/help';
 import { useProgress } from '@/hooks/useProgress';
 import { usePreviewNewsletter } from '@/api/newsletters';
 import type { GenerationConfig, PreviewResponse } from '@/types';
@@ -102,6 +103,9 @@ export default function ManualGeneration() {
         title={previewData?.title || null}
         itemsCount={previewData?.items_count || 0}
       />
+
+      {/* Help Panel */}
+      <HelpPanel category="manual-generation" />
     </div>
   );
 }

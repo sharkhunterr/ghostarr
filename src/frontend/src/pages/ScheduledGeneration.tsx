@@ -3,7 +3,13 @@
  */
 
 import { AutomaticGeneration } from '@/components/dashboard';
+import { HelpPanel } from '@/components/help';
 
 export default function ScheduledGeneration() {
-  return <AutomaticGeneration />;
+  return (
+    <>
+      <AutomaticGeneration />
+      <HelpPanel category="scheduling" />
+    </>
+  );
 }

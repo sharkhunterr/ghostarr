@@ -60,6 +60,12 @@ CATEGORIES: list[HelpCategory] = [
         description="Common issues and solutions",
         icon="help-circle",
     ),
+    HelpCategory(
+        id="history",
+        title="History",
+        description="View and manage generation history",
+        icon="clock",
+    ),
 ]
 
 ARTICLES: list[HelpArticle] = [
@@ -487,6 +493,86 @@ If generation is stuck:
 3. No post will be created in Ghost
         """,
         keywords=["error", "failed", "generation", "template", "ghost", "content"],
+    ),
+    # History
+    HelpArticle(
+        id="viewing-history",
+        category="history",
+        title="Viewing Generation History",
+        summary="How to view and filter past generations",
+        content="""
+# Viewing Generation History
+
+The History page shows all past newsletter generations, both manual and automatic.
+
+## History Table
+
+Each entry displays:
+- **Date**: When the generation was created
+- **Type**: Manual or Automatic
+- **Template**: The template used
+- **Status**: Pending, Running, Success, Failed, or Cancelled
+- **Duration**: How long the generation took
+- **Items**: Number of content items included
+
+## Filtering
+
+Use the filter bar to narrow down results:
+- **Period**: Filter by date range
+- **Type**: Manual or Automatic
+- **Status**: Filter by generation status
+- **Template**: Filter by template used
+
+## Viewing Details
+
+Click on any entry to view detailed information:
+- Step-by-step progress with timing
+- Error messages (if failed)
+- Configuration used for the generation
+- Link to the Ghost post (if published)
+        """,
+        keywords=["history", "view", "filter", "past", "generation"],
+    ),
+    HelpArticle(
+        id="managing-history",
+        category="history",
+        title="Managing History Entries",
+        summary="Delete, regenerate, and export history",
+        content="""
+# Managing History Entries
+
+## Actions
+
+For each history entry, you can:
+
+### View on Ghost
+Opens the published post in Ghost (if available).
+
+### Regenerate
+Creates a new generation using the same configuration. Useful if you want to update content with the latest data.
+
+### Delete from History
+Removes the entry from the history table. This does NOT delete the Ghost post.
+
+### Delete from Ghost
+Removes the published post from Ghost. Use with caution.
+
+## Bulk Actions
+
+Select multiple entries to perform bulk operations:
+1. Use the checkboxes to select entries
+2. Choose an action from the bulk action bar:
+   - **Delete from history**: Removes selected entries
+   - **Delete with Ghost**: Removes entries AND their Ghost posts
+
+## Exporting
+
+Export your history for record keeping:
+1. Click the Export button
+2. Choose JSON or CSV format
+3. The file will download with the current filter applied
+        """,
+        keywords=["delete", "regenerate", "export", "bulk", "manage"],
     ),
 ]
 

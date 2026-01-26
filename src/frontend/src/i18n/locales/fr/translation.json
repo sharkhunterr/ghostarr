@@ -25,6 +25,8 @@
     "info": "Information",
     "unlimited": "Illimité",
     "optional": "optionnel",
+    "back": "Retour",
+    "clear": "Effacer",
     "changeLanguage": "Changer de langue",
     "time": {
       "minutesAgo": "il y a {{count}} min",
@@ -419,12 +421,36 @@
   "help": {
     "title": "Aide",
     "search": "Rechercher dans l'aide...",
+    "searchResults": "Résultats de recherche",
+    "noResults": "Aucun résultat pour \"{{query}}\"",
+    "noArticles": "Aucun article d'aide disponible",
+    "viewAll": "Voir toute l'aide",
+    "viewAllHelp": "Voir tous les articles d'aide",
     "categories": {
       "gettingStarted": "Premiers pas",
       "manualGeneration": "Génération manuelle",
       "scheduling": "Planification",
       "templates": "Templates",
-      "troubleshooting": "Dépannage"
+      "troubleshooting": "Dépannage",
+      "settings": "Paramètres",
+      "history": "Historique"
+    },
+    "contextual": {
+      "defaultIntro": "Trouvez des réponses aux questions courantes sur cette page.",
+      "manualgenerationTitle": "Aide Génération manuelle",
+      "manualgenerationIntro": "Apprenez à configurer et générer des newsletters manuellement.",
+      "schedulingTitle": "Aide Planification",
+      "schedulingIntro": "Apprenez à configurer la génération automatique de newsletters.",
+      "templatesTitle": "Aide Templates",
+      "templatesIntro": "Apprenez à gérer et personnaliser vos templates de newsletter.",
+      "settingsTitle": "Aide Paramètres",
+      "settingsIntro": "Apprenez à configurer les services externes et les paramètres système.",
+      "historyTitle": "Aide Historique",
+      "historyIntro": "Apprenez à consulter et gérer l'historique de vos générations.",
+      "gettingstartedTitle": "Premiers pas",
+      "gettingstartedIntro": "Nouveau sur Ghostarr ? Commencez ici pour apprendre les bases.",
+      "troubleshootingTitle": "Dépannage",
+      "troubleshootingIntro": "Des problèmes ? Trouvez des solutions aux problèmes courants."
     }
   },
   "progress": {

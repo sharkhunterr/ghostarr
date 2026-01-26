@@ -27,6 +27,7 @@ import {
   HistoryTable,
   ProgressModal,
 } from '@/components/history';
+import { HelpPanel } from '@/components/help';
 import {
   useHistory,
   useDeleteHistory,
@@ -302,6 +303,9 @@ export default function History() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Help Panel */}
+      <HelpPanel category="history" />
     </div>
   );
 }

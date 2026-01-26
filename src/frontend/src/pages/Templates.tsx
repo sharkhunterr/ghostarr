@@ -24,6 +24,7 @@ import {
   TemplatePresetConfigDialog,
   LabelManager,
 } from '@/components/templates';
+import { HelpPanel } from '@/components/help';
 import { useTemplates, useDeleteTemplate, useUpdateTemplate, useScanTemplates } from '@/api/templates';
 import { useNotificationStore } from '@/stores/notificationStore';
 import type { Template } from '@/types';
@@ -203,6 +204,9 @@ export default function Templates() {
         open={labelManagerOpen}
         onOpenChange={setLabelManagerOpen}
       />
+
+      {/* Help Panel */}
+      <HelpPanel category="templates" />
     </div>
   );
 }

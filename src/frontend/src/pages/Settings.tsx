@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ServiceCard, GeneralSettings, LogViewer } from "@/components/settings";
+import { HelpPanel } from "@/components/help";
 import {
   useServices,
   useUpdateService,
@@ -151,6 +152,9 @@ export default function Settings() {
       )}
 
       {activeTab === "logs" && <LogViewer />}
+
+      {/* Help Panel */}
+      <HelpPanel category="troubleshooting" />
     </div>
   );
 }

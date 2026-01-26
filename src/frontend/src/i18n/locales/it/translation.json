@@ -25,6 +25,8 @@
     "info": "Informazione",
     "unlimited": "Illimitato",
     "optional": "opzionale",
+    "back": "Indietro",
+    "clear": "Cancella",
     "changeLanguage": "Cambia lingua",
     "time": {
       "minutesAgo": "{{count}} min fa",
@@ -348,12 +350,36 @@
   "help": {
     "title": "Aiuto",
     "search": "Cerca nell'aiuto...",
+    "searchResults": "Risultati di ricerca",
+    "noResults": "Nessun risultato per \"{{query}}\"",
+    "noArticles": "Nessun articolo di aiuto disponibile",
+    "viewAll": "Vedi tutto l'aiuto",
+    "viewAllHelp": "Vedi tutti gli articoli di aiuto",
     "categories": {
       "gettingStarted": "Per iniziare",
       "manualGeneration": "Generazione manuale",
       "scheduling": "Pianificazione",
       "templates": "Modelli",
-      "troubleshooting": "Risoluzione problemi"
+      "troubleshooting": "Risoluzione problemi",
+      "settings": "Impostazioni",
+      "history": "Cronologia"
+    },
+    "contextual": {
+      "defaultIntro": "Trova risposte alle domande comuni su questa pagina.",
+      "manualgenerationTitle": "Aiuto generazione manuale",
+      "manualgenerationIntro": "Scopri come configurare e generare newsletter manualmente.",
+      "schedulingTitle": "Aiuto pianificazione",
+      "schedulingIntro": "Scopri come impostare pianificazioni per la generazione automatica di newsletter.",
+      "templatesTitle": "Aiuto modelli",
+      "templatesIntro": "Scopri come gestire e personalizzare i tuoi modelli di newsletter.",
+      "settingsTitle": "Aiuto impostazioni",
+      "settingsIntro": "Scopri come configurare servizi esterni e impostazioni di sistema.",
+      "historyTitle": "Aiuto cronologia",
+      "historyIntro": "Scopri come visualizzare e gestire la cronologia delle generazioni di newsletter.",
+      "gettingstartedTitle": "Per iniziare",
+      "gettingstartedIntro": "Nuovo su Ghostarr? Inizia qui per imparare le basi.",
+      "troubleshootingTitle": "Risoluzione problemi",
+      "troubleshootingIntro": "Hai problemi? Trova soluzioni ai problemi comuni."
     }
   },
   "progress": {

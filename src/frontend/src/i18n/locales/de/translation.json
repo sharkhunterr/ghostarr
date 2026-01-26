@@ -25,6 +25,8 @@
     "info": "Information",
     "unlimited": "Unbegrenzt",
     "optional": "optional",
+    "back": "Zurück",
+    "clear": "Löschen",
     "changeLanguage": "Sprache ändern",
     "time": {
       "minutesAgo": "vor {{count}} Min",
@@ -348,12 +350,36 @@
   "help": {
     "title": "Hilfe",
     "search": "Hilfe durchsuchen...",
+    "searchResults": "Suchergebnisse",
+    "noResults": "Keine Ergebnisse für \"{{query}}\"",
+    "noArticles": "Keine Hilfeartikel verfügbar",
+    "viewAll": "Alle Hilfe anzeigen",
+    "viewAllHelp": "Alle Hilfeartikel anzeigen",
     "categories": {
       "gettingStarted": "Erste Schritte",
       "manualGeneration": "Manuelle Generierung",
       "scheduling": "Zeitplanung",
       "templates": "Vorlagen",
-      "troubleshooting": "Fehlerbehebung"
+      "troubleshooting": "Fehlerbehebung",
+      "settings": "Einstellungen",
+      "history": "Verlauf"
+    },
+    "contextual": {
+      "defaultIntro": "Finden Sie Antworten auf häufige Fragen zu dieser Seite.",
+      "manualgenerationTitle": "Hilfe zur manuellen Generierung",
+      "manualgenerationIntro": "Erfahren Sie, wie Sie Newsletter manuell konfigurieren und generieren.",
+      "schedulingTitle": "Hilfe zur Zeitplanung",
+      "schedulingIntro": "Erfahren Sie, wie Sie automatische Newsletter-Generierungszeitpläne einrichten.",
+      "templatesTitle": "Hilfe zu Vorlagen",
+      "templatesIntro": "Erfahren Sie, wie Sie Ihre Newsletter-Vorlagen verwalten und anpassen.",
+      "settingsTitle": "Hilfe zu Einstellungen",
+      "settingsIntro": "Erfahren Sie, wie Sie externe Dienste und Systemeinstellungen konfigurieren.",
+      "historyTitle": "Hilfe zum Verlauf",
+      "historyIntro": "Erfahren Sie, wie Sie Ihren Newsletter-Generierungsverlauf anzeigen und verwalten.",
+      "gettingstartedTitle": "Erste Schritte",
+      "gettingstartedIntro": "Neu bei Ghostarr? Beginnen Sie hier, um die Grundlagen zu lernen.",
+      "troubleshootingTitle": "Fehlerbehebung",
+      "troubleshootingIntro": "Probleme? Finden Sie Lösungen für häufige Probleme."
     }
   },
   "progress": {

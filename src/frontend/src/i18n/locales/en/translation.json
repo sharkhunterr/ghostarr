@@ -25,6 +25,8 @@
     "info": "Information",
     "unlimited": "Unlimited",
     "optional": "optional",
+    "back": "Back",
+    "clear": "Clear",
     "changeLanguage": "Change language",
     "time": {
       "minutesAgo": "{{count}} min ago",
@@ -419,12 +421,36 @@
   "help": {
     "title": "Help",
     "search": "Search help...",
+    "searchResults": "Search results",
+    "noResults": "No results for \"{{query}}\"",
+    "noArticles": "No help articles available",
+    "viewAll": "View all help",
+    "viewAllHelp": "View all help articles",
     "categories": {
       "gettingStarted": "Getting Started",
       "manualGeneration": "Manual Generation",
       "scheduling": "Scheduling",
       "templates": "Templates",
-      "troubleshooting": "Troubleshooting"
+      "troubleshooting": "Troubleshooting",
+      "settings": "Settings",
+      "history": "History"
+    },
+    "contextual": {
+      "defaultIntro": "Find answers to common questions about this page.",
+      "manualgenerationTitle": "Manual Generation Help",
+      "manualgenerationIntro": "Learn how to configure and generate newsletters manually.",
+      "schedulingTitle": "Scheduling Help",
+      "schedulingIntro": "Learn how to set up automatic newsletter generation schedules.",
+      "templatesTitle": "Templates Help",
+      "templatesIntro": "Learn how to manage and customize your newsletter templates.",
+      "settingsTitle": "Settings Help",
+      "settingsIntro": "Learn how to configure external services and system settings.",
+      "historyTitle": "History Help",
+      "historyIntro": "Learn how to view and manage your newsletter generation history.",
+      "gettingstartedTitle": "Getting Started",
+      "gettingstartedIntro": "New to Ghostarr? Start here to learn the basics.",
+      "troubleshootingTitle": "Troubleshooting",
+      "troubleshootingIntro": "Having issues? Find solutions to common problems."
     }
   },
   "progress": {

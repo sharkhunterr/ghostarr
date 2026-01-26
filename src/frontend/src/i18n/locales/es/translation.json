@@ -25,6 +25,8 @@
     "info": "Información",
     "unlimited": "Ilimitado",
     "optional": "opcional",
+    "back": "Volver",
+    "clear": "Limpiar",
     "changeLanguage": "Cambiar idioma",
     "time": {
       "minutesAgo": "hace {{count}} min",
@@ -348,12 +350,36 @@
   "help": {
     "title": "Ayuda",
     "search": "Buscar en la ayuda...",
+    "searchResults": "Resultados de búsqueda",
+    "noResults": "Sin resultados para \"{{query}}\"",
+    "noArticles": "No hay artículos de ayuda disponibles",
+    "viewAll": "Ver toda la ayuda",
+    "viewAllHelp": "Ver todos los artículos de ayuda",
     "categories": {
       "gettingStarted": "Primeros pasos",
       "manualGeneration": "Generación manual",
       "scheduling": "Programación",
       "templates": "Plantillas",
-      "troubleshooting": "Solución de problemas"
+      "troubleshooting": "Solución de problemas",
+      "settings": "Configuración",
+      "history": "Historial"
+    },
+    "contextual": {
+      "defaultIntro": "Encuentra respuestas a preguntas comunes sobre esta página.",
+      "manualgenerationTitle": "Ayuda de generación manual",
+      "manualgenerationIntro": "Aprende a configurar y generar newsletters manualmente.",
+      "schedulingTitle": "Ayuda de programación",
+      "schedulingIntro": "Aprende a configurar programaciones de generación automática de newsletters.",
+      "templatesTitle": "Ayuda de plantillas",
+      "templatesIntro": "Aprende a gestionar y personalizar tus plantillas de newsletter.",
+      "settingsTitle": "Ayuda de configuración",
+      "settingsIntro": "Aprende a configurar servicios externos y ajustes del sistema.",
+      "historyTitle": "Ayuda de historial",
+      "historyIntro": "Aprende a ver y gestionar el historial de generaciones de newsletters.",
+      "gettingstartedTitle": "Primeros pasos",
+      "gettingstartedIntro": "¿Nuevo en Ghostarr? Empieza aquí para aprender lo básico.",
+      "troubleshootingTitle": "Solución de problemas",
+      "troubleshootingIntro": "¿Tienes problemas? Encuentra soluciones a problemas comunes."
     }
   },
   "progress": {

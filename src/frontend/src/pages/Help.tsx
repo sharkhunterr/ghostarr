@@ -11,6 +11,7 @@ import {
   Calendar,
   FileText,
   HelpCircle,
+  Clock,
   ChevronRight,
   ArrowLeft,
 } from 'lucide-react';
@@ -32,6 +33,7 @@ const categoryIcons: Record<string, React.ReactNode> = {
   calendar: <Calendar className="h-5 w-5" />,
   'file-text': <FileText className="h-5 w-5" />,
   'help-circle': <HelpCircle className="h-5 w-5" />,
+  clock: <Clock className="h-5 w-5" />,
 };
 
 // Simple markdown renderer
