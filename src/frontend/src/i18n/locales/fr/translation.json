@@ -18,6 +18,7 @@
     "no": "Non",
     "all": "Tous",
     "none": "Aucun",
+    "other": "Autre",
     "success": "Succès",
     "error": "Erreur",
     "warning": "Attention",
@@ -100,7 +101,8 @@
       "skipEmptyHelp": "Ne pas générer si aucun film, série, jeu, livre ou programme TV n'est disponible (la maintenance n'est pas concernée)",
       "featuredItem": "Mettre en avant un élément",
       "channels": "Chaînes",
-      "channelsHelp": "Sélectionnez les chaînes à inclure"
+      "channelsHelp": "Sélectionnez les chaînes à inclure",
+      "channelsNotConfigured": "Tunarr n'est pas configuré ou aucune chaîne disponible"
     },
     "sources": {
       "tautulli": "Films & Séries",

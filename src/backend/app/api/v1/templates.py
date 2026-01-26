@@ -282,11 +282,19 @@ async def scan_and_import_templates(db: AsyncSession = Depends(get_db)):
             preset_config={},
         )
         db.add(template)
-        await db.flush()
-        await db.refresh(template)
-        imported.append(TemplateResponse.model_validate(template))
+        imported.append(template)
         logger.info(f"Imported template: {name} from {filename}")
 
     await db.commit()
 
-    return imported
+    # Re-query imported templates with labels loaded
+    if imported:
+        imported_ids = [t.id for t in imported]
+        result = await db.execute(
+            select(Template)
+            .options(selectinload(Template.labels))
+            .where(Template.id.in_(imported_ids))
+        )
+        imported = list(result.scalars().all())
+
+    return [TemplateResponse.model_validate(t) for t in imported]

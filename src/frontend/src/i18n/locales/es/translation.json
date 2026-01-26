@@ -18,6 +18,7 @@
     "no": "No",
     "all": "Todos",
     "none": "Ninguno",
+    "other": "Otro",
     "success": "Éxito",
     "error": "Error",
     "warning": "Advertencia",
@@ -99,7 +100,8 @@
       "skipEmptyHelp": "No generar si no hay contenido disponible",
       "featuredItem": "Destacar un elemento",
       "channels": "Canales",
-      "channelsHelp": "Selecciona los canales a incluir"
+      "channelsHelp": "Selecciona los canales a incluir",
+      "channelsNotConfigured": "Tunarr no está configurado o no hay canales disponibles"
     },
     "sources": {
       "tautulli": "Películas y Series",

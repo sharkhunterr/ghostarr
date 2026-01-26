@@ -18,6 +18,7 @@
     "no": "No",
     "all": "All",
     "none": "None",
+    "other": "Other",
     "success": "Success",
     "error": "Error",
     "warning": "Warning",
@@ -100,7 +101,8 @@
       "skipEmptyHelp": "Don't generate if no movies, shows, games, books or TV programs are available (maintenance is not affected)",
       "featuredItem": "Feature an item",
       "channels": "Channels",
-      "channelsHelp": "Select channels to include"
+      "channelsHelp": "Select channels to include",
+      "channelsNotConfigured": "Tunarr is not configured or no channels available"
     },
     "sources": {
       "tautulli": "Movies & TV Shows",
