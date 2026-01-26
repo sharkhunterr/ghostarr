@@ -1,26 +1,23 @@
 """Templates CRUD API endpoints."""
 
 from pathlib import Path
-from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.config import settings
-from app.database import get_db
-from app.models.template import Template
-from app.models.schedule import Schedule
-from app.schemas.template import (
-    TemplateCreate,
-    TemplateUpdate,
-    TemplateResponse,
-    TemplatePreviewResponse,
-)
-from app.schemas.common import PaginatedResponse, PaginationParams
-from app.services.template_service import template_service
 from app.core.logging import get_logger
+from app.database import get_db
+from app.models.schedule import Schedule
+from app.models.template import Template
+from app.schemas.template import (
+    TemplatePreviewResponse,
+    TemplateResponse,
+    TemplateUpdate,
+)
+from app.services.template_service import template_service
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -55,8 +52,8 @@ async def get_template(template_id: str, db: AsyncSession = Depends(get_db)):
 @router.post("", response_model=TemplateResponse)
 async def create_template(
     name: str = Form(...),
-    description: Optional[str] = Form(None),
-    tags: Optional[str] = Form(None),  # Comma-separated
+    description: str | None = Form(None),
+    tags: str | None = Form(None),  # Comma-separated
     is_default: bool = Form(False),
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
@@ -101,9 +98,9 @@ async def create_template(
     # If setting as default, unset other defaults
     if is_default:
         await db.execute(
-            select(Template).where(Template.is_default == True)
+            select(Template).where(Template.is_default)
         )
-        result = await db.execute(select(Template).where(Template.is_default == True))
+        result = await db.execute(select(Template).where(Template.is_default))
         for t in result.scalars():
             t.is_default = False
 
@@ -146,7 +143,7 @@ async def update_template(
     # If setting as default, unset other defaults
     if update.is_default:
         result = await db.execute(
-            select(Template).where(Template.is_default == True, Template.id != template_id)
+            select(Template).where(Template.is_default, Template.id != template_id)
         )
         for t in result.scalars():
             t.is_default = False
@@ -171,7 +168,7 @@ async def delete_template(template_id: str, db: AsyncSession = Depends(get_db)):
 
     # Check if template is used by any schedules
     result = await db.execute(
-        select(Schedule).where(Schedule.template_id == template_id, Schedule.is_active == True)
+        select(Schedule).where(Schedule.template_id == template_id, Schedule.is_active)
     )
     active_schedules = result.scalars().all()
 
@@ -218,7 +215,7 @@ async def preview_template(
 @router.get("/default", response_model=TemplateResponse)
 async def get_default_template(db: AsyncSession = Depends(get_db)):
     """Get the default template."""
-    result = await db.execute(select(Template).where(Template.is_default == True))
+    result = await db.execute(select(Template).where(Template.is_default))
     template = result.scalar_one_or_none()
 
     if not template:

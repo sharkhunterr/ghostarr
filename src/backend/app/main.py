@@ -13,8 +13,14 @@ from app import __version__
 from app.api.v1.router import api_router
 from app.config import settings
 from app.core.exceptions import GhostarrException, NotFoundError
-from app.core.logging import get_logger, set_correlation_id, setup_logging, start_db_logging, stop_db_logging
-from app.database import async_engine, Base
+from app.core.logging import (
+    get_logger,
+    set_correlation_id,
+    setup_logging,
+    start_db_logging,
+    stop_db_logging,
+)
+from app.database import Base, async_engine
 from app.schemas.common import ErrorResponse, HealthResponse
 
 logger = get_logger(__name__)
@@ -23,6 +29,7 @@ logger = get_logger(__name__)
 async def seed_default_templates():
     """Seed default templates if they don't exist."""
     from sqlalchemy import select
+
     from app.database import AsyncSessionLocal
     from app.models.template import Template
 

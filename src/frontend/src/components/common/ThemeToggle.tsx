@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { usePreferencesStore } from '@/stores/preferencesStore';
-import type { Theme } from '@/types';
 
 export function ThemeToggle() {
   const { t } = useTranslation();

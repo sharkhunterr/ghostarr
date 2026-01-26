@@ -1,29 +1,27 @@
 """Newsletter generator service - orchestrates the generation pipeline."""
 
-import asyncio
 from datetime import datetime
 from typing import Any
 from uuid import uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import settings
-from app.core.exceptions import GenerationError, IntegrationError, GenerationCancelledException
+from app.core.exceptions import GenerationCancelledException, GenerationError
 from app.core.logging import get_logger
-from app.models.history import History, GenerationType, GenerationStatus
+from app.integrations.audiobookshelf import AudiobookshelfIntegration
+from app.integrations.ghost import GhostIntegration
+from app.integrations.komga import KomgaIntegration
+from app.integrations.romm import ROMMIntegration
+from app.integrations.tautulli import TautulliIntegration
+from app.integrations.tmdb import TMDBIntegration
+from app.integrations.tunarr import TunarrIntegration
+from app.models.history import GenerationStatus, GenerationType, History
 from app.models.setting import Setting
 from app.models.template import Template
 from app.schemas.generation import GenerationConfig, PublicationMode
 from app.services.crypto_service import crypto_service
 from app.services.progress_tracker import ProgressTracker
 from app.services.template_service import template_service
-from app.integrations.tautulli import TautulliIntegration, MediaItem
-from app.integrations.tmdb import TMDBIntegration
-from app.integrations.ghost import GhostIntegration
-from app.integrations.romm import ROMMIntegration
-from app.integrations.komga import KomgaIntegration
-from app.integrations.audiobookshelf import AudiobookshelfIntegration
-from app.integrations.tunarr import TunarrIntegration
 
 logger = get_logger(__name__)
 
@@ -879,10 +877,7 @@ class NewsletterGenerator:
 
             if self.config.publication_mode == PublicationMode.PUBLISH:
                 status = "published"
-            elif self.config.publication_mode == PublicationMode.EMAIL:
-                status = "published"
-                send_email = True
-            elif self.config.publication_mode == PublicationMode.EMAIL_PUBLISH:
+            elif self.config.publication_mode == PublicationMode.EMAIL or self.config.publication_mode == PublicationMode.EMAIL_PUBLISH:
                 status = "published"
                 send_email = True
 

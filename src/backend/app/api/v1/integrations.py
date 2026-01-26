@@ -3,12 +3,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.logging import get_logger
 from app.database import get_db
+from app.integrations.ghost import GhostIntegration
+from app.integrations.tunarr import TunarrIntegration
 from app.models.setting import Setting
 from app.services.crypto_service import crypto_service
-from app.integrations.ghost import GhostIntegration, GhostNewsletter
-from app.integrations.tunarr import TunarrIntegration, TunarrChannel
-from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()

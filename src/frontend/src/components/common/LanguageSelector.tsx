@@ -3,7 +3,6 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,

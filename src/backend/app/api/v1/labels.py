@@ -5,17 +5,17 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+from app.core.logging import get_logger
 from app.database import get_db
 from app.models.label import Label
 from app.models.template import Template
 from app.schemas.label import (
     LabelCreate,
-    LabelUpdate,
     LabelResponse,
+    LabelUpdate,
     TemplateLabelAssignment,
 )
 from app.schemas.template import TemplateResponse
-from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()

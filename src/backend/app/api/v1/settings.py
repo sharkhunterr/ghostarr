@@ -3,22 +3,22 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.logging import get_logger
 from app.database import get_db
+from app.integrations import get_integration
 from app.models.setting import Setting
-from app.models.user_preference import UserPreference, Theme, SUPPORTED_LANGUAGES
+from app.models.user_preference import SUPPORTED_LANGUAGES, Theme, UserPreference
 from app.schemas.settings import (
+    AllServicesStatus,
+    DeletionLoggingSettings,
+    PreferencesResponse,
+    PreferencesUpdate,
+    RetentionSettings,
     ServiceConfig,
     ServiceConfigResponse,
     ServiceTestResult,
-    AllServicesStatus,
-    PreferencesUpdate,
-    PreferencesResponse,
-    RetentionSettings,
-    DeletionLoggingSettings,
 )
 from app.services.crypto_service import crypto_service
-from app.integrations import get_integration
-from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()

@@ -8,8 +8,8 @@ from typing import Any
 import httpx
 from pydantic import BaseModel
 
-from app.integrations.base import BaseIntegration
 from app.core.logging import get_logger
+from app.integrations.base import BaseIntegration
 
 logger = get_logger(__name__)
 

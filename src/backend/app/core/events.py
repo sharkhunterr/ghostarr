@@ -7,7 +7,6 @@ from datetime import datetime
 from typing import Any
 
 from app.core.logging import get_logger
-from app.schemas.history import ProgressStep, ProgressStepStatus
 
 logger = get_logger(__name__)
 
@@ -90,7 +89,7 @@ class EventManager:
                     # Stop if generation completed or cancelled
                     if event.type in ("generation_complete", "generation_cancelled", "generation_error"):
                         break
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     # Check if generation is still active
                     if generation_id in self._completed:
                         break

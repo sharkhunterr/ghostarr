@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Monitor, Smartphone, Tablet, X } from 'lucide-react';
+import { Monitor, Smartphone, Tablet } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -40,8 +40,6 @@ export function PreviewModal({
 }: PreviewModalProps) {
   const { t } = useTranslation();
   const [viewport, setViewport] = useState<Viewport>('desktop');
-
-  const ViewportIcon = viewportConfig[viewport].icon;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

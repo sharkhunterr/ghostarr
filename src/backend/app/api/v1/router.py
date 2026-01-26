@@ -2,17 +2,18 @@
 
 from fastapi import APIRouter
 
-# Import routers
-from app.api.v1.settings import router as settings_router
+from app.api.v1.help import router as help_router
+from app.api.v1.history import router as history_router
 from app.api.v1.integrations import router as integrations_router
-from app.api.v1.newsletters import router as newsletters_router
-from app.api.v1.templates import router as templates_router
 from app.api.v1.labels import router as labels_router
+from app.api.v1.logs import router as logs_router
+from app.api.v1.newsletters import router as newsletters_router
 from app.api.v1.progress import router as progress_router
 from app.api.v1.schedules import router as schedules_router
-from app.api.v1.history import router as history_router
-from app.api.v1.logs import router as logs_router
-from app.api.v1.help import router as help_router
+
+# Import routers
+from app.api.v1.settings import router as settings_router
+from app.api.v1.templates import router as templates_router
 
 api_router = APIRouter()
 

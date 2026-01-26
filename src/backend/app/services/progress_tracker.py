@@ -1,10 +1,9 @@
 """Progress tracker service for newsletter generation."""
 
-import asyncio
 from datetime import datetime
 from typing import Any
 
-from app.core.events import event_manager, ProgressEvent
+from app.core.events import event_manager
 from app.core.logging import get_logger
 from app.schemas.history import ProgressStep, ProgressStepStatus
 

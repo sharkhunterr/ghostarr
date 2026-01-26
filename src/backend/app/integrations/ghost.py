@@ -1,17 +1,14 @@
 """Ghost CMS integration for newsletter publishing."""
 
-import hashlib
-import hmac
 import json
 import time
-from datetime import datetime
 from typing import Any
 
 import jwt
 from pydantic import BaseModel
 
-from app.integrations.base import BaseIntegration
 from app.core.logging import get_logger
+from app.integrations.base import BaseIntegration
 
 logger = get_logger(__name__)
 
@@ -205,7 +202,7 @@ class GhostIntegration(BaseIntegration[GhostNewsletter]):
                 json={"posts": [post_data]},
             )
 
-            logger.info(f"Ghost response: post created successfully")
+            logger.info("Ghost response: post created successfully")
 
             posts = response.get("posts", [])
             if posts:

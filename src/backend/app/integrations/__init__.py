@@ -1,12 +1,12 @@
 """External service integrations package."""
 
+from app.integrations.audiobookshelf import AudiobookshelfIntegration
 from app.integrations.base import BaseIntegration
+from app.integrations.ghost import GhostIntegration
+from app.integrations.komga import KomgaIntegration
+from app.integrations.romm import ROMMIntegration
 from app.integrations.tautulli import TautulliIntegration
 from app.integrations.tmdb import TMDBIntegration
-from app.integrations.ghost import GhostIntegration
-from app.integrations.romm import ROMMIntegration
-from app.integrations.komga import KomgaIntegration
-from app.integrations.audiobookshelf import AudiobookshelfIntegration
 from app.integrations.tunarr import TunarrIntegration
 
 __all__ = [

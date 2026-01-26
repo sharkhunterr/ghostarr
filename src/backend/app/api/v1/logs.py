@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
 from app.models.log import Log, LogLevel, LogSource
-from app.schemas.common import PaginatedResponse, PaginationParams
+from app.schemas.common import PaginatedResponse
 from app.schemas.log import LogCreate, LogResponse, LogStats
 
 router = APIRouter()

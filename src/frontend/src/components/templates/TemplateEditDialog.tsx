@@ -22,7 +22,7 @@ import { Switch } from '@/components/ui/switch';
 import { Separator } from '@/components/ui/separator';
 import { useUpdateTemplate } from '@/api/templates';
 import { LabelSelector } from './LabelSelector';
-import type { Template, GenerationConfig, Label as LabelType } from '@/types';
+import type { Template, Label as LabelType } from '@/types';
 
 /**
  * Calculate contrasting text color (black or white) based on background color.
@@ -79,7 +79,7 @@ export function TemplateEditDialog({
         templateId: template.id,
         data: {
           name: name.trim(),
-          description: description.trim() || null,
+          description: description.trim() || undefined,
           tags: tags
             .split(',')
             .map((t) => t.trim())

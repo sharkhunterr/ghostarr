@@ -1,22 +1,21 @@
 """Scheduler service for automatic newsletter generation using APScheduler."""
 
 from datetime import datetime
-from typing import Any
-import pytz
 
+import pytz
+from apscheduler.job import Job
+from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
-from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
-from apscheduler.job import Job
 from croniter import croniter
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import settings
-from app.database import AsyncSessionLocal, SYNC_DATABASE_URL
 from app.core.logging import get_logger
-from app.models.schedule import Schedule, RunStatus, ScheduleType
+from app.database import SYNC_DATABASE_URL, AsyncSessionLocal
 from app.models.history import GenerationType
+from app.models.schedule import RunStatus, Schedule, ScheduleType
 from app.schemas.generation import GenerationConfig
 
 logger = get_logger(__name__)
@@ -101,7 +100,7 @@ async def stop_scheduler() -> None:
 async def load_schedules_from_db(db: AsyncSession) -> None:
     """Load all active schedules from database and add them to scheduler."""
     result = await db.execute(
-        select(Schedule).where(Schedule.is_active == True)
+        select(Schedule).where(Schedule.is_active)
     )
     schedules = result.scalars().all()
 

@@ -4,12 +4,9 @@ import type {
   GenerationStatus,
   GenerationType,
   History,
-  Log,
   LogLevel,
   LogSource,
-  Schedule,
   ScheduleType,
-  Template,
   Theme,
 } from "./entities";
 

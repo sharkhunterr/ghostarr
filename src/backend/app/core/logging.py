@@ -251,9 +251,7 @@ class DatabaseLogHandler(logging.Handler):
         # Extract service name from logger (e.g., "app.integrations.tautulli" -> "tautulli")
         service = None
         parts = record.name.split(".")
-        if len(parts) >= 3 and parts[1] == "integrations":
-            service = parts[2]
-        elif len(parts) >= 3 and parts[1] == "services":
+        if len(parts) >= 3 and parts[1] == "integrations" or len(parts) >= 3 and parts[1] == "services":
             service = parts[2]
 
         correlation_id = getattr(record, "correlation_id", None)

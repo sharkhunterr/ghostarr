@@ -1,14 +1,15 @@
 """Newsletter generation API endpoints."""
 
 import asyncio
-from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import get_db, AsyncSessionLocal
-from app.models.history import History, GenerationType, GenerationStatus
+from app.core.logging import get_logger
+from app.database import AsyncSessionLocal, get_db
+from app.models.history import GenerationStatus, GenerationType, History
 from app.models.template import Template
 from app.schemas.generation import (
-    GenerationConfig,
     GenerationRequest,
     PreviewRequest,
     PreviewResponse,
@@ -20,7 +21,6 @@ from app.services.newsletter_generator import (
     is_generation_active,
 )
 from app.services.template_service import template_service
-from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -85,8 +85,8 @@ async def generate_newsletter(
                 bg_generator.history = await new_db.get(History, generation_id)
                 # Re-initialize tracker
                 enabled_steps = bg_generator._get_enabled_steps()
-                from app.services.progress_tracker import ProgressTracker
                 from app.services.newsletter_generator import _active_generations
+                from app.services.progress_tracker import ProgressTracker
                 bg_generator.tracker = ProgressTracker(generation_id, enabled_steps)
                 _active_generations[generation_id] = bg_generator.tracker
 

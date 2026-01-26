@@ -18,6 +18,12 @@ from app.schemas.history import (
     ProgressStep,
     ProgressStepStatus,
 )
+from app.schemas.label import (
+    LabelCreate,
+    LabelResponse,
+    LabelUpdate,
+    TemplateLabelAssignment,
+)
 from app.schemas.schedule import (
     ScheduleCreate,
     ScheduleResponse,
@@ -28,12 +34,6 @@ from app.schemas.settings import (
     PreferencesUpdate,
     ServiceConfig,
     ServiceTestResult,
-)
-from app.schemas.label import (
-    LabelCreate,
-    LabelResponse,
-    LabelUpdate,
-    TemplateLabelAssignment,
 )
 from app.schemas.template import (
     TemplateCreate,

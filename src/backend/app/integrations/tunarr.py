@@ -6,8 +6,8 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from app.integrations.base import BaseIntegration
 from app.core.logging import get_logger
+from app.integrations.base import BaseIntegration
 
 logger = get_logger(__name__)
 
@@ -143,8 +143,8 @@ class TunarrIntegration(BaseIntegration[ProgramItem]):
 
             # First, try to get the guide/schedule data
             # Tunarr uses Unix timestamps in milliseconds for the guide
-            start_ts = int(start_time.timestamp() * 1000)
-            end_ts = int(end_time.timestamp() * 1000)
+            int(start_time.timestamp() * 1000)
+            int(end_time.timestamp() * 1000)
 
             try:
                 # Try the guide endpoint with channel filter

@@ -2,12 +2,12 @@
 
 from datetime import datetime, timedelta
 
-from sqlalchemy import select, and_
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models.history import History, GenerationType, GenerationStatus
-from app.models.setting import Setting
 from app.core.logging import get_logger
+from app.models.history import GenerationStatus, GenerationType, History
+from app.models.setting import Setting
 
 logger = get_logger(__name__)
 

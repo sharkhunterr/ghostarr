@@ -8,7 +8,6 @@ from sqlalchemy.orm import relationship
 
 from app.database import Base
 
-
 # Association table for many-to-many relationship between templates and labels
 template_labels = Table(
     "template_labels",

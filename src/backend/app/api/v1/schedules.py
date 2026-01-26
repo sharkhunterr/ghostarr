@@ -4,29 +4,25 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.logging import get_logger
 from app.database import get_db
-from app.models.schedule import Schedule, RunStatus, ScheduleType
+from app.models.schedule import RunStatus, Schedule, ScheduleType
 from app.models.template import Template
 from app.schemas.generation import GenerationConfig
 from app.schemas.schedule import (
     ScheduleCreate,
-    ScheduleUpdate,
-    ScheduleResponse,
     ScheduleNextRuns,
+    ScheduleResponse,
+    ScheduleUpdate,
 )
 from app.services.scheduler_service import (
     add_schedule_job,
-    remove_schedule_job,
-    pause_schedule_job,
-    resume_schedule_job,
-    get_job_next_run,
-    execute_scheduled_generation,
-    execute_scheduled_deletion,
-    validate_cron_expression,
     get_cron_description,
+    get_job_next_run,
     get_next_runs,
+    remove_schedule_job,
+    validate_cron_expression,
 )
-from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -151,9 +147,7 @@ async def update_schedule(
     # Update fields
     update_data = data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
-        if field == "generation_config" and value:
-            value = value.model_dump(mode="json") if hasattr(value, "model_dump") else value
-        elif field == "deletion_config" and value:
+        if field == "generation_config" and value or field == "deletion_config" and value:
             value = value.model_dump(mode="json") if hasattr(value, "model_dump") else value
         setattr(schedule, field, value)
         if field in ["cron_expression", "timezone", "is_active"]:
@@ -227,8 +221,9 @@ async def execute_schedule(schedule_id: str, db: AsyncSession = Depends(get_db))
     For deletion schedules, executes immediately and returns the result.
     """
     import asyncio
-    from app.database import AsyncSessionLocal
     from datetime import datetime
+
+    from app.database import AsyncSessionLocal
 
     schedule = await db.get(Schedule, schedule_id)
     if not schedule:
@@ -261,16 +256,16 @@ async def execute_schedule(schedule_id: str, db: AsyncSession = Depends(get_db))
         }
 
     # Handle generation schedules
+    from app.models.history import GenerationType, History
     from app.services.newsletter_generator import NewsletterGenerator, _active_generations
     from app.services.progress_tracker import ProgressTracker
-    from app.models.history import History, GenerationType
 
     # Create generation config from schedule
     config = GenerationConfig.model_validate(schedule.generation_config)
 
     # Create generator and history entry
     generator = NewsletterGenerator(db, config)
-    history = await generator.create_history_entry(
+    await generator.create_history_entry(
         generation_type=GenerationType.MANUAL,
         schedule_id=schedule_id,
     )

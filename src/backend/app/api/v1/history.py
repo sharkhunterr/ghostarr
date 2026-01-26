@@ -4,29 +4,25 @@ import csv
 import io
 import json
 from datetime import datetime, timedelta
-from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi.responses import StreamingResponse
-from sqlalchemy import select, and_, desc
+from sqlalchemy import and_, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.database import get_db
-from app.models.history import History, GenerationType, GenerationStatus
-from app.models.template import Template
-from app.models.schedule import Schedule
-from app.schemas.history import (
-    HistoryResponse,
-    HistoryFilter,
-    HistoryExportFormat,
-)
-from app.schemas.common import PaginatedResponse
-from app.schemas.generation import GenerationConfig
-from app.services.newsletter_generator import NewsletterGenerator
-from app.services.deletion_service import DeletionService
-from app.integrations.ghost import ghost_client
 from app.core.logging import get_logger
+from app.database import get_db
+from app.integrations.ghost import ghost_client
+from app.models.history import GenerationStatus, GenerationType, History
+from app.models.template import Template
+from app.schemas.generation import GenerationConfig
+from app.schemas.history import (
+    HistoryExportFormat,
+    HistoryResponse,
+)
+from app.services.deletion_service import DeletionService
+from app.services.newsletter_generator import NewsletterGenerator
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -34,12 +30,12 @@ router = APIRouter()
 
 @router.get("", response_model=list[HistoryResponse])
 async def list_history(
-    type: Optional[GenerationType] = None,
-    status: Optional[GenerationStatus] = None,
-    template_id: Optional[str] = None,
-    schedule_id: Optional[str] = None,
-    start_date: Optional[datetime] = None,
-    end_date: Optional[datetime] = None,
+    type: GenerationType | None = None,
+    status: GenerationStatus | None = None,
+    template_id: str | None = None,
+    schedule_id: str | None = None,
+    start_date: datetime | None = None,
+    end_date: datetime | None = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=100),
     db: AsyncSession = Depends(get_db),
@@ -84,10 +80,10 @@ async def list_history(
 @router.get("/export")
 async def export_history(
     format: HistoryExportFormat = HistoryExportFormat.JSON,
-    type: Optional[GenerationType] = None,
-    status: Optional[GenerationStatus] = None,
-    start_date: Optional[datetime] = None,
-    end_date: Optional[datetime] = None,
+    type: GenerationType | None = None,
+    status: GenerationStatus | None = None,
+    start_date: datetime | None = None,
+    end_date: datetime | None = None,
     db: AsyncSession = Depends(get_db),
 ):
     """Export history entries to JSON or CSV."""

@@ -43,7 +43,7 @@ const WEEKDAY_NAMES = [
 export function CronInput({
   value,
   onChange,
-  timezone = 'Europe/Paris',
+  timezone: _timezone = 'Europe/Paris',
   showPreview = true,
   error,
 }: CronInputProps) {
@@ -65,7 +65,7 @@ export function CronInput({
 
   const validateCron = useValidateCron();
 
-  // Parse CRON to simple mode if possible
+  // Parse CRON to simple mode if possible (only on initial mount)
   useEffect(() => {
     if (!value) return;
 
@@ -109,6 +109,7 @@ export function CronInput({
       // Complex pattern, switch to advanced
       setIsSimpleMode(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Generate CRON from simple config
@@ -137,6 +138,7 @@ export function CronInput({
     if (value && showPreview) {
       validateCron.mutate(value);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value, showPreview]);
 
   const updateSimpleConfig = <K extends keyof typeof simpleConfig>(
