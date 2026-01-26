@@ -170,7 +170,8 @@
     },
     "types": {
       "manual": "Manuell",
-      "automatic": "Automatisch"
+      "automatic": "Automatisch",
+      "deletion": "Löschung"
     },
     "status": {
       "pending": "Ausstehend",
@@ -300,6 +301,11 @@
         "title": "Datenaufbewahrung",
         "history": "Verlauf (Tage)",
         "logs": "Protokolle (Tage)"
+      },
+      "deletionLogging": {
+        "title": "Löschprotokollierung",
+        "label": "Löschungen im Verlauf protokollieren",
+        "help": "Wenn aktiviert, werden Löschaktionen (manuell oder geplant) im Verlauf aufgezeichnet"
       },
       "export": "Konfiguration exportieren",
       "import": "Konfiguration importieren"
@@ -543,7 +549,12 @@
     "empty": "Keine Benachrichtigungen"
   },
   "schedule": {
+    "tabs": {
+      "generation": "Newsletter-Generierung",
+      "deletion": "Bereinigung"
+    },
     "create": "Zeitplan erstellen",
+    "createDeletion": "Bereinigungszeitplan erstellen",
     "empty": "Keine Zeitpläne konfiguriert",
     "nextRun": "Nächste Ausführung",
     "lastRun": "Letzte Ausführung",
@@ -553,8 +564,13 @@
     "form": {
       "createTitle": "Zeitplan erstellen",
       "createDescription": "Konfigurieren Sie einen neuen automatischen Newsletter-Generierungszeitplan",
+      "createDeletionTitle": "Bereinigungszeitplan erstellen",
+      "createDeletionDescription": "Konfigurieren Sie einen neuen automatischen Bereinigungszeitplan",
       "editTitle": "Zeitplan bearbeiten",
       "editDescription": "Zeitplaneinstellungen ändern",
+      "editDeletionTitle": "Bereinigungszeitplan bearbeiten",
+      "editDeletionDescription": "Bereinigungszeitplaneinstellungen ändern",
+      "deletionConfig": "Bereinigungseinstellungen",
       "name": "Zeitplanname",
       "namePlaceholder": "z.B. Wöchentlicher Newsletter",
       "cron": "CRON-Ausdruck",
@@ -588,6 +604,13 @@
     "actions": {
       "executeNow": "Jetzt ausführen",
       "toggle": "Aktivieren/Deaktivieren"
+    },
+    "deletion": {
+      "retentionDays": "Aufbewahrungszeitraum (Tage)",
+      "retentionDaysHelp": "Newsletter löschen, die älter als diese Anzahl von Tagen sind",
+      "retentionDaysBadge": "> {{days}}T",
+      "deleteFromGhost": "Von Ghost löschen",
+      "deleteFromGhostHelp": "Auch die zugehörigen Ghost-Beiträge löschen (nicht nur aus dem Verlauf)"
     },
     "deleteConfirm": {
       "title": "Zeitplan löschen",

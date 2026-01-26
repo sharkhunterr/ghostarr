@@ -24,6 +24,7 @@ from app.schemas.history import (
 from app.schemas.common import PaginatedResponse
 from app.schemas.generation import GenerationConfig
 from app.services.newsletter_generator import NewsletterGenerator
+from app.services.deletion_service import DeletionService
 from app.integrations.ghost import ghost_client
 from app.core.logging import get_logger
 
@@ -225,6 +226,14 @@ async def bulk_delete_history(
 
     await db.commit()
 
+    # Log manual deletion in history if enabled
+    deletion_service = DeletionService(db)
+    await deletion_service.log_manual_deletion(
+        deleted_count=deleted_count,
+        ghost_deleted_count=0,
+        errors=None,
+    )
+
     return {"status": "deleted", "deleted_count": deleted_count}
 
 
@@ -257,6 +266,14 @@ async def bulk_delete_history_with_ghost(
             deleted_count += 1
 
     await db.commit()
+
+    # Log manual deletion in history if enabled
+    deletion_service = DeletionService(db)
+    await deletion_service.log_manual_deletion(
+        deleted_count=deleted_count,
+        ghost_deleted_count=ghost_deleted_count,
+        errors=errors if errors else None,
+    )
 
     return {
         "status": "deleted",

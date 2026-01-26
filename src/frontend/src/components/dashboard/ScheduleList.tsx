@@ -55,10 +55,11 @@ import { useCancelGeneration } from '@/api/newsletters';
 import { useProgressStore } from '@/stores/progressStore';
 import { useSSE } from '@/hooks/useSSE';
 import { ProgressCard } from './ProgressCard';
-import type { Schedule, RunStatus, ProgressEvent } from '@/types';
+import type { Schedule, RunStatus, ScheduleType, ProgressEvent } from '@/types';
 
 interface ScheduleListProps {
   onEdit?: (schedule: Schedule) => void;
+  scheduleType?: ScheduleType;
 }
 
 function getStatusIcon(status: RunStatus | null) {
@@ -103,9 +104,14 @@ function formatRelativeTime(dateStr: string | null, t: (key: string, params?: Re
   }
 }
 
-export function ScheduleList({ onEdit }: ScheduleListProps) {
+export function ScheduleList({ onEdit, scheduleType }: ScheduleListProps) {
   const { t } = useTranslation();
-  const { data: schedules, isLoading, error } = useSchedules();
+  const { data: allSchedules, isLoading, error } = useSchedules();
+
+  // Filter schedules by type if specified
+  const schedules = allSchedules?.filter(
+    (s) => !scheduleType || s.schedule_type === scheduleType
+  );
   const toggleSchedule = useToggleSchedule();
   const deleteSchedule = useDeleteSchedule();
   const executeSchedule = useExecuteSchedule();
@@ -171,9 +177,12 @@ export function ScheduleList({ onEdit }: ScheduleListProps) {
       setExecutingScheduleId(schedule.id);
       const result = await executeSchedule.mutateAsync(schedule.id);
 
-      // Start tracking progress
-      startGeneration(result.generation_id);
-      setProgressModalOpen(true);
+      // Only show progress modal for generation schedules
+      if (schedule.schedule_type === 'generation' && result.generation_id) {
+        startGeneration(result.generation_id);
+        setProgressModalOpen(true);
+      }
+      // For deletion schedules, the result is immediate - no modal needed
     } catch (error) {
       console.error('Failed to execute schedule:', error);
     } finally {
@@ -251,6 +260,18 @@ export function ScheduleList({ onEdit }: ScheduleListProps) {
                       <Badge variant="secondary" className="text-xs px-1">
                         <Pause className="h-3 w-3" />
                       </Badge>
+                    )}
+                    {schedule.schedule_type === 'deletion' && schedule.deletion_config && (
+                      <>
+                        <Badge variant="outline" className="text-xs hidden sm:inline-flex">
+                          {t('schedule.deletion.retentionDaysBadge', { days: schedule.deletion_config.retention_days })}
+                        </Badge>
+                        {schedule.deletion_config.delete_from_ghost && (
+                          <Badge variant="destructive" className="text-xs hidden sm:inline-flex">
+                            Ghost
+                          </Badge>
+                        )}
+                      </>
                     )}
                   </div>
 

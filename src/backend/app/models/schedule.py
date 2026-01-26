@@ -10,6 +10,13 @@ from sqlalchemy.orm import relationship
 from app.database import Base
 
 
+class ScheduleType(enum.Enum):
+    """Type of schedule."""
+
+    GENERATION = "generation"
+    DELETION = "deletion"
+
+
 class RunStatus(enum.Enum):
     """Status of schedule execution."""
 
@@ -26,11 +33,18 @@ class Schedule(Base):
 
     id = Column(String(36), primary_key=True, default=lambda: str(uuid4()))
     name = Column(String(255), nullable=False, index=True)
+    schedule_type = Column(
+        Enum(ScheduleType, values_callable=lambda x: [e.value for e in x]),
+        default=ScheduleType.GENERATION,
+        nullable=False,
+        index=True,
+    )
     is_active = Column(Boolean, default=True, index=True)
     cron_expression = Column(String(100), nullable=False)  # "0 8 * * 1"
     timezone = Column(String(50), default="Europe/Paris")
-    template_id = Column(String(36), ForeignKey("templates.id"), nullable=False)
-    generation_config = Column(JSON, nullable=False)  # Full config snapshot
+    template_id = Column(String(36), ForeignKey("templates.id"), nullable=True)
+    generation_config = Column(JSON, nullable=True)  # Full config snapshot for generation
+    deletion_config = Column(JSON, nullable=True)  # Config for deletion schedules
     last_run_at = Column(DateTime, nullable=True)
     last_run_status = Column(
         Enum(RunStatus, values_callable=lambda x: [e.value for e in x]),

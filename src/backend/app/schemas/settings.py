@@ -76,6 +76,12 @@ class RetentionSettings(BaseModel):
     logs_days: int = Field(default=30, ge=1, le=365, description="Days to keep logs")
 
 
+class DeletionLoggingSettings(BaseModel):
+    """Deletion logging settings."""
+
+    log_deletions: bool = Field(default=True, description="Log deletion actions in history")
+
+
 class ConfigExport(BaseModel):
     """Full configuration export."""
 

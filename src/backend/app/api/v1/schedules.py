@@ -5,7 +5,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import get_db
-from app.models.schedule import Schedule, RunStatus
+from app.models.schedule import Schedule, RunStatus, ScheduleType
 from app.models.template import Template
 from app.schemas.generation import GenerationConfig
 from app.schemas.schedule import (
@@ -21,6 +21,7 @@ from app.services.scheduler_service import (
     resume_schedule_job,
     get_job_next_run,
     execute_scheduled_generation,
+    execute_scheduled_deletion,
     validate_cron_expression,
     get_cron_description,
     get_next_runs,
@@ -76,23 +77,28 @@ async def create_schedule(
     if not is_valid:
         raise HTTPException(status_code=400, detail=f"Invalid CRON expression: {error}")
 
-    # Validate template exists
-    template = await db.get(Template, data.template_id)
-    if not template:
-        raise HTTPException(status_code=400, detail="Template not found")
+    # Validate template only for generation schedules
+    if data.schedule_type == ScheduleType.GENERATION:
+        if not data.template_id:
+            raise HTTPException(status_code=400, detail="Template ID is required for generation schedules")
+        template = await db.get(Template, data.template_id)
+        if not template:
+            raise HTTPException(status_code=400, detail="Template not found")
 
     # Check for duplicate name
     existing = await db.execute(select(Schedule).where(Schedule.name == data.name))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=400, detail="Schedule with this name already exists")
 
-    # Create schedule
+    # Create schedule based on type
     schedule = Schedule(
         name=data.name,
+        schedule_type=data.schedule_type,
         cron_expression=data.cron_expression,
         timezone=data.timezone or "UTC",
-        template_id=data.template_id,
-        generation_config=data.generation_config.model_dump(mode="json"),
+        template_id=data.template_id if data.schedule_type == ScheduleType.GENERATION else None,
+        generation_config=data.generation_config.model_dump(mode="json") if data.generation_config else None,
+        deletion_config=data.deletion_config.model_dump(mode="json") if data.deletion_config else None,
         is_active=data.is_active if data.is_active is not None else True,
     )
     db.add(schedule)
@@ -146,6 +152,8 @@ async def update_schedule(
     update_data = data.model_dump(exclude_unset=True)
     for field, value in update_data.items():
         if field == "generation_config" and value:
+            value = value.model_dump(mode="json") if hasattr(value, "model_dump") else value
+        elif field == "deletion_config" and value:
             value = value.model_dump(mode="json") if hasattr(value, "model_dump") else value
         setattr(schedule, field, value)
         if field in ["cron_expression", "timezone", "is_active"]:
@@ -215,17 +223,47 @@ async def toggle_schedule(schedule_id: str, db: AsyncSession = Depends(get_db)):
 async def execute_schedule(schedule_id: str, db: AsyncSession = Depends(get_db)):
     """Execute a schedule immediately (manual trigger).
 
-    Returns the history entry for progress tracking via SSE.
+    Returns the history entry for progress tracking via SSE (for generation schedules).
+    For deletion schedules, executes immediately and returns the result.
     """
     import asyncio
-    from app.services.newsletter_generator import NewsletterGenerator, _active_generations
-    from app.services.progress_tracker import ProgressTracker
-    from app.models.history import History, GenerationType
     from app.database import AsyncSessionLocal
+    from datetime import datetime
 
     schedule = await db.get(Schedule, schedule_id)
     if not schedule:
         raise HTTPException(status_code=404, detail="Schedule not found")
+
+    # Handle deletion schedules
+    if schedule.schedule_type == ScheduleType.DELETION:
+        from app.services.deletion_service import DeletionService
+
+        deletion_config = schedule.deletion_config or {}
+        retention_days = deletion_config.get("retention_days", 30)
+        delete_from_ghost = deletion_config.get("delete_from_ghost", False)
+
+        service = DeletionService(db)
+        result = await service.execute_cleanup(
+            retention_days=retention_days,
+            delete_from_ghost=delete_from_ghost,
+            schedule_id=schedule_id,
+        )
+
+        # Update schedule last run info
+        schedule.last_run_at = datetime.utcnow()
+        schedule.last_run_status = RunStatus.SUCCESS
+        await db.commit()
+
+        return {
+            "status": "completed",
+            "schedule_id": schedule_id,
+            "result": result,
+        }
+
+    # Handle generation schedules
+    from app.services.newsletter_generator import NewsletterGenerator, _active_generations
+    from app.services.progress_tracker import ProgressTracker
+    from app.models.history import History, GenerationType
 
     # Create generation config from schedule
     config = GenerationConfig.model_validate(schedule.generation_config)
@@ -259,7 +297,6 @@ async def execute_schedule(schedule_id: str, db: AsyncSession = Depends(get_db))
                 # Update schedule last run info
                 schedule_obj = await new_db.get(Schedule, schedule_id)
                 if schedule_obj and bg_generator.history:
-                    from datetime import datetime
                     schedule_obj.last_run_at = datetime.utcnow()
                     if bg_generator.history.status.value == "success":
                         schedule_obj.last_run_status = RunStatus.SUCCESS
@@ -273,7 +310,6 @@ async def execute_schedule(schedule_id: str, db: AsyncSession = Depends(get_db))
             # Update schedule with failure
             try:
                 async with AsyncSessionLocal() as err_db:
-                    from datetime import datetime
                     schedule_obj = await err_db.get(Schedule, schedule_id)
                     if schedule_obj:
                         schedule_obj.last_run_at = datetime.utcnow()

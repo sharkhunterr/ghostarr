@@ -15,6 +15,7 @@ class GenerationType(enum.Enum):
 
     MANUAL = "manual"
     AUTOMATIC = "automatic"
+    DELETION = "deletion"
 
 
 class GenerationStatus(enum.Enum):
@@ -35,15 +36,16 @@ class History(Base):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid4()))
     type = Column(Enum(GenerationType), nullable=False, index=True)
     schedule_id = Column(String(36), ForeignKey("schedules.id"), nullable=True)
-    template_id = Column(String(36), ForeignKey("templates.id"), nullable=False)
+    template_id = Column(String(36), ForeignKey("templates.id"), nullable=True)
     status = Column(Enum(GenerationStatus), default=GenerationStatus.PENDING, index=True)
     ghost_post_id = Column(String(100), nullable=True)
     ghost_post_url = Column(String(512), nullable=True)
-    generation_config = Column(JSON, nullable=False)
+    generation_config = Column(JSON, nullable=True)  # Nullable for deletion entries
     progress_log = Column(JSON, default=list)  # Array of step logs
     error_message = Column(Text, nullable=True)
     items_count = Column(Integer, default=0)
     duration_seconds = Column(Float, nullable=True)
+    deletion_result = Column(JSON, nullable=True)  # Result for deletion operations
     started_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, index=True)

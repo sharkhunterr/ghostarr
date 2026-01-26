@@ -4,7 +4,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from './client';
-import type { Schedule, GenerationConfig } from '../types';
+import type { Schedule, GenerationConfig, DeletionConfig, ScheduleType } from '../types';
 
 // Query keys
 export const scheduleKeys = {
@@ -19,8 +19,10 @@ export interface ScheduleCreateData {
   name: string;
   cron_expression: string;
   timezone?: string;
-  template_id: string;
-  generation_config: GenerationConfig;
+  schedule_type?: ScheduleType;
+  template_id?: string;
+  generation_config?: GenerationConfig;
+  deletion_config?: DeletionConfig;
   is_active?: boolean;
 }
 
@@ -30,6 +32,7 @@ export interface ScheduleUpdateData {
   timezone?: string;
   template_id?: string;
   generation_config?: GenerationConfig;
+  deletion_config?: DeletionConfig;
   is_active?: boolean;
 }
 

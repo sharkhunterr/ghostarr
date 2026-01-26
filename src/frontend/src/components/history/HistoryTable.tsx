@@ -33,7 +33,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import type { History, GenerationStatus } from '@/types';
+import type { History, GenerationStatus, GenerationType } from '@/types';
+
+function getTypeIcon(type: GenerationType) {
+  switch (type) {
+    case 'deletion':
+      return <Trash2 className="h-4 w-4 text-orange-500" />;
+    default:
+      return null;
+  }
+}
 
 interface HistoryTableProps {
   entries: History[];
@@ -192,9 +201,12 @@ export function HistoryTable({
                 {formatDate(entry.created_at)}
               </TableCell>
               <TableCell className="hidden sm:table-cell">
-                <Badge variant="outline">
-                  {t(`history.types.${entry.type}`)}
-                </Badge>
+                <div className="flex items-center gap-1">
+                  {getTypeIcon(entry.type)}
+                  <Badge variant={entry.type === 'deletion' ? 'secondary' : 'outline'}>
+                    {t(`history.types.${entry.type}`)}
+                  </Badge>
+                </div>
               </TableCell>
               <TableCell>
                 <div className="flex items-center gap-1 sm:gap-2">
@@ -205,7 +217,18 @@ export function HistoryTable({
                 </div>
               </TableCell>
               <TableCell className="hidden md:table-cell text-right">
-                {entry.items_count || '-'}
+                {entry.type === 'deletion' && entry.deletion_result ? (
+                  <span>
+                    {entry.deletion_result.deleted_count}
+                    {entry.deletion_result.ghost_deleted_count > 0 && (
+                      <span className="text-muted-foreground">
+                        {' + '}{entry.deletion_result.ghost_deleted_count} Ghost
+                      </span>
+                    )}
+                  </span>
+                ) : (
+                  entry.items_count || '-'
+                )}
               </TableCell>
               <TableCell className="hidden md:table-cell text-right">
                 {formatDuration(entry.duration_seconds)}
@@ -223,7 +246,7 @@ export function HistoryTable({
                       {t('history.actions.viewDetails')}
                     </DropdownMenuItem>
 
-                    {entry.ghost_post_url && (
+                    {entry.type !== 'deletion' && entry.ghost_post_url && (
                       <DropdownMenuItem asChild>
                         <a
                           href={entry.ghost_post_url}
@@ -236,14 +259,16 @@ export function HistoryTable({
                       </DropdownMenuItem>
                     )}
 
-                    <DropdownMenuItem onClick={() => onRegenerate(entry)}>
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      {t('history.actions.regenerate')}
-                    </DropdownMenuItem>
+                    {entry.type !== 'deletion' && (
+                      <DropdownMenuItem onClick={() => onRegenerate(entry)}>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        {t('history.actions.regenerate')}
+                      </DropdownMenuItem>
+                    )}
 
                     <DropdownMenuSeparator />
 
-                    {entry.ghost_post_id && (
+                    {entry.type !== 'deletion' && entry.ghost_post_id && (
                       <DropdownMenuItem
                         onClick={() => onDeleteGhostPost(entry)}
                         className="text-destructive"

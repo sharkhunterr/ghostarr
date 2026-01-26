@@ -170,7 +170,8 @@
     },
     "types": {
       "manual": "Manuale",
-      "automatic": "Automatica"
+      "automatic": "Automatica",
+      "deletion": "Eliminazione"
     },
     "status": {
       "pending": "In attesa",
@@ -300,6 +301,11 @@
         "title": "Conservazione dati",
         "history": "Cronologia (giorni)",
         "logs": "Log (giorni)"
+      },
+      "deletionLogging": {
+        "title": "Registro eliminazioni",
+        "label": "Registra eliminazioni nella cronologia",
+        "help": "Quando attivo, le azioni di eliminazione (manuali o programmate) saranno registrate nella cronologia"
       },
       "export": "Esporta configurazione",
       "import": "Importa configurazione"
@@ -543,7 +549,12 @@
     "empty": "Nessuna notifica"
   },
   "schedule": {
+    "tabs": {
+      "generation": "Generazione Newsletter",
+      "deletion": "Pulizia"
+    },
     "create": "Crea pianificazione",
+    "createDeletion": "Crea pulizia pianificata",
     "empty": "Nessuna pianificazione configurata",
     "nextRun": "Prossima esecuzione",
     "lastRun": "Ultima esecuzione",
@@ -553,8 +564,13 @@
     "form": {
       "createTitle": "Crea pianificazione",
       "createDescription": "Configura una nuova pianificazione per la generazione automatica di newsletter",
+      "createDeletionTitle": "Crea pulizia pianificata",
+      "createDeletionDescription": "Configura una nuova pulizia automatica pianificata",
       "editTitle": "Modifica pianificazione",
       "editDescription": "Modifica le impostazioni della pianificazione",
+      "editDeletionTitle": "Modifica pulizia pianificata",
+      "editDeletionDescription": "Modifica le impostazioni della pulizia pianificata",
+      "deletionConfig": "Impostazioni pulizia",
       "name": "Nome pianificazione",
       "namePlaceholder": "es. Newsletter settimanale",
       "cron": "Espressione CRON",
@@ -588,6 +604,13 @@
     "actions": {
       "executeNow": "Esegui ora",
       "toggle": "Attiva/Disattiva"
+    },
+    "deletion": {
+      "retentionDays": "Periodo di conservazione (giorni)",
+      "retentionDaysHelp": "Elimina le newsletter più vecchie di questo numero di giorni",
+      "retentionDaysBadge": "> {{days}}g",
+      "deleteFromGhost": "Elimina da Ghost",
+      "deleteFromGhostHelp": "Elimina anche i post Ghost associati (non solo dalla cronologia)"
     },
     "deleteConfirm": {
       "title": "Elimina pianificazione",

@@ -8,11 +8,13 @@ import type {
   PreferencesUpdate,
   PreferencesResponse,
   RetentionSettings,
+  DeletionLoggingSettings,
 } from "@/types";
 
 const SERVICES_KEY = ["services"];
 const PREFERENCES_KEY = ["preferences"];
 const RETENTION_KEY = ["retention"];
+const DELETION_LOGGING_KEY = ["deletion-logging"];
 
 // Services
 export function useServices() {
@@ -141,6 +143,36 @@ export function useUpdateRetentionSettings() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: RETENTION_KEY });
+    },
+  });
+}
+
+// Deletion Logging
+export function useDeletionLoggingSettings() {
+  return useQuery({
+    queryKey: DELETION_LOGGING_KEY,
+    queryFn: async () => {
+      const { data } = await apiClient.get<DeletionLoggingSettings>(
+        "/settings/deletion-logging"
+      );
+      return data;
+    },
+  });
+}
+
+export function useUpdateDeletionLoggingSettings() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (settings: DeletionLoggingSettings) => {
+      const { data } = await apiClient.put<DeletionLoggingSettings>(
+        "/settings/deletion-logging",
+        settings
+      );
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: DELETION_LOGGING_KEY });
     },
   });
 }

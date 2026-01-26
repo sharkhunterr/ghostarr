@@ -170,7 +170,8 @@
     },
     "types": {
       "manual": "Manual",
-      "automatic": "Automático"
+      "automatic": "Automático",
+      "deletion": "Eliminación"
     },
     "status": {
       "pending": "Pendiente",
@@ -300,6 +301,11 @@
         "title": "Retención de datos",
         "history": "Historial (días)",
         "logs": "Registros (días)"
+      },
+      "deletionLogging": {
+        "title": "Registro de eliminaciones",
+        "label": "Registrar eliminaciones en el historial",
+        "help": "Cuando está activado, las acciones de eliminación (manuales o programadas) se registrarán en el historial"
       },
       "export": "Exportar configuración",
       "import": "Importar configuración"
@@ -543,7 +549,12 @@
     "empty": "Sin notificaciones"
   },
   "schedule": {
+    "tabs": {
+      "generation": "Generación de Newsletter",
+      "deletion": "Limpieza"
+    },
     "create": "Crear programación",
+    "createDeletion": "Crear limpieza programada",
     "empty": "Sin programaciones configuradas",
     "nextRun": "Próxima ejecución",
     "lastRun": "Última ejecución",
@@ -553,8 +564,13 @@
     "form": {
       "createTitle": "Crear programación",
       "createDescription": "Configura una nueva programación para la generación automática de newsletters",
+      "createDeletionTitle": "Crear limpieza programada",
+      "createDeletionDescription": "Configura una nueva limpieza automática programada",
       "editTitle": "Editar programación",
       "editDescription": "Modificar la configuración de la programación",
+      "editDeletionTitle": "Editar limpieza programada",
+      "editDeletionDescription": "Modificar la configuración de la limpieza programada",
+      "deletionConfig": "Configuración de limpieza",
       "name": "Nombre de la programación",
       "namePlaceholder": "ej. Newsletter semanal",
       "cron": "Expresión CRON",
@@ -588,6 +604,13 @@
     "actions": {
       "executeNow": "Ejecutar ahora",
       "toggle": "Activar/Desactivar"
+    },
+    "deletion": {
+      "retentionDays": "Período de retención (días)",
+      "retentionDaysHelp": "Eliminar newsletters más antiguos que este número de días",
+      "retentionDaysBadge": "> {{days}}d",
+      "deleteFromGhost": "Eliminar de Ghost",
+      "deleteFromGhostHelp": "También eliminar las publicaciones de Ghost asociadas (no solo del historial)"
     },
     "deleteConfirm": {
       "title": "Eliminar programación",

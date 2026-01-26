@@ -13,6 +13,8 @@ import {
   ChevronDown,
   ChevronRight,
   Settings2,
+  Trash2,
+  Ghost,
 } from 'lucide-react';
 import {
   Dialog,
@@ -29,7 +31,7 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
-import type { History, ProgressStepStatus, GenerationConfig } from '@/types';
+import type { History, ProgressStepStatus, GenerationConfig, DeletionResult } from '@/types';
 
 interface ProgressModalProps {
   open: boolean;
@@ -215,6 +217,54 @@ function ConfigSection({ config, t }: { config: GenerationConfig; t: (key: strin
   );
 }
 
+function DeletionResultSection({ result, t }: { result: DeletionResult; t: (key: string, params?: Record<string, unknown>) => string }) {
+  return (
+    <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+      <div className="flex items-center gap-2 text-lg font-medium">
+        <Trash2 className="h-5 w-5 text-orange-500" />
+        <span>{t('history.deletion.title')}</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        {/* Deleted from history */}
+        <div className="space-y-1">
+          <span className="text-sm text-muted-foreground">{t('history.deletion.fromHistory')}</span>
+          <div className="text-2xl font-bold">{result.deleted_count}</div>
+        </div>
+
+        {/* Deleted from Ghost */}
+        <div className="space-y-1">
+          <span className="text-sm text-muted-foreground flex items-center gap-1">
+            <Ghost className="h-4 w-4" />
+            {t('history.deletion.fromGhost')}
+          </span>
+          <div className="text-2xl font-bold">{result.ghost_deleted_count}</div>
+        </div>
+      </div>
+
+      {/* Retention period */}
+      <div className="flex justify-between items-center text-sm">
+        <span className="text-muted-foreground">{t('history.deletion.retentionPeriod')}</span>
+        <Badge variant="outline">{t('history.deletion.olderThan', { days: result.retention_days })}</Badge>
+      </div>
+
+      {/* Errors if any */}
+      {result.errors && result.errors.length > 0 && (
+        <div className="space-y-2">
+          <span className="text-sm font-medium text-destructive">{t('history.deletion.errors')}</span>
+          <ul className="text-sm text-destructive space-y-1">
+            {result.errors.map((error, i) => (
+              <li key={i} className="pl-2 border-l-2 border-destructive">
+                {error}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ProgressModal({
   open,
   onOpenChange,
@@ -231,7 +281,11 @@ export function ProgressModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>{t('history.progressModal.title')}</DialogTitle>
+          <DialogTitle>
+            {history.type === 'deletion'
+              ? t('history.deletion.modalTitle')
+              : t('history.progressModal.title')}
+          </DialogTitle>
         </DialogHeader>
 
         {/* Summary */}
@@ -247,7 +301,7 @@ export function ProgressModal({
           >
             {t(`history.status.${history.status}`)}
           </Badge>
-          {history.items_count > 0 && (
+          {history.type !== 'deletion' && history.items_count > 0 && (
             <span className="text-sm text-muted-foreground">
               {history.items_count} {t('dashboard.items')}
             </span>
@@ -265,8 +319,13 @@ export function ProgressModal({
           </div>
         )}
 
+        {/* Deletion result section */}
+        {history.type === 'deletion' && history.deletion_result && (
+          <DeletionResultSection result={history.deletion_result} t={t} />
+        )}
+
         {/* Generation config collapsible */}
-        {history.generation_config && (
+        {history.type !== 'deletion' && history.generation_config && (
           <Collapsible open={configOpen} onOpenChange={setConfigOpen}>
             <CollapsibleTrigger asChild>
               <Button
@@ -291,62 +350,58 @@ export function ProgressModal({
           </Collapsible>
         )}
 
-        <Separator />
-
-        {/* Steps timeline */}
-        <div className="flex-1 overflow-y-auto py-2">
-          <div className="space-y-1">
-            {steps.map((step, index) => (
-              <div
-                key={index}
-                className={cn(
-                  'relative pl-8 py-2',
-                  index < steps.length - 1 && 'border-l-2 ml-2.5 border-muted'
-                )}
-              >
-                {/* Step icon */}
-                <div className="absolute left-0 top-2 bg-background">
-                  {getStepIcon(step.status)}
-                </div>
-
-                {/* Step content */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-medium text-sm">
-                      {t(`progress.steps.${step.step}`, step.step)}
-                    </span>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      {step.items_count !== undefined && step.items_count > 0 && (
-                        <Badge variant="outline" className="text-xs">
-                          {step.items_count} {t('dashboard.items')}
-                        </Badge>
+        {history.type !== 'deletion' && (
+          <>
+            <Separator />
+            <div className="flex-1 overflow-y-auto py-2">
+              <div className="space-y-1">
+                {steps.map((step, index) => (
+                  <div
+                    key={index}
+                    className={cn(
+                      'relative pl-8 py-2',
+                      index < steps.length - 1 && 'border-l-2 ml-2.5 border-muted'
+                    )}
+                  >
+                    <div className="absolute left-0 top-2 bg-background">
+                      {getStepIcon(step.status)}
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-medium text-sm">
+                          {t(`progress.steps.${step.step}`, step.step)}
+                        </span>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          {step.items_count !== undefined && step.items_count > 0 && (
+                            <Badge variant="outline" className="text-xs">
+                              {step.items_count} {t('dashboard.items')}
+                            </Badge>
+                          )}
+                          {step.duration_ms !== undefined && (
+                            <span>{formatDuration(step.duration_ms)}</span>
+                          )}
+                        </div>
+                      </div>
+                      {step.message && (
+                        <p className="text-sm text-muted-foreground">
+                          {step.message}
+                        </p>
                       )}
-                      {step.duration_ms !== undefined && (
-                        <span>{formatDuration(step.duration_ms)}</span>
+                      {step.error && (
+                        <p className="text-sm text-destructive">{step.error}</p>
                       )}
                     </div>
                   </div>
-
-                  {step.message && (
-                    <p className="text-sm text-muted-foreground">
-                      {step.message}
-                    </p>
-                  )}
-
-                  {step.error && (
-                    <p className="text-sm text-destructive">{step.error}</p>
-                  )}
-                </div>
+                ))}
+                {steps.length === 0 && (
+                  <p className="text-center text-muted-foreground py-4">
+                    {t('history.progressModal.noSteps')}
+                  </p>
+                )}
               </div>
-            ))}
-
-            {steps.length === 0 && (
-              <p className="text-center text-muted-foreground py-4">
-                {t('history.progressModal.noSteps')}
-              </p>
-            )}
-          </div>
-        </div>
+            </div>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   );

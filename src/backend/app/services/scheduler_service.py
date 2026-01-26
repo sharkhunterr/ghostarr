@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.config import settings
 from app.database import AsyncSessionLocal, SYNC_DATABASE_URL
 from app.core.logging import get_logger
-from app.models.schedule import Schedule, RunStatus
+from app.models.schedule import Schedule, RunStatus, ScheduleType
 from app.models.history import GenerationType
 from app.schemas.generation import GenerationConfig
 
@@ -123,8 +123,14 @@ def add_schedule_job(schedule: Schedule) -> Job | None:
             timezone=pytz.timezone(schedule.timezone),
         )
 
+        # Choose executor based on schedule type
+        if schedule.schedule_type == ScheduleType.DELETION:
+            executor_func = execute_scheduled_deletion
+        else:
+            executor_func = execute_scheduled_generation
+
         job = scheduler.add_job(
-            execute_scheduled_generation,
+            executor_func,
             trigger=trigger,
             id=f"schedule_{schedule.id}",
             name=schedule.name,
@@ -247,6 +253,63 @@ async def execute_scheduled_generation(schedule_id: str) -> None:
 
         except Exception as e:
             logger.exception(f"Scheduled generation failed for {schedule_id}: {e}")
+
+            # Update schedule with failure
+            schedule.last_run_at = datetime.utcnow()
+            schedule.last_run_status = RunStatus.FAILED
+            await db.commit()
+
+
+async def execute_scheduled_deletion(schedule_id: str) -> None:
+    """Execute a scheduled deletion/cleanup."""
+    from app.services.deletion_service import DeletionService
+
+    logger.info(f"Executing scheduled deletion for schedule {schedule_id}")
+
+    async with AsyncSessionLocal() as db:
+        # Get the schedule
+        schedule = await db.get(Schedule, schedule_id)
+
+        if not schedule:
+            logger.error(f"Schedule {schedule_id} not found")
+            return
+
+        if not schedule.is_active:
+            logger.warning(f"Schedule {schedule_id} is not active, skipping")
+            return
+
+        try:
+            # Get deletion config
+            deletion_config = schedule.deletion_config or {}
+            retention_days = deletion_config.get("retention_days", 30)
+            delete_from_ghost = deletion_config.get("delete_from_ghost", False)
+
+            # Execute cleanup
+            service = DeletionService(db)
+            result = await service.execute_cleanup(
+                retention_days=retention_days,
+                delete_from_ghost=delete_from_ghost,
+                schedule_id=schedule_id,
+            )
+
+            # Update schedule last run info
+            schedule.last_run_at = datetime.utcnow()
+            schedule.last_run_status = RunStatus.SUCCESS
+
+            # Update next run time
+            job = get_scheduler().get_job(f"schedule_{schedule_id}")
+            if job:
+                schedule.next_run_at = job.next_run_time
+
+            await db.commit()
+
+            logger.info(
+                f"Scheduled deletion completed for {schedule_id}: "
+                f"deleted={result['deleted_count']}, ghost={result['ghost_deleted_count']}"
+            )
+
+        except Exception as e:
+            logger.exception(f"Scheduled deletion failed for {schedule_id}: {e}")
 
             # Update schedule with failure
             schedule.last_run_at = datetime.utcnow()

@@ -171,7 +171,8 @@
     },
     "types": {
       "manual": "Manuelle",
-      "automatic": "Automatique"
+      "automatic": "Automatique",
+      "deletion": "Suppression"
     },
     "status": {
       "pending": "En attente",
@@ -212,6 +213,15 @@
     "progressModal": {
       "title": "Détails de la génération",
       "noSteps": "Aucune information d'étape disponible"
+    },
+    "deletion": {
+      "modalTitle": "Détails du nettoyage",
+      "title": "Résultat du nettoyage",
+      "fromHistory": "Supprimé de l'historique",
+      "fromGhost": "Supprimé de Ghost",
+      "retentionPeriod": "Période de rétention",
+      "olderThan": "> {{days}} jours",
+      "errors": "Erreurs rencontrées"
     },
     "config": {
       "title": "Paramètres de génération",
@@ -343,6 +353,11 @@
         "title": "Rétention des données",
         "history": "Historique (jours)",
         "logs": "Logs (jours)"
+      },
+      "deletionLogging": {
+        "title": "Journalisation des suppressions",
+        "label": "Enregistrer les suppressions dans l'historique",
+        "help": "Quand activé, les actions de suppression (manuelles ou planifiées) seront enregistrées dans l'historique"
       },
       "export": "Exporter la configuration",
       "import": "Importer une configuration"
@@ -586,7 +601,12 @@
     "empty": "Aucune notification"
   },
   "schedule": {
+    "tabs": {
+      "generation": "Génération Newsletter",
+      "deletion": "Nettoyage"
+    },
     "create": "Créer une planification",
+    "createDeletion": "Créer un nettoyage planifié",
     "empty": "Aucune planification configurée",
     "nextRun": "Prochaine exécution",
     "lastRun": "Dernière exécution",
@@ -596,8 +616,13 @@
     "form": {
       "createTitle": "Créer une planification",
       "createDescription": "Configurez une nouvelle planification de génération automatique",
+      "createDeletionTitle": "Créer un nettoyage planifié",
+      "createDeletionDescription": "Configurez un nouveau nettoyage automatique",
       "editTitle": "Modifier la planification",
       "editDescription": "Modifiez les paramètres de la planification",
+      "editDeletionTitle": "Modifier le nettoyage planifié",
+      "editDeletionDescription": "Modifiez les paramètres du nettoyage planifié",
+      "deletionConfig": "Paramètres de nettoyage",
       "name": "Nom de la planification",
       "namePlaceholder": "Ex: Newsletter hebdomadaire",
       "cron": "Expression CRON",
@@ -631,6 +656,13 @@
     "actions": {
       "executeNow": "Exécuter maintenant",
       "toggle": "Activer/Désactiver"
+    },
+    "deletion": {
+      "retentionDays": "Période de rétention (jours)",
+      "retentionDaysHelp": "Supprimer les newsletters plus anciennes que ce nombre de jours",
+      "retentionDaysBadge": "> {{days}}j",
+      "deleteFromGhost": "Supprimer de Ghost",
+      "deleteFromGhostHelp": "Supprimer également les publications Ghost associées (pas seulement de l'historique)"
     },
     "deleteConfirm": {
       "title": "Supprimer la planification",

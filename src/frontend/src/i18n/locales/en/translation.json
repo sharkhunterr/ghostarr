@@ -171,7 +171,8 @@
     },
     "types": {
       "manual": "Manual",
-      "automatic": "Automatic"
+      "automatic": "Automatic",
+      "deletion": "Deletion"
     },
     "status": {
       "pending": "Pending",
@@ -212,6 +213,15 @@
     "progressModal": {
       "title": "Generation Details",
       "noSteps": "No step information available"
+    },
+    "deletion": {
+      "modalTitle": "Cleanup Details",
+      "title": "Cleanup Result",
+      "fromHistory": "Deleted from history",
+      "fromGhost": "Deleted from Ghost",
+      "retentionPeriod": "Retention period",
+      "olderThan": "> {{days}} days old",
+      "errors": "Errors encountered"
     },
     "config": {
       "title": "Generation Parameters",
@@ -343,6 +353,11 @@
         "title": "Data Retention",
         "history": "History (days)",
         "logs": "Logs (days)"
+      },
+      "deletionLogging": {
+        "title": "Deletion Logging",
+        "label": "Log deletions in history",
+        "help": "When enabled, deletion actions (manual or scheduled) will be recorded in the history"
       },
       "export": "Export configuration",
       "import": "Import configuration"
@@ -586,7 +601,12 @@
     "empty": "No notifications"
   },
   "schedule": {
+    "tabs": {
+      "generation": "Newsletter Generation",
+      "deletion": "Cleanup"
+    },
     "create": "Create schedule",
+    "createDeletion": "Create cleanup schedule",
     "empty": "No schedules configured",
     "nextRun": "Next run",
     "lastRun": "Last run",
@@ -596,8 +616,13 @@
     "form": {
       "createTitle": "Create Schedule",
       "createDescription": "Configure a new automatic newsletter generation schedule",
+      "createDeletionTitle": "Create Cleanup Schedule",
+      "createDeletionDescription": "Configure a new automatic cleanup schedule",
       "editTitle": "Edit Schedule",
       "editDescription": "Modify the schedule settings",
+      "editDeletionTitle": "Edit Cleanup Schedule",
+      "editDeletionDescription": "Modify the cleanup schedule settings",
+      "deletionConfig": "Cleanup settings",
       "name": "Schedule name",
       "namePlaceholder": "e.g., Weekly Newsletter",
       "cron": "CRON expression",
@@ -631,6 +656,13 @@
     "actions": {
       "executeNow": "Execute now",
       "toggle": "Enable/Disable"
+    },
+    "deletion": {
+      "retentionDays": "Retention period (days)",
+      "retentionDaysHelp": "Delete newsletters older than this number of days",
+      "retentionDaysBadge": "> {{days}}d",
+      "deleteFromGhost": "Delete from Ghost",
+      "deleteFromGhostHelp": "Also delete the associated Ghost posts (not just from history)"
     },
     "deleteConfirm": {
       "title": "Delete schedule",

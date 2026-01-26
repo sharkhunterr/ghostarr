@@ -2,10 +2,17 @@
 
 from datetime import datetime
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
-from app.models.schedule import RunStatus
+from app.models.schedule import RunStatus, ScheduleType
 from app.schemas.generation import GenerationConfig
+
+
+class DeletionConfig(BaseModel):
+    """Configuration for deletion schedules."""
+
+    delete_from_ghost: bool = Field(default=False, description="Also delete posts from Ghost")
+    retention_days: int = Field(ge=1, le=365, description="Delete items older than X days")
 
 
 class ScheduleBase(BaseModel):
@@ -43,9 +50,24 @@ class ScheduleBase(BaseModel):
 class ScheduleCreate(ScheduleBase):
     """Schema for creating a schedule."""
 
-    template_id: str = Field(description="Template ID to use")
-    generation_config: GenerationConfig = Field(description="Generation configuration")
+    schedule_type: ScheduleType = Field(default=ScheduleType.GENERATION, description="Schedule type")
+    template_id: str | None = Field(default=None, description="Template ID (required for generation)")
+    generation_config: GenerationConfig | None = Field(default=None, description="Generation configuration")
+    deletion_config: DeletionConfig | None = Field(default=None, description="Deletion configuration")
     is_active: bool = Field(default=True, description="Enable schedule")
+
+    @model_validator(mode="after")
+    def validate_config(self):
+        """Validate config based on schedule type."""
+        if self.schedule_type == ScheduleType.GENERATION:
+            if not self.template_id:
+                raise ValueError("template_id is required for generation schedules")
+            if not self.generation_config:
+                raise ValueError("generation_config is required for generation schedules")
+        elif self.schedule_type == ScheduleType.DELETION:
+            if not self.deletion_config:
+                raise ValueError("deletion_config is required for deletion schedules")
+        return self
 
 
 class ScheduleUpdate(BaseModel):
@@ -56,6 +78,7 @@ class ScheduleUpdate(BaseModel):
     timezone: str | None = None
     template_id: str | None = None
     generation_config: GenerationConfig | None = None
+    deletion_config: DeletionConfig | None = None
     is_active: bool | None = None
 
     @field_validator("cron_expression")
@@ -91,9 +114,11 @@ class ScheduleResponse(ScheduleBase):
     """Schedule response schema."""
 
     id: str
+    schedule_type: ScheduleType
     is_active: bool
-    template_id: str
-    generation_config: dict
+    template_id: str | None
+    generation_config: dict | None
+    deletion_config: dict | None
     last_run_at: datetime | None
     last_run_status: RunStatus | None
     next_run_at: datetime | None

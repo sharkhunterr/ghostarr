@@ -1,4 +1,5 @@
 import type {
+  DeletionConfig,
   GenerationConfig,
   GenerationStatus,
   GenerationType,
@@ -7,6 +8,7 @@ import type {
   LogLevel,
   LogSource,
   Schedule,
+  ScheduleType,
   Template,
   Theme,
 } from "./entities";
@@ -66,8 +68,10 @@ export interface ScheduleCreate {
   name: string;
   cron_expression: string;
   timezone?: string;
-  template_id: string;
-  generation_config: GenerationConfig;
+  schedule_type?: ScheduleType;
+  template_id?: string;
+  generation_config?: GenerationConfig;
+  deletion_config?: DeletionConfig;
   is_active?: boolean;
 }
 
@@ -77,6 +81,7 @@ export interface ScheduleUpdate {
   timezone?: string;
   template_id?: string;
   generation_config?: GenerationConfig;
+  deletion_config?: DeletionConfig;
   is_active?: boolean;
 }
 
@@ -164,6 +169,11 @@ export interface PreferencesResponse {
 export interface RetentionSettings {
   history_days: number;
   logs_days: number;
+}
+
+// Settings - Deletion Logging
+export interface DeletionLoggingSettings {
+  log_deletions: boolean;
 }
 
 // Logs

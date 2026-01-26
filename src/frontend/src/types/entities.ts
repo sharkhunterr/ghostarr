@@ -24,12 +24,14 @@ export interface Template {
 export interface Schedule {
   id: UUID;
   name: string;
+  schedule_type: ScheduleType;
   is_active: boolean;
   cron_expression: string;
   timezone: string;
-  template_id: UUID;
+  template_id: UUID | null;
   template?: Template;
-  generation_config: GenerationConfig;
+  generation_config: GenerationConfig | null;
+  deletion_config: DeletionConfig | null;
   last_run_at: string | null;
   last_run_status: RunStatus | null;
   next_run_at: string | null;
@@ -38,29 +40,43 @@ export interface Schedule {
 }
 
 export type RunStatus = "pending" | "success" | "failed" | "skipped";
+export type ScheduleType = "generation" | "deletion";
+
+export interface DeletionConfig {
+  delete_from_ghost: boolean;
+  retention_days: number;
+}
 
 export interface History {
   id: UUID;
   type: GenerationType;
   schedule_id: UUID | null;
   schedule?: Schedule;
-  template_id: UUID;
+  template_id: UUID | null;
   template?: Template;
   status: GenerationStatus;
   ghost_post_id: string | null;
   ghost_post_url: string | null;
-  generation_config: GenerationConfig;
+  generation_config: GenerationConfig | null;
   progress_log: ProgressStep[];
   error_message: string | null;
   items_count: number;
   duration_seconds: number | null;
+  deletion_result: DeletionResult | null;
   started_at: string | null;
   completed_at: string | null;
   created_at: string;
 }
 
-export type GenerationType = "manual" | "automatic";
+export type GenerationType = "manual" | "automatic" | "deletion";
 export type GenerationStatus = "pending" | "running" | "success" | "failed" | "cancelled";
+
+export interface DeletionResult {
+  deleted_count: number;
+  ghost_deleted_count: number;
+  retention_days: number;
+  errors: string[] | null;
+}
 
 export interface ProgressStep {
   step: string;

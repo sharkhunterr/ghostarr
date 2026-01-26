@@ -43,14 +43,20 @@ import {
   type ScheduleCreateData,
   type ScheduleUpdateData,
 } from '@/api/schedules';
-import type { Schedule, GenerationConfig, PublicationMode, Template } from '@/types';
+import type { Schedule, GenerationConfig, DeletionConfig, PublicationMode, ScheduleType, Template } from '@/types';
 
 interface ScheduleFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   schedule?: Schedule | null;
+  defaultScheduleType?: ScheduleType;
   onSuccess?: () => void;
 }
+
+const defaultDeletionConfig: DeletionConfig = {
+  retention_days: 30,
+  delete_from_ghost: false,
+};
 
 const defaultConfig: GenerationConfig = {
   template_id: '',
@@ -106,6 +112,7 @@ export function ScheduleForm({
   open,
   onOpenChange,
   schedule,
+  defaultScheduleType = 'generation',
   onSuccess,
 }: ScheduleFormProps) {
   const { t } = useTranslation();
@@ -119,7 +126,9 @@ export function ScheduleForm({
   const [cronExpression, setCronExpression] = useState('0 8 * * 1');
   const [timezone, setTimezone] = useState('Europe/Paris');
   const [isActive, setIsActive] = useState(true);
+  const [scheduleType, setScheduleType] = useState<ScheduleType>(defaultScheduleType);
   const [config, setConfig] = useState<GenerationConfig>(defaultConfig);
+  const [deletionConfig, setDeletionConfig] = useState<DeletionConfig>(defaultDeletionConfig);
 
   // Reset form when opening/schedule changes
   useEffect(() => {
@@ -129,20 +138,28 @@ export function ScheduleForm({
         setCronExpression(schedule.cron_expression);
         setTimezone(schedule.timezone);
         setIsActive(schedule.is_active);
-        setConfig(schedule.generation_config);
+        setScheduleType(schedule.schedule_type || 'generation');
+        if (schedule.generation_config) {
+          setConfig(schedule.generation_config);
+        }
+        if (schedule.deletion_config) {
+          setDeletionConfig(schedule.deletion_config);
+        }
       } else {
         setName('');
         setCronExpression('0 8 * * 1');
         setTimezone('Europe/Paris');
         setIsActive(true);
+        setScheduleType(defaultScheduleType);
         const defaultTemplate = templates?.find((t) => t.is_default);
         setConfig({
           ...defaultConfig,
           template_id: defaultTemplate?.id || '',
         });
+        setDeletionConfig(defaultDeletionConfig);
       }
     }
-  }, [open, schedule, templates]);
+  }, [open, schedule, templates, defaultScheduleType]);
 
   const handleTemplateChange = useCallback(
     (templateId: string, template: Template | undefined) => {
@@ -166,14 +183,24 @@ export function ScheduleForm({
     e.preventDefault();
 
     try {
+      const baseData = {
+        name,
+        cron_expression: cronExpression,
+        timezone,
+        is_active: isActive,
+      };
+
       if (isEditing && schedule) {
         const data: ScheduleUpdateData = {
-          name,
-          cron_expression: cronExpression,
-          timezone,
-          is_active: isActive,
-          template_id: config.template_id,
-          generation_config: config,
+          ...baseData,
+          ...(scheduleType === 'generation'
+            ? {
+                template_id: config.template_id,
+                generation_config: config,
+              }
+            : {
+                deletion_config: deletionConfig,
+              }),
         };
         await updateSchedule.mutateAsync({
           scheduleId: schedule.id,
@@ -181,12 +208,16 @@ export function ScheduleForm({
         });
       } else {
         const data: ScheduleCreateData = {
-          name,
-          cron_expression: cronExpression,
-          timezone,
-          is_active: isActive,
-          template_id: config.template_id,
-          generation_config: config,
+          ...baseData,
+          schedule_type: scheduleType,
+          ...(scheduleType === 'generation'
+            ? {
+                template_id: config.template_id,
+                generation_config: config,
+              }
+            : {
+                deletion_config: deletionConfig,
+              }),
         };
         await createSchedule.mutateAsync(data);
       }
@@ -198,7 +229,11 @@ export function ScheduleForm({
     }
   };
 
-  const isValid = name.trim() !== '' && config.template_id !== '';
+  const isValid =
+    name.trim() !== '' &&
+    (scheduleType === 'generation'
+      ? config.template_id !== ''
+      : deletionConfig.retention_days > 0);
   const isLoading = createSchedule.isPending || updateSchedule.isPending;
 
   return (
@@ -208,13 +243,21 @@ export function ScheduleForm({
           <DialogHeader>
             <DialogTitle>
               {isEditing
-                ? t('schedule.form.editTitle')
-                : t('schedule.form.createTitle')}
+                ? scheduleType === 'generation'
+                  ? t('schedule.form.editTitle')
+                  : t('schedule.form.editDeletionTitle')
+                : scheduleType === 'generation'
+                ? t('schedule.form.createTitle')
+                : t('schedule.form.createDeletionTitle')}
             </DialogTitle>
             <DialogDescription>
               {isEditing
-                ? t('schedule.form.editDescription')
-                : t('schedule.form.createDescription')}
+                ? scheduleType === 'generation'
+                  ? t('schedule.form.editDescription')
+                  : t('schedule.form.editDeletionDescription')
+                : scheduleType === 'generation'
+                ? t('schedule.form.createDescription')
+                : t('schedule.form.createDeletionDescription')}
             </DialogDescription>
           </DialogHeader>
 
@@ -274,200 +317,256 @@ export function ScheduleForm({
 
             <Separator />
 
-            {/* Generation Config */}
-            <div className="space-y-4">
-              <h4 className="font-medium">{t('schedule.form.generationConfig')}</h4>
+            {/* Generation Config - only for generation schedules */}
+            {scheduleType === 'generation' && (
+              <>
+                <div className="space-y-4">
+                  <h4 className="font-medium">{t('schedule.form.generationConfig')}</h4>
 
-              {/* Template */}
-              <div className="space-y-2">
-                <Label htmlFor="schedule-template">{t('dashboard.config.template')}</Label>
-                <TemplateSelect
-                  id="schedule-template"
-                  value={config.template_id}
-                  onValueChange={handleTemplateChange}
-                  disabled={isLoadingTemplates}
-                />
-              </div>
+                  {/* Template */}
+                  <div className="space-y-2">
+                    <Label htmlFor="schedule-template">{t('dashboard.config.template')}</Label>
+                    <TemplateSelect
+                      id="schedule-template"
+                      value={config.template_id}
+                      onValueChange={handleTemplateChange}
+                      disabled={isLoadingTemplates}
+                    />
+                  </div>
 
-              {/* Title */}
-              <div className="space-y-2">
-                <Label htmlFor="title">{t('dashboard.config.title')}</Label>
-                <Input
-                  id="title"
-                  value={config.title}
-                  onChange={(e) => updateConfig('title', e.target.value)}
-                  placeholder="Newsletter - Semaine {{date.week}}"
-                />
-              </div>
+                  {/* Title */}
+                  <div className="space-y-2">
+                    <Label htmlFor="title">{t('dashboard.config.title')}</Label>
+                    <Input
+                      id="title"
+                      value={config.title}
+                      onChange={(e) => updateConfig('title', e.target.value)}
+                      placeholder="Newsletter - Semaine {{date.week}}"
+                    />
+                  </div>
 
-              {/* Publication mode */}
-              <div className="space-y-2">
-                <Label htmlFor="publication_mode">
-                  {t('dashboard.config.publicationMode')}
-                </Label>
-                <Select
-                  value={config.publication_mode}
-                  onValueChange={(value: PublicationMode) =>
-                    updateConfig('publication_mode', value)
-                  }
-                >
-                  <SelectTrigger id="publication_mode">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="draft">
-                      {t('dashboard.config.modes.draft')}
-                    </SelectItem>
-                    <SelectItem value="publish">
-                      {t('dashboard.config.modes.publish')}
-                    </SelectItem>
-                    <SelectItem value="email">
-                      {t('dashboard.config.modes.email')}
-                    </SelectItem>
-                    <SelectItem value="email+publish">
-                      {t('dashboard.config.modes.emailPublish')}
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+                  {/* Publication mode */}
+                  <div className="space-y-2">
+                    <Label htmlFor="publication_mode">
+                      {t('dashboard.config.publicationMode')}
+                    </Label>
+                    <Select
+                      value={config.publication_mode}
+                      onValueChange={(value: PublicationMode) =>
+                        updateConfig('publication_mode', value)
+                      }
+                    >
+                      <SelectTrigger id="publication_mode">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="draft">
+                          {t('dashboard.config.modes.draft')}
+                        </SelectItem>
+                        <SelectItem value="publish">
+                          {t('dashboard.config.modes.publish')}
+                        </SelectItem>
+                        <SelectItem value="email">
+                          {t('dashboard.config.modes.email')}
+                        </SelectItem>
+                        <SelectItem value="email+publish">
+                          {t('dashboard.config.modes.emailPublish')}
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
 
-            <Separator />
+                <Separator />
 
-            {/* Content sources */}
-            <Tabs defaultValue="media" className="w-full">
-              <TabsList className="w-full flex overflow-x-auto">
-                <TabsTrigger value="media" className="flex-1 text-xs sm:text-sm min-w-0">
-                  {t('dashboard.tabs.media')}
-                </TabsTrigger>
-                <TabsTrigger value="tvPrograms" className="flex-1 text-xs sm:text-sm min-w-0">
-                  {t('dashboard.tabs.tvPrograms')}
-                </TabsTrigger>
-                <TabsTrigger value="maintenance" className="flex-1 text-xs sm:text-sm min-w-0">
-                  {t('dashboard.tabs.maintenance')}
-                </TabsTrigger>
-              </TabsList>
+                {/* Content sources */}
+                <Tabs defaultValue="media" className="w-full">
+                  <TabsList className="w-full flex overflow-x-auto">
+                    <TabsTrigger value="media" className="flex-1 text-xs sm:text-sm min-w-0">
+                      {t('dashboard.tabs.media')}
+                    </TabsTrigger>
+                    <TabsTrigger value="tvPrograms" className="flex-1 text-xs sm:text-sm min-w-0">
+                      {t('dashboard.tabs.tvPrograms')}
+                    </TabsTrigger>
+                    <TabsTrigger value="maintenance" className="flex-1 text-xs sm:text-sm min-w-0">
+                      {t('dashboard.tabs.maintenance')}
+                    </TabsTrigger>
+                  </TabsList>
 
-              <TabsContent value="media" className="space-y-4 pt-4">
-                {/* Master switch for all media */}
-                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                  <div className="space-y-0.5">
-                    <Label className="font-medium">{t('dashboard.media.enableAll')}</Label>
+                  <TabsContent value="media" className="space-y-4 pt-4">
+                    {/* Master switch for all media */}
+                    <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      <div className="space-y-0.5">
+                        <Label className="font-medium">{t('dashboard.media.enableAll')}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t('dashboard.media.enableAllHelp')}
+                        </p>
+                      </div>
+                      <Switch
+                        checked={
+                          config.tautulli.enabled ||
+                          config.romm.enabled ||
+                          config.komga.enabled ||
+                          config.audiobookshelf.enabled ||
+                          config.statistics.enabled
+                        }
+                        onCheckedChange={(checked) => {
+                          updateConfig('tautulli', { ...config.tautulli, enabled: checked });
+                          updateConfig('romm', { ...config.romm, enabled: checked });
+                          updateConfig('komga', { ...config.komga, enabled: checked });
+                          updateConfig('audiobookshelf', { ...config.audiobookshelf, enabled: checked });
+                          updateConfig('statistics', { ...config.statistics, enabled: checked });
+                        }}
+                      />
+                    </div>
+
+                    {/* Films & Series */}
+                    <ContentSourceConfig
+                      title={t('dashboard.sources.tautulli')}
+                      description={t('dashboard.sources.tautulliDesc')}
+                      config={config.tautulli}
+                      onChange={(value) => updateConfig('tautulli', value)}
+                      showFeatured
+                    />
+
+                    {/* Statistics */}
+                    <StatisticsConfig
+                      config={config.statistics}
+                      onChange={(value) => updateConfig('statistics', value)}
+                    />
+
+                    {/* Video Games */}
+                    <ContentSourceConfig
+                      title={t('dashboard.sources.romm')}
+                      description={t('dashboard.sources.rommDesc')}
+                      config={config.romm}
+                      onChange={(value) => updateConfig('romm', value)}
+                    />
+
+                    {/* Comics & Books */}
+                    <ContentSourceConfig
+                      title={t('dashboard.sources.komga')}
+                      description={t('dashboard.sources.komgaDesc')}
+                      config={config.komga}
+                      onChange={(value) => updateConfig('komga', value)}
+                    />
+
+                    {/* Audiobooks */}
+                    <ContentSourceConfig
+                      title={t('dashboard.sources.audiobookshelf')}
+                      description={t('dashboard.sources.audiobookshelfDesc')}
+                      config={config.audiobookshelf}
+                      onChange={(value) => updateConfig('audiobookshelf', value)}
+                    />
+
+                    {/* Max items - only for media */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-muted/50 rounded-lg">
+                      <div className="space-y-0.5">
+                        <Label>{t('dashboard.config.maxItems')}</Label>
+                        <p className="text-xs text-muted-foreground">
+                          {t('dashboard.config.maxItemsHelp')}
+                        </p>
+                      </div>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={100}
+                        value={config.max_total_items}
+                        onChange={(e) =>
+                          updateConfig('max_total_items', parseInt(e.target.value) || 20)
+                        }
+                        className="w-20"
+                      />
+                    </div>
+                  </TabsContent>
+
+                  <TabsContent value="tvPrograms" className="space-y-4 pt-4">
+                    <ContentSourceConfig
+                      title={t('dashboard.sources.tunarr')}
+                      description={t('dashboard.sources.tunarrDesc')}
+                      config={config.tunarr}
+                      onChange={(value) => updateConfig('tunarr', value)}
+                      showChannels
+                    />
+                  </TabsContent>
+
+                  <TabsContent value="maintenance" className="pt-4">
+                    <MaintenanceConfig
+                      config={config.maintenance}
+                      onChange={(value) => updateConfig('maintenance', value)}
+                    />
+                  </TabsContent>
+                </Tabs>
+
+                <Separator />
+
+                {/* Skip if empty option */}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="space-y-0.5 flex-1">
+                    <Label>{t('dashboard.config.skipEmpty')}</Label>
                     <p className="text-xs text-muted-foreground">
-                      {t('dashboard.media.enableAllHelp')}
+                      {t('dashboard.config.skipEmptyHelp')}
                     </p>
                   </div>
                   <Switch
-                    checked={
-                      config.tautulli.enabled ||
-                      config.romm.enabled ||
-                      config.komga.enabled ||
-                      config.audiobookshelf.enabled ||
-                      config.statistics.enabled
-                    }
-                    onCheckedChange={(checked) => {
-                      updateConfig('tautulli', { ...config.tautulli, enabled: checked });
-                      updateConfig('romm', { ...config.romm, enabled: checked });
-                      updateConfig('komga', { ...config.komga, enabled: checked });
-                      updateConfig('audiobookshelf', { ...config.audiobookshelf, enabled: checked });
-                      updateConfig('statistics', { ...config.statistics, enabled: checked });
-                    }}
+                    checked={config.skip_if_empty}
+                    onCheckedChange={(checked) => updateConfig('skip_if_empty', checked)}
                   />
                 </div>
+              </>
+            )}
 
-                {/* Films & Series */}
-                <ContentSourceConfig
-                  title={t('dashboard.sources.tautulli')}
-                  description={t('dashboard.sources.tautulliDesc')}
-                  config={config.tautulli}
-                  onChange={(value) => updateConfig('tautulli', value)}
-                  showFeatured
-                />
+            {/* Deletion Config - only for deletion schedules */}
+            {scheduleType === 'deletion' && (
+              <div className="space-y-4">
+                <h4 className="font-medium">{t('schedule.form.deletionConfig')}</h4>
 
-                {/* Statistics */}
-                <StatisticsConfig
-                  config={config.statistics}
-                  onChange={(value) => updateConfig('statistics', value)}
-                />
-
-                {/* Video Games */}
-                <ContentSourceConfig
-                  title={t('dashboard.sources.romm')}
-                  description={t('dashboard.sources.rommDesc')}
-                  config={config.romm}
-                  onChange={(value) => updateConfig('romm', value)}
-                />
-
-                {/* Comics & Books */}
-                <ContentSourceConfig
-                  title={t('dashboard.sources.komga')}
-                  description={t('dashboard.sources.komgaDesc')}
-                  config={config.komga}
-                  onChange={(value) => updateConfig('komga', value)}
-                />
-
-                {/* Audiobooks */}
-                <ContentSourceConfig
-                  title={t('dashboard.sources.audiobookshelf')}
-                  description={t('dashboard.sources.audiobookshelfDesc')}
-                  config={config.audiobookshelf}
-                  onChange={(value) => updateConfig('audiobookshelf', value)}
-                />
-
-                {/* Max items - only for media */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 bg-muted/50 rounded-lg">
-                  <div className="space-y-0.5">
-                    <Label>{t('dashboard.config.maxItems')}</Label>
-                    <p className="text-xs text-muted-foreground">
-                      {t('dashboard.config.maxItemsHelp')}
-                    </p>
-                  </div>
+                {/* Retention days */}
+                <div className="space-y-2">
+                  <Label htmlFor="retention-days">
+                    {t('schedule.deletion.retentionDays')}
+                  </Label>
+                  <p className="text-xs text-muted-foreground">
+                    {t('schedule.deletion.retentionDaysHelp')}
+                  </p>
                   <Input
+                    id="retention-days"
                     type="number"
                     min={1}
-                    max={100}
-                    value={config.max_total_items}
+                    max={365}
+                    value={deletionConfig.retention_days}
                     onChange={(e) =>
-                      updateConfig('max_total_items', parseInt(e.target.value) || 20)
+                      setDeletionConfig({
+                        ...deletionConfig,
+                        retention_days: parseInt(e.target.value) || 30,
+                      })
                     }
-                    className="w-20"
+                    className="w-32"
                   />
                 </div>
-              </TabsContent>
 
-              <TabsContent value="tvPrograms" className="space-y-4 pt-4">
-                <ContentSourceConfig
-                  title={t('dashboard.sources.tunarr')}
-                  description={t('dashboard.sources.tunarrDesc')}
-                  config={config.tunarr}
-                  onChange={(value) => updateConfig('tunarr', value)}
-                  showChannels
-                />
-              </TabsContent>
-
-              <TabsContent value="maintenance" className="pt-4">
-                <MaintenanceConfig
-                  config={config.maintenance}
-                  onChange={(value) => updateConfig('maintenance', value)}
-                />
-              </TabsContent>
-            </Tabs>
-
-            <Separator />
-
-            {/* Skip if empty option */}
-            <div className="flex items-center justify-between gap-2">
-              <div className="space-y-0.5 flex-1">
-                <Label>{t('dashboard.config.skipEmpty')}</Label>
-                <p className="text-xs text-muted-foreground">
-                  {t('dashboard.config.skipEmptyHelp')}
-                </p>
+                {/* Delete from Ghost */}
+                <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                  <div className="space-y-0.5">
+                    <Label className="font-medium">
+                      {t('schedule.deletion.deleteFromGhost')}
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      {t('schedule.deletion.deleteFromGhostHelp')}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={deletionConfig.delete_from_ghost}
+                    onCheckedChange={(checked) =>
+                      setDeletionConfig({
+                        ...deletionConfig,
+                        delete_from_ghost: checked,
+                      })
+                    }
+                  />
+                </div>
               </div>
-              <Switch
-                checked={config.skip_if_empty}
-                onCheckedChange={(checked) => updateConfig('skip_if_empty', checked)}
-              />
-            </div>
+            )}
           </div>
 
           <DialogFooter className="flex-col sm:flex-row gap-2">

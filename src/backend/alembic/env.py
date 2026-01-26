@@ -11,6 +11,7 @@ from app.database import Base, sync_engine
 # Import all models to ensure they are registered with Base
 from app.models import (  # noqa: F401
     History,
+    Label,
     Log,
     Schedule,
     Setting,

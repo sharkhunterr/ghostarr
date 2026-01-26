@@ -31,13 +31,22 @@ class ProgressStep(BaseModel):
     error: str | None = None
 
 
+class DeletionResult(BaseModel):
+    """Result of a deletion operation."""
+
+    deleted_count: int = Field(description="Number of history entries deleted")
+    ghost_deleted_count: int = Field(default=0, description="Number of Ghost posts deleted")
+    retention_days: int = Field(default=0, description="Retention period used (0 for manual)")
+    errors: list[str] | None = Field(default=None, description="Errors encountered")
+
+
 class HistoryCreate(BaseModel):
     """Schema for creating history entry (internal use)."""
 
     type: GenerationType
-    template_id: str
+    template_id: str | None = None
     schedule_id: str | None = None
-    generation_config: dict
+    generation_config: dict | None = None
 
 
 class HistoryResponse(BaseModel):
@@ -46,15 +55,16 @@ class HistoryResponse(BaseModel):
     id: str
     type: GenerationType
     schedule_id: str | None
-    template_id: str
+    template_id: str | None
     status: GenerationStatus
     ghost_post_id: str | None
     ghost_post_url: str | None
-    generation_config: dict
+    generation_config: dict | None
     progress_log: list[ProgressStep]
     error_message: str | None
     items_count: int
     duration_seconds: float | None
+    deletion_result: DeletionResult | None = None
     started_at: datetime | None
     completed_at: datetime | None
     created_at: datetime

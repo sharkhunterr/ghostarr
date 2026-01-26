@@ -14,6 +14,7 @@ from app.schemas.settings import (
     PreferencesUpdate,
     PreferencesResponse,
     RetentionSettings,
+    DeletionLoggingSettings,
 )
 from app.services.crypto_service import crypto_service
 from app.integrations import get_integration
@@ -423,6 +424,34 @@ async def update_retention_settings(
         logs_setting.value = settings.logs_days
     else:
         db.add(Setting(key="retention.logs_days", value=settings.logs_days))
+
+    await db.commit()
+
+    return settings
+
+
+# Deletion Logging Settings
+@router.get("/deletion-logging", response_model=DeletionLoggingSettings)
+async def get_deletion_logging_settings(db: AsyncSession = Depends(get_db)):
+    """Get deletion logging settings."""
+    setting = await db.get(Setting, "deletion.log_deletions")
+
+    return DeletionLoggingSettings(
+        log_deletions=setting.value if setting else True,
+    )
+
+
+@router.put("/deletion-logging", response_model=DeletionLoggingSettings)
+async def update_deletion_logging_settings(
+    settings: DeletionLoggingSettings,
+    db: AsyncSession = Depends(get_db),
+):
+    """Update deletion logging settings."""
+    setting = await db.get(Setting, "deletion.log_deletions")
+    if setting:
+        setting.value = settings.log_deletions
+    else:
+        db.add(Setting(key="deletion.log_deletions", value=settings.log_deletions))
 
     await db.commit()
 

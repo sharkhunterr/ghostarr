@@ -4,10 +4,11 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Globe, Trash2, Save, Download, Upload } from 'lucide-react';
+import { Globe, Trash2, Save, Download, Upload, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -20,6 +21,8 @@ import {
   useUpdatePreferences,
   useRetentionSettings,
   useUpdateRetentionSettings,
+  useDeletionLoggingSettings,
+  useUpdateDeletionLoggingSettings,
 } from '@/api/settings';
 import { usePreferencesStore } from '@/stores/preferencesStore';
 
@@ -49,13 +52,16 @@ export function GeneralSettings() {
   // API hooks
   const { data: preferences, isLoading: prefsLoading } = usePreferences();
   const { data: retention, isLoading: retentionLoading } = useRetentionSettings();
+  const { data: deletionLogging, isLoading: deletionLoggingLoading } = useDeletionLoggingSettings();
   const updatePrefs = useUpdatePreferences();
   const updateRetention = useUpdateRetentionSettings();
+  const updateDeletionLogging = useUpdateDeletionLoggingSettings();
 
   // Local state
   const [timezone, setTimezone] = useState(storeTimezone || 'UTC');
   const [historyDays, setHistoryDays] = useState(90);
   const [logsDays, setLogsDays] = useState(30);
+  const [logDeletions, setLogDeletions] = useState(true);
 
   // Sync with API data
   useEffect(() => {
@@ -70,6 +76,12 @@ export function GeneralSettings() {
       setLogsDays(retention.logs_days);
     }
   }, [retention]);
+
+  useEffect(() => {
+    if (deletionLogging) {
+      setLogDeletions(deletionLogging.log_deletions);
+    }
+  }, [deletionLogging]);
 
   const handleSaveTimezone = async () => {
     try {
@@ -88,6 +100,18 @@ export function GeneralSettings() {
       });
     } catch (error) {
       console.error('Failed to save retention settings:', error);
+    }
+  };
+
+  const handleToggleDeletionLogging = async (checked: boolean) => {
+    setLogDeletions(checked);
+    try {
+      await updateDeletionLogging.mutateAsync({
+        log_deletions: checked,
+      });
+    } catch (error) {
+      console.error('Failed to save deletion logging settings:', error);
+      setLogDeletions(!checked); // Revert on error
     }
   };
 
@@ -144,7 +168,7 @@ export function GeneralSettings() {
     input.click();
   };
 
-  if (prefsLoading || retentionLoading) {
+  if (prefsLoading || retentionLoading || deletionLoggingLoading) {
     return (
       <div className="text-center py-8 text-muted-foreground">
         {t('common.loading')}
@@ -231,6 +255,28 @@ export function GeneralSettings() {
             <Save className="h-4 w-4 mr-2" />
             {t('common.save')}
           </Button>
+        </div>
+      </div>
+
+      {/* Deletion Logging */}
+      <div className="rounded-lg border bg-card p-6">
+        <div className="flex items-center gap-2 mb-4">
+          <History className="h-5 w-5 text-muted-foreground" />
+          <h2 className="text-lg font-semibold">{t('settings.general.deletionLogging.title')}</h2>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="space-y-0.5">
+            <Label htmlFor="log-deletions">{t('settings.general.deletionLogging.label')}</Label>
+            <p className="text-sm text-muted-foreground">
+              {t('settings.general.deletionLogging.help')}
+            </p>
+          </div>
+          <Switch
+            id="log-deletions"
+            checked={logDeletions}
+            onCheckedChange={handleToggleDeletionLogging}
+            disabled={updateDeletionLogging.isPending}
+          />
         </div>
       </div>
 
