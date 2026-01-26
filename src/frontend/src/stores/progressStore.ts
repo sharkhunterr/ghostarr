@@ -172,7 +172,7 @@ export const useProgressStore = create<ProgressState>((set, get) => ({
               ...state.generations[generationId],
               progress: 100,
               isComplete: true,
-              ghostPostUrl: event.data?.ghost_post_url as string | undefined,
+              ghostPostUrl: (event.data?.ghost_post_url as string) ?? null,
             },
           },
         }));

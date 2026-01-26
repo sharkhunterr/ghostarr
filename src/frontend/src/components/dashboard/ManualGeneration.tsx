@@ -275,7 +275,7 @@ export function ManualGeneration({
               title={t('dashboard.sources.tautulli')}
               description={t('dashboard.sources.tautulliDesc')}
               config={config.tautulli}
-              onChange={(value) => updateConfig('tautulli', value)}
+              onChange={(value) => updateConfig('tautulli', value as typeof config.tautulli)}
               showFeatured
             />
 
@@ -335,7 +335,7 @@ export function ManualGeneration({
               title={t('dashboard.sources.tunarr')}
               description={t('dashboard.sources.tunarrDesc')}
               config={config.tunarr}
-              onChange={(value) => updateConfig('tunarr', value)}
+              onChange={(value) => updateConfig('tunarr', value as typeof config.tunarr)}
               showChannels
             />
           </TabsContent>

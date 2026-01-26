@@ -164,11 +164,8 @@ export function ContentSourceConfig({
 }: ContentSourceConfigProps) {
   const { t } = useTranslation();
 
-  const updateConfig = <K extends keyof typeof config>(
-    key: K,
-    value: (typeof config)[K]
-  ) => {
-    onChange({ ...config, [key]: value });
+  const updateConfig = (key: string, value: unknown) => {
+    onChange({ ...config, [key]: value } as typeof config);
   };
 
   return (
@@ -230,7 +227,7 @@ export function ContentSourceConfig({
                 id={`${title}-featured`}
                 checked={(config as TautulliConfig).featured_item}
                 onCheckedChange={(checked) =>
-                  updateConfig('featured_item' as keyof typeof config, checked as boolean)
+                  updateConfig('featured_item', checked)
                 }
               />
               <Label htmlFor={`${title}-featured`} className="text-sm">
@@ -244,7 +241,7 @@ export function ContentSourceConfig({
             <TunarrChannelSelector
               selectedChannels={(config as TunarrConfig).channels}
               onChannelsChange={(channels) =>
-                updateConfig('channels' as keyof typeof config, channels as never)
+                updateConfig('channels', channels)
               }
             />
           )}
