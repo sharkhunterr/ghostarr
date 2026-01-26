@@ -7,26 +7,22 @@ echo "🐍 Configuration du backend Python..."
 
 cd "$(dirname "$0")/../src/backend"
 
-# Vérifier si Poetry est installé
-if ! command -v poetry &> /dev/null; then
-    echo "⚠️  Poetry n'est pas installé."
-    echo "📦 Installation de Poetry..."
-
-    # Installer Poetry
-    curl -sSL https://install.python-poetry.org | python3 -
-
-    # Ajouter Poetry au PATH pour cette session
-    export PATH="$HOME/.local/bin:$PATH"
-
-    echo "✅ Poetry installé"
+# Créer l'environnement virtuel s'il n'existe pas
+if [ ! -d ".venv" ]; then
+    echo "📦 Création de l'environnement virtuel..."
+    python3 -m venv .venv
 fi
 
-# Configurer Poetry pour créer le venv dans le projet
-poetry config virtualenvs.in-project true
+# Activer l'environnement virtuel
+source .venv/bin/activate
+
+# Mettre à jour pip
+echo "📦 Mise à jour de pip..."
+pip install --upgrade pip
 
 # Installer les dépendances
 echo "📦 Installation des dépendances..."
-poetry install
+pip install -e ".[dev]"
 
 echo "✅ Backend configuré avec succès!"
 echo ""

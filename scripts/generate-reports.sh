@@ -12,9 +12,6 @@ cd "$(dirname "$0")/.."
 # Créer le dossier de rapports
 mkdir -p reports
 
-# Ajouter Poetry au PATH si nécessaire
-export PATH="$HOME/.local/bin:$PATH"
-
 # ============================================================================
 # Backend Reports
 # ============================================================================
@@ -23,30 +20,35 @@ if [ -d "src/backend" ]; then
     echo "🐍 Génération des rapports backend..."
     cd src/backend
 
-    if command -v poetry &> /dev/null; then
+    # Activate virtual environment if it exists
+    if [ -f ".venv/bin/activate" ]; then
+        source .venv/bin/activate
+    fi
+
+    if command -v ruff &> /dev/null; then
         # Rapport Ruff (linting)
         echo "  → Rapport Ruff (JSON)..."
-        poetry run ruff check src/ --output-format=json > ../../reports/ruff-report.json 2>&1 || true
+        ruff check app/ --output-format=json > ../../reports/ruff-report.json 2>&1 || true
 
         echo "  → Rapport Ruff (TXT)..."
-        poetry run ruff check src/ --output-format=text > ../../reports/ruff-report.txt 2>&1 || true
+        ruff check app/ --output-format=text > ../../reports/ruff-report.txt 2>&1 || true
 
         # Rapport Ruff avec suggestions de corrections
         echo "  → Rapport Ruff avec suggestions..."
-        poetry run ruff check src/ --output-format=text --show-fixes > ../../reports/ruff-fixes.txt 2>&1 || true
+        ruff check app/ --output-format=text --show-fixes > ../../reports/ruff-fixes.txt 2>&1 || true
 
         # Générer un fichier PATCH avec les corrections
         echo "  → Génération du patch de corrections..."
-        poetry run ruff check src/ --fix --diff > ../../reports/ruff-fixes.patch 2>&1 || true
+        ruff check app/ --fix --diff > ../../reports/ruff-fixes.patch 2>&1 || true
 
-        # Rapport Black (formatage)
-        echo "  → Rapport Black..."
-        poetry run black src/ --check --diff > ../../reports/black-report.txt 2>&1 || true
+        # Rapport Ruff format
+        echo "  → Rapport Ruff format..."
+        ruff format app/ --check --diff > ../../reports/ruff-format-report.txt 2>&1 || true
 
         # Rapport de tests avec coverage
         echo "  → Tests et couverture..."
-        poetry run pytest \
-            --cov=src \
+        pytest \
+            --cov=app \
             --cov-report=xml:../../reports/coverage.xml \
             --cov-report=html:../../reports/htmlcov \
             --cov-report=term \
@@ -55,11 +57,11 @@ if [ -d "src/backend" ]; then
 
         # Résumé de la couverture
         echo "  → Résumé de couverture..."
-        poetry run coverage report > ../../reports/coverage-summary.txt 2>&1 || true
+        coverage report > ../../reports/coverage-summary.txt 2>&1 || true
 
         echo "  ✅ Rapports backend générés"
     else
-        echo "  ⚠️  Poetry non trouvé - rapports backend ignorés"
+        echo "  ⚠️  Ruff non trouvé - rapports backend ignorés"
     fi
 
     cd ../..
@@ -164,7 +166,7 @@ cat >> reports/SUMMARY.md << 'EOF'
 - `ruff-report.txt` - Rapport Ruff au format texte
 - `ruff-fixes.txt` - Suggestions de corrections Ruff
 - `ruff-fixes.patch` - Fichier patch pour appliquer les corrections
-- `black-report.txt` - Rapport Black (formatage)
+- `ruff-format-report.txt` - Rapport Ruff format
 - `coverage.xml` - Couverture de code (format Cobertura)
 - `htmlcov/` - Rapport de couverture HTML
 - `junit.xml` - Résultats de tests (format JUnit)
@@ -179,10 +181,10 @@ cat >> reports/SUMMARY.md << 'EOF'
 ### Backend
 ```bash
 # Appliquer les corrections automatiques Ruff
-cd src/backend && poetry run ruff check src/ --fix --unsafe-fixes
+cd src/backend && source .venv/bin/activate && ruff check app/ --fix --unsafe-fixes
 
-# Appliquer le formatage Black
-cd src/backend && poetry run black src/
+# Appliquer le formatage Ruff
+cd src/backend && source .venv/bin/activate && ruff format app/
 
 # Ou appliquer le patch généré
 patch -p1 < reports/ruff-fixes.patch

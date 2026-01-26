@@ -1,0 +1,35 @@
+# Ghostarr - Docker Compose Configuration
+# Single unified container with backend + frontend
+
+services:
+  ghostarr:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: ghostarr
+    ports:
+      - "3000:3000"  # Frontend (nginx)
+      - "8000:8000"  # Backend API
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:////app/data/ghostarr.db
+      - LOG_LEVEL=INFO
+      - CORS_ORIGINS=["http://localhost:3000","http://localhost:5173"]
+    volumes:
+      - ghostarr-data:/app/data
+    networks:
+      - ghostarr-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  ghostarr-data:
+    name: ghostarr-data
+
+networks:
+  ghostarr-network:
+    name: ghostarr-network
+    driver: bridge

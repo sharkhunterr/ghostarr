@@ -1,22 +1,18 @@
 #!/bin/bash
-# Script pour corriger le linting backend (avec ou sans Poetry)
+# Script pour corriger le linting backend
 
 set -e
 
 cd "$(dirname "$0")/../src/backend"
 
 run_fix() {
-    if command -v poetry &> /dev/null; then
-        echo "🔧 Correction avec Poetry..."
-        poetry run ruff check src/ --fix --unsafe-fixes
-        poetry run black src/
-    elif [ -f ".venv/bin/activate" ]; then
+    if [ -f ".venv/bin/activate" ]; then
         echo "🔧 Correction avec venv..."
         source .venv/bin/activate
-        ruff check src/ --fix --unsafe-fixes
-        black src/
+        ruff check app/ --fix --unsafe-fixes
+        ruff format app/
     else
-        echo "❌ Erreur: Ni Poetry ni environnement virtuel trouvé"
+        echo "❌ Erreur: Environnement virtuel non trouvé"
         echo ""
         echo "Pour configurer le backend, exécutez:"
         echo "  bash scripts/setup-backend.sh"

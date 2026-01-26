@@ -1,5 +1,5 @@
 # GitLab CI/CD Pipeline Template
-# Ghostarr - AI Homelab Gateway
+# Ghostarr - Newsletter Generator for Media Server Administrators
 
 # =============================================================================
 # Variables globales
@@ -61,9 +61,9 @@ stages:
   before_script:
     - cd src/backend
     - pip install --upgrade pip
-    - pip install poetry
-    - poetry config virtualenvs.in-project true
-    - poetry install
+    - python -m venv .venv
+    - . .venv/bin/activate
+    - pip install -e ".[dev]"
 
 .node_template: &node_template
   image: node:${NODE_VERSION}-alpine
@@ -94,7 +94,7 @@ auto-fix:
   image: python:${PYTHON_VERSION}-slim
   before_script:
     - apt-get update && apt-get install -y git nodejs npm
-    - cd src/backend && pip install poetry && poetry config virtualenvs.in-project true && poetry install && cd ../..
+    - cd src/backend && python -m venv .venv && . .venv/bin/activate && pip install -e ".[dev]" && cd ../..
     - cd src/frontend && npm ci && cd ../..
   script:
     - chmod +x scripts/ci-auto-fix.sh
@@ -112,17 +112,16 @@ validate:backend:
   <<: *python_template
   script:
     - echo "Validation du backend Python..."
+    - . .venv/bin/activate
     # Génération des rapports de linting
-    - poetry run ruff check src/ --output-format=json > ruff-report.json || true
-    - poetry run ruff check src/ --output-format=text > ruff-report.txt || true
+    - ruff check app/ --output-format=json > ruff-report.json || true
+    - ruff check app/ --output-format=text > ruff-report.txt || true
     # Auto-fix des erreurs (safe fixes seulement)
-    - poetry run ruff check src/ --fix
-    # Application de Black
-    - poetry run black src/
+    - ruff check app/ --fix
     # Vérification finale après les corrections
     - echo "Vérification après auto-fix..."
-    - poetry run ruff check src/ || echo "⚠️ Des erreurs subsistent après auto-fix"
-    - poetry run black --check src/ || echo "⚠️ Des erreurs de formatage subsistent"
+    - ruff check app/ || echo "⚠️ Des erreurs subsistent après auto-fix"
+    - ruff format --check app/ || echo "⚠️ Des erreurs de formatage subsistent"
   artifacts:
     when: always
     paths:
@@ -169,7 +168,8 @@ test:backend:
   <<: *python_template
   script:
     - echo "Exécution des tests backend..."
-    - poetry run pytest --cov=src --cov-report=xml --cov-report=html --junitxml=junit.xml
+    - . .venv/bin/activate
+    - pytest --cov=app --cov-report=xml --cov-report=html --junitxml=junit.xml
   coverage: '/TOTAL.*\s+(\d+%)/'
   artifacts:
     when: always

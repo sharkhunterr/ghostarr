@@ -1,0 +1,7 @@
+# Production configuration
+# Uses pre-built image from Docker Hub
+
+services:
+  mcparr:
+    image: sharkhunterr/mcparr:latest
+    build: !reset null

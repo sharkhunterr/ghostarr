@@ -13,20 +13,25 @@ if [ -d "src/backend" ]; then
     echo "📦 Backend - Auto-fixing linting issues..."
     cd src/backend
 
-    if command -v poetry &> /dev/null; then
-        echo "  → Running ruff --fix..."
-        poetry run ruff check src/ --fix --unsafe-fixes || true
+    # Activate virtual environment if it exists
+    if [ -f ".venv/bin/activate" ]; then
+        source .venv/bin/activate
+    fi
 
-        echo "  → Running black..."
-        poetry run black src/ || true
+    if command -v ruff &> /dev/null; then
+        echo "  → Running ruff --fix..."
+        ruff check app/ --fix --unsafe-fixes || true
+
+        echo "  → Running ruff format..."
+        ruff format app/ || true
 
         echo "  → Generating linting report..."
-        poetry run ruff check src/ --output-format=json > ruff-report.json || true
-        poetry run ruff check src/ --output-format=text > ruff-report.txt || true
+        ruff check app/ --output-format=json > ruff-report.json || true
+        ruff check app/ --output-format=text > ruff-report.txt || true
 
         echo "✅ Backend linting fixes applied"
     else
-        echo "⚠️  Poetry not found, skipping backend fixes"
+        echo "⚠️  Ruff not found, skipping backend fixes"
     fi
 
     cd ../..

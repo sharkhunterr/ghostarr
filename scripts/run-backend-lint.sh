@@ -1,22 +1,18 @@
 #!/bin/bash
-# Script pour vérifier le linting backend (avec ou sans Poetry)
+# Script pour vérifier le linting backend
 
 set -e
 
 cd "$(dirname "$0")/../src/backend"
 
 run_lint() {
-    if command -v poetry &> /dev/null; then
-        echo "🔍 Vérification avec Poetry..."
-        poetry run ruff check src/
-        poetry run black --check src/
-    elif [ -f ".venv/bin/activate" ]; then
+    if [ -f ".venv/bin/activate" ]; then
         echo "🔍 Vérification avec venv..."
         source .venv/bin/activate
-        ruff check src/
-        black --check src/
+        ruff check app/
+        ruff format --check app/
     else
-        echo "❌ Erreur: Ni Poetry ni environnement virtuel trouvé"
+        echo "❌ Erreur: Environnement virtuel non trouvé"
         echo ""
         echo "Pour configurer le backend, exécutez:"
         echo "  bash scripts/setup-backend.sh"
