@@ -49,6 +49,12 @@ We're excited to announce Ghostarr v1.1.4, a powerful automated newsletter gener
 - Email only - Newsletter distribution
 - Site + Email - Full publication
 
+**🔧 Maintenance Notices**
+- Scheduled maintenance announcements
+- Outage and incident communication
+- Update and improvement notices
+- Security advisories
+
 **🏭 Production Ready**
 - Docker deployment with single image
 - SQLite with WAL mode for reliability

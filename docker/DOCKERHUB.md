@@ -53,7 +53,7 @@ docker compose up -d
 - Jinja2 template customization
 - Ranking evolution badges
 - Play statistics comparison
-- Mobile-responsive design
+- Maintenance notices
 - Preview before sending
 
 **🖥️ Modern Interface**

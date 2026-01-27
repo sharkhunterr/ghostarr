@@ -77,8 +77,8 @@ Ghostarr automatically collects statistics and content from your media server se
 - Ranking evolution
 - Play statistics
 - New additions
+- Maintenance notices
 - Custom templates
-- Responsive design
 - Preview before send
 
 </td>
@@ -97,6 +97,13 @@ Ghostarr automatically collects statistics and content from your media server se
 - **Site only** - Blog post without email
 - **Email only** - Newsletter distribution
 - **Site + Email** - Full publication
+
+### 🔧 Maintenance Notices
+Inform your users about planned maintenance or incidents:
+- **Scheduled maintenance** - Planned downtime
+- **Outage / Network issue** - Incident communication
+- **Update / Improvement** - New features announcement
+- **Security** - Security-related notices
 
 ---
 
@@ -317,7 +324,7 @@ flowchart LR
 
 | Manual Generation | Schedule Management |
 |-------------------|---------------------|
-| ![Manual](docs/images/manual.png) | ![Schedules](docs/images/schedules.png) |
+| ![Manual](docs/images/dashboard.png) | ![Schedules](docs/images/schedules.png) |
 
 </details>
 
@@ -335,7 +342,7 @@ flowchart LR
 
 | Services Config | General Settings |
 |-----------------|------------------|
-| ![Services](docs/images/services.png) | ![Settings](docs/images/settings.png) |
+| ![Services](docs/images/settings-services.png) | ![Settings](docs/images/settings-general.png) |
 
 </details>
 
