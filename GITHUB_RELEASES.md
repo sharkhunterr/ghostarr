@@ -4,11 +4,11 @@
 
 ---
 
-# v1.1.4
+# v1.1.5
 
-## 👻 Ghostarr v1.1.4 - The Complete Media Newsletter Solution
+## 👻 Ghostarr v1.1.5 - The Complete Media Newsletter Solution
 
-We're excited to announce Ghostarr v1.1.4, a powerful automated newsletter generator for media server administrators. This release brings together all the features that make Ghostarr the ultimate tool for keeping your users informed about your media library.
+We're excited to announce Ghostarr v1.1.5, a powerful automated newsletter generator for media server administrators. This release brings together all the features that make Ghostarr the ultimate tool for keeping your users informed about your media library.
 
 ### ✨ Highlights
 
