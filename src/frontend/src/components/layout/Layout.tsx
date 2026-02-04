@@ -13,7 +13,6 @@ import {
   Settings,
   HelpCircle,
   Menu,
-  Ghost,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -116,9 +115,7 @@ export function Layout() {
         {/* Logo */}
         <div className="flex h-14 items-center gap-2 border-b border-sidebar-border px-4">
           <Link to="/manual" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Ghost className="h-4 w-4 text-primary-foreground" />
-            </div>
+            <img src="/favicon.svg" alt="Ghostarr" className="h-8 w-8" />
             <span className="text-lg font-semibold">Ghostarr</span>
           </Link>
         </div>
