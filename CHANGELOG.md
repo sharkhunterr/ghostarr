@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.4](https://github.com/sharkhunterr/ghostarr/-/compare/v1.3.3...v1.3.4) (2026-02-04)
+
+
+### Bug Fixes
+
+* Use custom logo in sidebar header instead of Lucide icon ([ef2c1ab](https://github.com/sharkhunterr/ghostarr/-/commit/ef2c1aba58ebfac21a4b3d7c34f6029e35a885f1))
+
 ### [1.3.3](https://github.com/sharkhunterr/ghostarr/-/compare/v1.3.2...v1.3.3) (2026-02-04)
 
 

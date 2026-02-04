@@ -1,6 +1,6 @@
 {
   "name": "ghostarr",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Ghostarr - Newsletter generator for media server administrators",
   "scripts": {
     "predev": "npm run kill",
