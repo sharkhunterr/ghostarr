@@ -23,6 +23,7 @@ dependencies = [
     "python-multipart>=0.0.9",
     "aiofiles>=23.2.1",
     "pillow>=10.2.0",
+    "pyjwt>=2.8.0",
 ]
 
 [project.optional-dependencies]
