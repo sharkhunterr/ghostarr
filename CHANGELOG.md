@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.3.4...v1.4.0) (2026-02-04)
+
+
+### Features
+
+* Add template export/import functionality ([6afb040](https://github.com/sharkhunterr/ghostarr/-/commit/6afb040411308b85fd04927cdd0e72e685b0e268))
+
 ### [1.3.4](https://github.com/sharkhunterr/ghostarr/-/compare/v1.3.3...v1.3.4) (2026-02-04)
 
 
