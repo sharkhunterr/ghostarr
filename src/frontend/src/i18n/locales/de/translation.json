@@ -254,12 +254,13 @@
     "emptyDescription": "Laden Sie Ihre erste Vorlage hoch, um zu beginnen",
     "dragOrClick": "Datei hierher ziehen oder klicken zum Durchsuchen",
     "dropHere": "Datei hier ablegen",
-    "acceptedFormats": "Akzeptierte Formate: .html, .htm oder .zip",
+    "acceptedFormats": "Akzeptierte Formate: .html, .htm, .zip oder .json",
     "editTitle": "Vorlage bearbeiten",
     "editDescription": "Vorlagen-Metadaten aktualisieren",
     "actions": {
       "preview": "Vorschau",
       "edit": "Bearbeiten",
+      "export": "Exportieren",
       "delete": "Löschen",
       "setDefault": "Als Standard festlegen"
     },
@@ -286,6 +287,20 @@
       "tablet": "Tablet",
       "desktop": "Desktop",
       "noContent": "Kein Inhalt zur Vorschau"
+    },
+    "scan": {
+      "button": "Ordner scannen",
+      "success": "Vorlagen importiert",
+      "imported": "{{count}} Vorlage(n) erfolgreich importiert",
+      "noNew": "Keine neuen Vorlagen",
+      "noNewDescription": "Alle Vorlagen im Ordner sind bereits importiert"
+    },
+    "import": {
+      "button": "Importieren",
+      "success": "Vorlage importiert",
+      "imported": "Vorlage \"{{name}}\" erfolgreich importiert",
+      "invalidFormat": "Ungültiges Vorlagenformat. Erforderliche Felder: name, html",
+      "parseError": "Datei konnte nicht gelesen werden. Überprüfen Sie, ob es sich um eine gültige JSON-Datei handelt."
     }
   },
   "settings": {

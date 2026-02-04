@@ -13,6 +13,7 @@ import {
   FileText,
   Loader2,
   Settings2,
+  Download,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -24,7 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useTemplatePreview } from '@/api/templates';
+import { useTemplatePreview, exportTemplate } from '@/api/templates';
 import type { Template } from '@/types';
 
 /**
@@ -231,6 +232,10 @@ export function TemplateCard({
               <DropdownMenuItem onClick={() => onConfigurePreset(template)}>
                 <Settings2 className="h-4 w-4 mr-2" />
                 {t('templates.actions.configurePreset')}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => exportTemplate(template.id)}>
+                <Download className="h-4 w-4 mr-2" />
+                {t('templates.actions.export')}
               </DropdownMenuItem>
               {!template.is_default && (
                 <DropdownMenuItem onClick={() => onSetDefault(template)}>

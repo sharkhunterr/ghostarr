@@ -176,3 +176,55 @@ export function useScanTemplates() {
     },
   });
 }
+
+// Template export/import data format
+export interface TemplateExportData {
+  name: string;
+  description: string | null;
+  html: string;
+  labels: string[];
+  preset_config: Record<string, unknown>;
+}
+
+// Import template from JSON export
+export function useImportTemplate() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: TemplateExportData): Promise<Template> => {
+      const response = await apiClient.post<Template>('/templates/import', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: templateKeys.all });
+    },
+  });
+}
+
+// Export template (download JSON file with HTML, labels, preset_config)
+export async function exportTemplate(templateId: string): Promise<void> {
+  const response = await apiClient.get(`/templates/${templateId}/export`, {
+    responseType: 'blob',
+  });
+
+  // Get filename from Content-Disposition header or use default
+  const contentDisposition = response.headers['content-disposition'];
+  let filename = 'template.json';
+  if (contentDisposition) {
+    const match = contentDisposition.match(/filename="?([^"]+)"?/);
+    if (match) {
+      filename = match[1];
+    }
+  }
+
+  // Create download link
+  const blob = new Blob([response.data], { type: 'application/json' });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+}

@@ -254,12 +254,13 @@
     "emptyDescription": "Sube tu primera plantilla para comenzar",
     "dragOrClick": "Arrastra y suelta un archivo aquí, o haz clic para explorar",
     "dropHere": "Suelta el archivo aquí",
-    "acceptedFormats": "Formatos aceptados: .html, .htm o .zip",
+    "acceptedFormats": "Formatos aceptados: .html, .htm, .zip o .json",
     "editTitle": "Editar plantilla",
     "editDescription": "Actualizar metadatos de la plantilla",
     "actions": {
       "preview": "Vista previa",
       "edit": "Editar",
+      "export": "Exportar",
       "delete": "Eliminar",
       "setDefault": "Establecer como predeterminada"
     },
@@ -286,6 +287,20 @@
       "tablet": "Tablet",
       "desktop": "Escritorio",
       "noContent": "Sin contenido para previsualizar"
+    },
+    "scan": {
+      "button": "Escanear carpeta",
+      "success": "Plantillas importadas",
+      "imported": "{{count}} plantilla(s) importada(s) con éxito",
+      "noNew": "No hay nuevas plantillas",
+      "noNewDescription": "Todas las plantillas de la carpeta ya están importadas"
+    },
+    "import": {
+      "button": "Importar",
+      "success": "Plantilla importada",
+      "imported": "Plantilla \"{{name}}\" importada con éxito",
+      "invalidFormat": "Formato de plantilla inválido. Campos requeridos: name, html",
+      "parseError": "No se puede leer el archivo. Verifique que sea un archivo JSON válido."
     }
   },
   "settings": {

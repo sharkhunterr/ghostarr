@@ -264,13 +264,14 @@
     "emptyDescription": "Importez votre premier template pour commencer",
     "dragOrClick": "Glissez-déposez un fichier ici, ou cliquez pour parcourir",
     "dropHere": "Déposez le fichier ici",
-    "acceptedFormats": "Formats acceptés : .html, .htm, ou .zip",
+    "acceptedFormats": "Formats acceptés : .html, .htm, .zip ou .json",
     "editTitle": "Modifier le template",
     "editDescription": "Mettre à jour les métadonnées du template",
     "actions": {
       "preview": "Aperçu",
       "edit": "Modifier",
       "configurePreset": "Paramètres par défaut",
+      "export": "Exporter",
       "delete": "Supprimer",
       "setDefault": "Définir par défaut"
     },
@@ -314,6 +315,13 @@
       "imported": "{{count}} template(s) importé(s) avec succès",
       "noNew": "Aucun nouveau template",
       "noNewDescription": "Tous les templates du dossier sont déjà importés"
+    },
+    "import": {
+      "button": "Importer",
+      "success": "Template importé",
+      "imported": "Template \"{{name}}\" importé avec succès",
+      "invalidFormat": "Format de template invalide. Champs requis : name, html",
+      "parseError": "Impossible de lire le fichier. Vérifiez qu'il s'agit d'un fichier JSON valide."
     }
   },
   "labels": {

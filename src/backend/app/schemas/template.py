@@ -59,3 +59,13 @@ class TemplatePreviewResponse(BaseModel):
 
     html: str = Field(description="Rendered HTML with mock data")
     viewport: str
+
+
+class TemplateExport(BaseModel):
+    """Template export format for download/import."""
+
+    name: str = Field(description="Template name")
+    description: str | None = Field(default=None, description="Template description")
+    html: str = Field(description="HTML template content")
+    labels: list[str] = Field(default_factory=list, description="Label names")
+    preset_config: dict = Field(default_factory=dict, description="Preset generation config")

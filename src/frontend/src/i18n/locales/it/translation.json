@@ -254,12 +254,13 @@
     "emptyDescription": "Carica il tuo primo modello per iniziare",
     "dragOrClick": "Trascina e rilascia un file qui, o clicca per sfogliare",
     "dropHere": "Rilascia il file qui",
-    "acceptedFormats": "Formati accettati: .html, .htm o .zip",
+    "acceptedFormats": "Formati accettati: .html, .htm, .zip o .json",
     "editTitle": "Modifica modello",
     "editDescription": "Aggiorna i metadati del modello",
     "actions": {
       "preview": "Anteprima",
       "edit": "Modifica",
+      "export": "Esporta",
       "delete": "Elimina",
       "setDefault": "Imposta come predefinito"
     },
@@ -286,6 +287,20 @@
       "tablet": "Tablet",
       "desktop": "Desktop",
       "noContent": "Nessun contenuto da visualizzare"
+    },
+    "scan": {
+      "button": "Scansiona cartella",
+      "success": "Modelli importati",
+      "imported": "{{count}} modello/i importato/i con successo",
+      "noNew": "Nessun nuovo modello",
+      "noNewDescription": "Tutti i modelli nella cartella sono già importati"
+    },
+    "import": {
+      "button": "Importa",
+      "success": "Modello importato",
+      "imported": "Modello \"{{name}}\" importato con successo",
+      "invalidFormat": "Formato modello non valido. Campi richiesti: name, html",
+      "parseError": "Impossibile leggere il file. Verifica che sia un file JSON valido."
     }
   },
   "settings": {
