@@ -4,6 +4,70 @@
 
 ---
 
+# v1.4.0
+
+## 👻 Ghostarr v1.4.0 - Template Export & Import
+
+This release introduces a complete template export/import system, making it easy to share templates between Ghostarr instances or backup your customized templates.
+
+### ✨ What's New
+
+**📤 Template Export**
+- Export any template as a JSON file containing:
+  - Complete HTML template content
+  - Associated labels
+  - Preset generation configuration
+  - Template metadata (name, description)
+- One-click download from the template card menu
+
+**📥 Template Import**
+- Import templates from exported JSON files
+- Drag & drop JSON files directly into the upload dialog
+- Auto-fill form fields from JSON metadata
+- Automatic label creation if labels don't exist
+- Preserves preset configuration during import
+
+**🔍 Enhanced Folder Scan**
+- Scan now detects both HTML and JSON template files
+- JSON templates are automatically parsed and imported with their:
+  - Labels (created if missing)
+  - Preset configuration
+  - Metadata
+
+**🌍 Multi-language Support**
+- All new features fully translated in 5 languages (EN, FR, DE, ES, IT)
+
+### 🔄 Template Portability
+
+Share templates between users or Ghostarr instances:
+1. Export a template from the dropdown menu
+2. Send the `.json` file to another user
+3. They import it via drag & drop or folder scan
+4. Labels and presets are preserved automatically
+
+### 🐳 Docker Quick Start
+
+```yaml
+services:
+  ghostarr:
+    image: sharkhunterr/ghostarr:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/config
+    environment:
+      - TZ=Europe/Paris
+      - APP_SECRET_KEY=your-secret-key-minimum-32-characters
+```
+
+### 🔗 Links
+
+- [🐳 Docker Hub](https://hub.docker.com/r/sharkhunterr/ghostarr)
+- [📖 Documentation](https://github.com/sharkhunterr/ghostarr/tree/master/docs)
+- [🐛 Report Issues](https://github.com/sharkhunterr/ghostarr/issues)
+
+---
+
 # v1.2.0
 
 ## 👻 Ghostarr v1.2.0 - Documentation & Branding Update
