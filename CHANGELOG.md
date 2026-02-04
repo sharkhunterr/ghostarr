@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.2.0...v1.3.0) (2026-02-04)
+
+
+### Features
+
+* Add PNG version of logo (512x512) ([cf40e4a](https://github.com/sharkhunterr/ghostarr/-/commit/cf40e4a21472d4a856031df3b6024e16854253e2))
+
 ## [1.2.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.1.6...v1.2.0) (2026-02-04)
 
 
