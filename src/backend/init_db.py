@@ -36,13 +36,17 @@ def init_database():
     engine = create_engine(SYNC_DATABASE_URL)
     inspector = inspect(engine)
 
-    # Check if any tables exist
+    # Check if application tables exist (not just alembic_version)
     existing_tables = inspector.get_table_names()
     print(f"Existing tables: {existing_tables}")
 
-    if not existing_tables or "alembic_version" not in existing_tables:
+    # Check for actual application tables, not just alembic_version
+    app_tables = {"schedules", "templates", "history", "settings", "logs"}
+    has_app_tables = bool(app_tables & set(existing_tables))
+
+    if not has_app_tables:
         # Fresh install - create all tables
-        print("Fresh install detected, creating all tables...")
+        print("Fresh install detected (no application tables), creating all tables...")
 
         # Import models to register them with Base
         from app.database import Base
