@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.3](https://github.com/sharkhunterr/ghostarr/-/compare/v1.3.2...v1.3.3) (2026-02-04)
+
+
+### Bug Fixes
+
+* Add PyJWT dependency for Ghost integration ([3df513a](https://github.com/sharkhunterr/ghostarr/-/commit/3df513a25b8803e7fba54c982b987e66daa6c3a8))
+
 ### [1.3.2](https://github.com/sharkhunterr/ghostarr/-/compare/v1.3.1...v1.3.2) (2026-02-04)
 
 
