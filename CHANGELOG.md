@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.6](https://github.com/sharkhunterr/ghostarr/-/compare/v1.1.5...v1.1.6) (2026-02-04)
+
+
+### Bug Fixes
+
+* Add database initialization script for fresh installs ([5102b3b](https://github.com/sharkhunterr/ghostarr/-/commit/5102b3b68090aa711efa5f2b97d51d7fdb11f0ec))
+
 ### [1.1.5](https://github.com/sharkhunterr/ghostarr/-/compare/v1.1.4...v1.1.5) (2026-01-27)
 
 ### [1.1.4](https://github.com/sharkhunterr/ghostarr/-/compare/v1.1.3...v1.1.4) (2026-01-26)
