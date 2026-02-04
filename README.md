@@ -1,8 +1,6 @@
 <div align="center">
 
-# 👻 Ghostarr
-
-**Automated newsletter generator for your media server**
+<img src="docs/images/banner.svg" alt="Ghostarr Banner" width="800"/>
 
 [![Version](https://img.shields.io/github/v/tag/sharkhunterr/ghostarr?label=version&color=blue)](https://github.com/sharkhunterr/ghostarr/releases)
 [![Docker](https://img.shields.io/docker/v/sharkhunterr/ghostarr?label=docker&color=2496ED)](https://hub.docker.com/r/sharkhunterr/ghostarr)

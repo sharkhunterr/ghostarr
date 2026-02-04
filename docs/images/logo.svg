@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <linearGradient id="ghostGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6"/>
+      <stop offset="100%" style="stop-color:#6366F1"/>
+    </linearGradient>
+    <linearGradient id="shineGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="60" cy="60" r="56" fill="url(#ghostGrad)"/>
+
+  <!-- Ghost body -->
+  <path d="M60 20
+           C35 20 25 40 25 60
+           L25 90
+           Q30 85 35 90
+           Q40 95 45 90
+           Q50 85 55 90
+           Q60 95 65 90
+           Q70 85 75 90
+           Q80 95 85 90
+           Q90 85 95 90
+           L95 60
+           C95 40 85 20 60 20 Z"
+        fill="white"/>
+
+  <!-- Ghost shine -->
+  <path d="M60 20
+           C35 20 25 40 25 60
+           L25 50
+           C25 35 40 22 60 22
+           C70 22 78 28 82 35
+           L60 20 Z"
+        fill="url(#shineGrad)"/>
+
+  <!-- Left eye -->
+  <ellipse cx="45" cy="52" rx="8" ry="10" fill="#1F2937"/>
+  <circle cx="43" cy="49" r="3" fill="white" opacity="0.8"/>
+
+  <!-- Right eye -->
+  <ellipse cx="75" cy="52" rx="8" ry="10" fill="#1F2937"/>
+  <circle cx="73" cy="49" r="3" fill="white" opacity="0.8"/>
+
+  <!-- Smile -->
+  <path d="M48 68 Q60 78 72 68" stroke="#1F2937" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+  <!-- Newsletter icon (small envelope) -->
+  <g transform="translate(70, 75) scale(0.6)">
+    <rect x="0" y="5" width="30" height="20" rx="2" fill="#8B5CF6"/>
+    <path d="M0 7 L15 18 L30 7" stroke="white" stroke-width="2" fill="none"/>
+  </g>
+</svg>
