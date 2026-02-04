@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.2](https://github.com/sharkhunterr/ghostarr/-/compare/v1.3.1...v1.3.2) (2026-02-04)
+
+
+### Bug Fixes
+
+* Handle case where schema is up-to-date but alembic version is stale ([57d8137](https://github.com/sharkhunterr/ghostarr/-/commit/57d8137fe0f78dc632d9fc0e892881cdd6d57ff8))
+
 ### [1.3.1](https://github.com/sharkhunterr/ghostarr/-/compare/v1.3.0...v1.3.1) (2026-02-04)
 
 
