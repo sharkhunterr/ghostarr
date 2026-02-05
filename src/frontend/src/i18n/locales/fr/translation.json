@@ -325,6 +325,28 @@
       "imported": "Template \"{{name}}\" importé avec succès",
       "invalidFormat": "Format de template invalide. Champs requis : name, html",
       "parseError": "Impossible de lire le fichier. Vérifiez qu'il s'agit d'un fichier JSON valide."
+    },
+    "bulk": {
+      "export": "Exporter",
+      "import": "Importer",
+      "exportTitle": "Exporter des templates",
+      "exportDescription": "Sélectionnez les templates à exporter dans un fichier JSON unique",
+      "importTitle": "Importer des templates",
+      "importDescription": "Importer plusieurs templates depuis un fichier d'export",
+      "selectAll": "Tout sélectionner",
+      "templates": "templates",
+      "importSuccess": "Templates importés",
+      "importSuccessMessage": "Les templates ont été importés avec succès",
+      "errors": {
+        "invalidFormat": "Format de fichier invalide. Un tableau de templates est attendu.",
+        "parseError": "Impossible de lire le fichier. Vérifiez qu'il s'agit d'un fichier JSON valide."
+      },
+      "results": {
+        "title": "Résultats de l'import",
+        "imported": "{{count}} template(s) importé(s)",
+        "skipped": "{{count}} ignoré(s) (existent déjà)",
+        "errors": "{{count}} erreur(s)"
+      }
     }
   },
   "labels": {
@@ -412,6 +434,37 @@
       "results": {
         "title": "Résultats de l'import",
         "services": "{{count}} service(s) importé(s)"
+      }
+    },
+    "backup": {
+      "exportTitle": "Exporter une sauvegarde",
+      "exportDescription": "Créez une sauvegarde complète de votre configuration Ghostarr",
+      "importTitle": "Restaurer une sauvegarde",
+      "importDescription": "Restaurez la configuration depuis un fichier de sauvegarde",
+      "export": "Exporter",
+      "restore": "Restaurer",
+      "fullBackup": "Sauvegarde complète",
+      "sections": {
+        "settings": "Paramètres",
+        "data": "Données"
+      },
+      "options": {
+        "templates": "Templates",
+        "templatesDesc": "Templates de newsletter avec contenu HTML",
+        "schedules": "Planifications",
+        "schedulesDesc": "Générations et suppressions planifiées",
+        "labels": "Labels",
+        "labelsDesc": "Labels d'organisation des templates"
+      },
+      "results": {
+        "title": "Résultats de la restauration",
+        "services": "{{count}} service(s) restauré(s)",
+        "templates": "{{count}} template(s) restauré(s)",
+        "schedules": "{{count}} planification(s) restaurée(s)",
+        "labels": "{{count}} label(s) restauré(s)",
+        "skipped": "{{count}} ignoré(s)",
+        "errors": "Erreurs",
+        "moreErrors": "{{count}} erreur(s) supplémentaire(s)"
       }
     },
     "services": {

@@ -325,6 +325,28 @@
       "imported": "Template \"{{name}}\" imported successfully",
       "invalidFormat": "Invalid template format. Required fields: name, html",
       "parseError": "Unable to parse file. Please check it is a valid JSON file."
+    },
+    "bulk": {
+      "export": "Export",
+      "import": "Import",
+      "exportTitle": "Export Templates",
+      "exportDescription": "Select templates to export as a single JSON file",
+      "importTitle": "Import Templates",
+      "importDescription": "Import multiple templates from an export file",
+      "selectAll": "Select all",
+      "templates": "templates",
+      "importSuccess": "Templates imported",
+      "importSuccessMessage": "Templates have been imported successfully",
+      "errors": {
+        "invalidFormat": "Invalid file format. Expected an array of templates.",
+        "parseError": "Unable to parse file. Please check it is a valid JSON file."
+      },
+      "results": {
+        "title": "Import Results",
+        "imported": "{{count}} template(s) imported",
+        "skipped": "{{count}} skipped (already exist)",
+        "errors": "{{count}} error(s)"
+      }
     }
   },
   "labels": {
@@ -412,6 +434,37 @@
       "results": {
         "title": "Import Results",
         "services": "{{count}} service(s) imported"
+      }
+    },
+    "backup": {
+      "exportTitle": "Export Backup",
+      "exportDescription": "Create a full backup of your Ghostarr configuration",
+      "importTitle": "Restore Backup",
+      "importDescription": "Restore configuration from a backup file",
+      "export": "Export",
+      "restore": "Restore",
+      "fullBackup": "Full Backup",
+      "sections": {
+        "settings": "Settings",
+        "data": "Data"
+      },
+      "options": {
+        "templates": "Templates",
+        "templatesDesc": "Newsletter templates with HTML content",
+        "schedules": "Schedules",
+        "schedulesDesc": "Scheduled generations and deletions",
+        "labels": "Labels",
+        "labelsDesc": "Template organization labels"
+      },
+      "results": {
+        "title": "Restore Results",
+        "services": "{{count}} service(s) restored",
+        "templates": "{{count}} template(s) restored",
+        "schedules": "{{count}} schedule(s) restored",
+        "labels": "{{count}} label(s) restored",
+        "skipped": "{{count}} skipped",
+        "errors": "Errors",
+        "moreErrors": "{{count}} more error(s)"
       }
     },
     "services": {

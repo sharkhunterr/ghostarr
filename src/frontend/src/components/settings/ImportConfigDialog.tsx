@@ -1,10 +1,10 @@
 /**
- * Import configuration dialog with preview and selectable options.
+ * Import configuration dialog with preview and selectable options (full backup restore).
  */
 
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Upload, Loader2, Shield, AlertTriangle, FileJson, CheckCircle, XCircle } from 'lucide-react';
+import { Upload, Loader2, Shield, AlertTriangle, FileJson, CheckCircle, XCircle, FileText, Calendar, Tag } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -19,13 +19,10 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import {
-  useUpdatePreferences,
-  useUpdateRetentionSettings,
-  useUpdateDeletionLoggingSettings,
-  useImportServices,
-  type ServiceExport,
+  useRestoreBackup,
+  type BackupData,
+  type RestoreResult,
 } from '@/api/settings';
-import type { PreferencesResponse, RetentionSettings, DeletionLoggingSettings } from '@/types';
 
 interface ImportConfigDialogProps {
   open: boolean;
@@ -33,20 +30,11 @@ interface ImportConfigDialogProps {
   onSuccess?: () => void;
 }
 
-interface ParsedConfig {
-  version?: string;
-  exportedAt?: string;
-  preferences?: PreferencesResponse;
-  retention?: RetentionSettings;
-  deletionLogging?: DeletionLoggingSettings;
-  services?: Record<string, ServiceExport>;
-}
-
 export function ImportConfigDialog({ open, onOpenChange, onSuccess }: ImportConfigDialogProps) {
   const { t } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [parsedConfig, setParsedConfig] = useState<ParsedConfig | null>(null);
+  const [parsedConfig, setParsedConfig] = useState<BackupData | null>(null);
   const [parseError, setParseError] = useState<string | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
 
@@ -54,19 +42,14 @@ export function ImportConfigDialog({ open, onOpenChange, onSuccess }: ImportConf
   const [importRetention, setImportRetention] = useState(true);
   const [importDeletionLogging, setImportDeletionLogging] = useState(true);
   const [importServices, setImportServices] = useState(true);
+  const [importTemplates, setImportTemplates] = useState(true);
+  const [importSchedules, setImportSchedules] = useState(true);
+  const [importLabels, setImportLabels] = useState(true);
 
   const [isImporting, setIsImporting] = useState(false);
-  const [importResults, setImportResults] = useState<{
-    preferences?: boolean;
-    retention?: boolean;
-    deletionLogging?: boolean;
-    services?: { count: number; names: string[] };
-  } | null>(null);
+  const [importResults, setImportResults] = useState<RestoreResult | null>(null);
 
-  const updatePreferences = useUpdatePreferences();
-  const updateRetention = useUpdateRetentionSettings();
-  const updateDeletionLogging = useUpdateDeletionLoggingSettings();
-  const importServicesMutation = useImportServices();
+  const restoreBackup = useRestoreBackup();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -81,10 +64,10 @@ export function ImportConfigDialog({ open, onOpenChange, onSuccess }: ImportConf
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        const parsed = JSON.parse(content) as ParsedConfig;
+        const parsed = JSON.parse(content) as BackupData;
 
-        // Validate it's a Ghostarr config
-        if (!parsed.version && !parsed.preferences && !parsed.retention && !parsed.services) {
+        // Validate it's a Ghostarr backup
+        if (!parsed.version && !parsed.preferences && !parsed.retention && !parsed.services && !parsed.templates) {
           setParseError(t('settings.import.errors.invalidFormat'));
           return;
         }
@@ -96,6 +79,9 @@ export function ImportConfigDialog({ open, onOpenChange, onSuccess }: ImportConf
         setImportRetention(!!parsed.retention);
         setImportDeletionLogging(!!parsed.deletionLogging);
         setImportServices(!!parsed.services && Object.keys(parsed.services).length > 0);
+        setImportTemplates(!!parsed.templates && parsed.templates.length > 0);
+        setImportSchedules(!!parsed.schedules && parsed.schedules.length > 0);
+        setImportLabels(!!parsed.labels && parsed.labels.length > 0);
       } catch {
         setParseError(t('settings.import.errors.parseError'));
       }
@@ -108,63 +94,58 @@ export function ImportConfigDialog({ open, onOpenChange, onSuccess }: ImportConf
 
     setIsImporting(true);
     setImportResults(null);
-    const results: typeof importResults = {};
 
     try {
-      // Import preferences
+      // Build backup data to restore based on selections
+      const dataToRestore: BackupData = {
+        version: parsedConfig.version,
+        exportedAt: parsedConfig.exportedAt,
+      };
+
       if (importPreferences && parsedConfig.preferences) {
-        try {
-          await updatePreferences.mutateAsync(parsedConfig.preferences);
-          results.preferences = true;
-        } catch {
-          results.preferences = false;
-        }
+        dataToRestore.preferences = parsedConfig.preferences;
       }
-
-      // Import retention
       if (importRetention && parsedConfig.retention) {
-        try {
-          await updateRetention.mutateAsync(parsedConfig.retention);
-          results.retention = true;
-        } catch {
-          results.retention = false;
-        }
+        dataToRestore.retention = parsedConfig.retention;
       }
-
-      // Import deletion logging
       if (importDeletionLogging && parsedConfig.deletionLogging) {
-        try {
-          await updateDeletionLogging.mutateAsync(parsedConfig.deletionLogging);
-          results.deletionLogging = true;
-        } catch {
-          results.deletionLogging = false;
-        }
+        dataToRestore.deletionLogging = parsedConfig.deletionLogging;
       }
-
-      // Import services
       if (importServices && parsedConfig.services) {
-        try {
-          const result = await importServicesMutation.mutateAsync(parsedConfig.services);
-          results.services = { count: result.count, names: result.imported };
-        } catch {
-          results.services = { count: 0, names: [] };
-        }
+        dataToRestore.services = parsedConfig.services;
+      }
+      if (importLabels && parsedConfig.labels) {
+        dataToRestore.labels = parsedConfig.labels;
+      }
+      if (importTemplates && parsedConfig.templates) {
+        dataToRestore.templates = parsedConfig.templates;
+      }
+      if (importSchedules && parsedConfig.schedules) {
+        dataToRestore.schedules = parsedConfig.schedules;
       }
 
-      setImportResults(results);
+      const result = await restoreBackup.mutateAsync(dataToRestore);
+      setImportResults(result);
 
-      // Check if all imports succeeded
-      const allSucceeded =
-        (results.preferences === undefined || results.preferences) &&
-        (results.retention === undefined || results.retention) &&
-        (results.deletionLogging === undefined || results.deletionLogging) &&
-        (results.services === undefined || results.services.count > 0 || !parsedConfig.services);
-
-      if (allSucceeded) {
+      // Check if restore was successful
+      if (result.errors.length === 0) {
         onSuccess?.();
       }
     } catch (error) {
-      console.error('Failed to import config:', error);
+      console.error('Failed to restore backup:', error);
+      setImportResults({
+        services_restored: 0,
+        preferences_restored: false,
+        retention_restored: false,
+        deletion_logging_restored: false,
+        templates_restored: 0,
+        templates_skipped: 0,
+        schedules_restored: 0,
+        schedules_skipped: 0,
+        labels_restored: 0,
+        labels_skipped: 0,
+        errors: [String(error)],
+      });
     } finally {
       setIsImporting(false);
     }
@@ -185,10 +166,14 @@ export function ImportConfigDialog({ open, onOpenChange, onSuccess }: ImportConf
     parsedConfig.preferences ||
     parsedConfig.retention ||
     parsedConfig.deletionLogging ||
-    (parsedConfig.services && Object.keys(parsedConfig.services).length > 0)
+    (parsedConfig.services && Object.keys(parsedConfig.services).length > 0) ||
+    (parsedConfig.templates && parsedConfig.templates.length > 0) ||
+    (parsedConfig.schedules && parsedConfig.schedules.length > 0) ||
+    (parsedConfig.labels && parsedConfig.labels.length > 0)
   );
 
-  const nothingSelected = !importPreferences && !importRetention && !importDeletionLogging && !importServices;
+  const nothingSelected = !importPreferences && !importRetention && !importDeletionLogging &&
+    !importServices && !importTemplates && !importSchedules && !importLabels;
 
   const getServiceCount = () => {
     if (!parsedConfig?.services) return 0;
@@ -199,11 +184,11 @@ export function ImportConfigDialog({ open, onOpenChange, onSuccess }: ImportConf
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{t('settings.import.title')}</DialogTitle>
+          <DialogTitle>{t('settings.backup.importTitle')}</DialogTitle>
           <DialogDescription>
-            {t('settings.import.description')}
+            {t('settings.backup.importDescription')}
           </DialogDescription>
         </DialogHeader>
 
@@ -246,6 +231,16 @@ export function ImportConfigDialog({ open, onOpenChange, onSuccess }: ImportConf
                   {parsedConfig.exportedAt && (
                     <span>{new Date(parsedConfig.exportedAt).toLocaleDateString()}</span>
                   )}
+                  {parsedConfig.type === 'full_backup' && (
+                    <Badge>{t('settings.backup.fullBackup')}</Badge>
+                  )}
+                </div>
+              )}
+
+              {/* Settings Section */}
+              {(parsedConfig.preferences || parsedConfig.retention || parsedConfig.deletionLogging || parsedConfig.services) && (
+                <div className="text-sm font-medium text-muted-foreground mt-2">
+                  {t('settings.backup.sections.settings')}
                 </div>
               )}
 
@@ -332,6 +327,76 @@ export function ImportConfigDialog({ open, onOpenChange, onSuccess }: ImportConf
                 </>
               )}
 
+              {/* Data Section */}
+              {(parsedConfig.templates || parsedConfig.schedules || parsedConfig.labels) && (
+                <div className="text-sm font-medium text-muted-foreground mt-4 pt-4 border-t">
+                  {t('settings.backup.sections.data')}
+                </div>
+              )}
+
+              {/* Labels */}
+              {parsedConfig.labels && parsedConfig.labels.length > 0 && (
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="import-labels"
+                    checked={importLabels}
+                    onCheckedChange={(checked) => setImportLabels(checked === true)}
+                  />
+                  <Label htmlFor="import-labels" className="flex-1 cursor-pointer">
+                    <div className="font-medium flex items-center gap-2">
+                      <Tag className="h-4 w-4" />
+                      {t('settings.backup.options.labels')}
+                      <Badge variant="secondary">{parsedConfig.labels.length}</Badge>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {t('settings.backup.options.labelsDesc')}
+                    </div>
+                  </Label>
+                </div>
+              )}
+
+              {/* Templates */}
+              {parsedConfig.templates && parsedConfig.templates.length > 0 && (
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="import-templates"
+                    checked={importTemplates}
+                    onCheckedChange={(checked) => setImportTemplates(checked === true)}
+                  />
+                  <Label htmlFor="import-templates" className="flex-1 cursor-pointer">
+                    <div className="font-medium flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      {t('settings.backup.options.templates')}
+                      <Badge variant="secondary">{parsedConfig.templates.length}</Badge>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {t('settings.backup.options.templatesDesc')}
+                    </div>
+                  </Label>
+                </div>
+              )}
+
+              {/* Schedules */}
+              {parsedConfig.schedules && parsedConfig.schedules.length > 0 && (
+                <div className="flex items-center space-x-3">
+                  <Checkbox
+                    id="import-schedules"
+                    checked={importSchedules}
+                    onCheckedChange={(checked) => setImportSchedules(checked === true)}
+                  />
+                  <Label htmlFor="import-schedules" className="flex-1 cursor-pointer">
+                    <div className="font-medium flex items-center gap-2">
+                      <Calendar className="h-4 w-4" />
+                      {t('settings.backup.options.schedules')}
+                      <Badge variant="secondary">{parsedConfig.schedules.length}</Badge>
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {t('settings.backup.options.schedulesDesc')}
+                    </div>
+                  </Label>
+                </div>
+              )}
+
               {/* No importable data */}
               {!hasAnySectionToImport && (
                 <Alert>
@@ -347,52 +412,95 @@ export function ImportConfigDialog({ open, onOpenChange, onSuccess }: ImportConf
           {/* Import results */}
           {importResults && (
             <div className="space-y-2">
-              <div className="font-medium">{t('settings.import.results.title')}</div>
+              <div className="font-medium">{t('settings.backup.results.title')}</div>
 
-              {importResults.preferences !== undefined && (
+              {importResults.preferences_restored && (
                 <div className="flex items-center gap-2 text-sm">
-                  {importResults.preferences ? (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <XCircle className="h-4 w-4 text-destructive" />
-                  )}
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span>{t('settings.import.options.preferences')}</span>
                 </div>
               )}
 
-              {importResults.retention !== undefined && (
+              {importResults.retention_restored && (
                 <div className="flex items-center gap-2 text-sm">
-                  {importResults.retention ? (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <XCircle className="h-4 w-4 text-destructive" />
-                  )}
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span>{t('settings.import.options.retention')}</span>
                 </div>
               )}
 
-              {importResults.deletionLogging !== undefined && (
+              {importResults.deletion_logging_restored && (
                 <div className="flex items-center gap-2 text-sm">
-                  {importResults.deletionLogging ? (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <XCircle className="h-4 w-4 text-destructive" />
-                  )}
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span>{t('settings.import.options.deletionLogging')}</span>
                 </div>
               )}
 
-              {importResults.services !== undefined && (
+              {importResults.services_restored > 0 && (
                 <div className="flex items-center gap-2 text-sm">
-                  {importResults.services.count > 0 ? (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
-                  ) : (
-                    <XCircle className="h-4 w-4 text-destructive" />
-                  )}
+                  <CheckCircle className="h-4 w-4 text-green-500" />
                   <span>
-                    {t('settings.import.results.services', { count: importResults.services.count })}
+                    {t('settings.backup.results.services', { count: importResults.services_restored })}
                   </span>
                 </div>
+              )}
+
+              {importResults.labels_restored > 0 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span>
+                    {t('settings.backup.results.labels', { count: importResults.labels_restored })}
+                    {importResults.labels_skipped > 0 && (
+                      <span className="text-muted-foreground">
+                        {' '}({t('settings.backup.results.skipped', { count: importResults.labels_skipped })})
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
+
+              {importResults.templates_restored > 0 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span>
+                    {t('settings.backup.results.templates', { count: importResults.templates_restored })}
+                    {importResults.templates_skipped > 0 && (
+                      <span className="text-muted-foreground">
+                        {' '}({t('settings.backup.results.skipped', { count: importResults.templates_skipped })})
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
+
+              {importResults.schedules_restored > 0 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <span>
+                    {t('settings.backup.results.schedules', { count: importResults.schedules_restored })}
+                    {importResults.schedules_skipped > 0 && (
+                      <span className="text-muted-foreground">
+                        {' '}({t('settings.backup.results.skipped', { count: importResults.schedules_skipped })})
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
+
+              {importResults.errors.length > 0 && (
+                <Alert variant="destructive" className="mt-2">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertDescription>
+                    <div className="font-medium mb-1">{t('settings.backup.results.errors')}</div>
+                    <ul className="text-xs list-disc list-inside">
+                      {importResults.errors.slice(0, 5).map((error, i) => (
+                        <li key={i}>{error}</li>
+                      ))}
+                      {importResults.errors.length > 5 && (
+                        <li>...{t('settings.backup.results.moreErrors', { count: importResults.errors.length - 5 })}</li>
+                      )}
+                    </ul>
+                  </AlertDescription>
+                </Alert>
               )}
             </div>
           )}
@@ -412,7 +520,7 @@ export function ImportConfigDialog({ open, onOpenChange, onSuccess }: ImportConf
               ) : (
                 <Upload className="h-4 w-4 mr-2" />
               )}
-              {t('settings.general.import')}
+              {t('settings.backup.restore')}
             </Button>
           )}
         </DialogFooter>

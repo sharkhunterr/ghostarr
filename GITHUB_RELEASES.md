@@ -4,6 +4,70 @@
 
 ---
 
+# v1.4.1
+
+## 👻 Ghostarr v1.4.1 - Ghost Email Publishing Fix
+
+This release fixes a critical issue with Ghost email publishing and adds newsletter channel selection for better control over your email distribution.
+
+### 🐛 Bug Fixes
+
+**📧 Ghost Email Publishing**
+- Fixed an issue where email modes (Email, Email+Publish) weren't sending newsletters
+- Implemented Ghost API 2-step process for email sending:
+  1. Create post as draft
+  2. PUT request with newsletter slug in URL to trigger email
+- Email-only mode now correctly sets posts as visible only via email (not on site)
+- Publish+Email mode now correctly publishes on site AND sends email
+
+### ✨ What's New
+
+**📬 Newsletter Channel Selection**
+- New dropdown to select which Ghost newsletter to use for email sending
+- Available in both Manual Generation and Scheduled Generation forms
+- Selector only appears when an email mode is selected
+- Default: "Automatic" - uses the first active newsletter
+
+**🔄 Smart Newsletter Auto-Selection**
+- If no newsletter is specified, Ghostarr automatically selects the first active newsletter
+- Backwards compatible with existing schedules that don't have a newsletter configured
+- Detailed logging of newsletter selection for troubleshooting
+
+**🌍 Multi-language Support**
+- Newsletter selector fully translated in 5 languages (EN, FR, DE, ES, IT)
+
+### 🔧 Technical Details
+
+The Ghost Admin API requires email sending to be triggered via the PUT endpoint URL:
+```
+PUT /ghost/api/admin/posts/{id}/?newsletter={slug}
+```
+
+This is different from the documented `newsletter_id` body parameter, which only links the post to a newsletter but doesn't trigger email delivery.
+
+### 🐳 Docker Quick Start
+
+```yaml
+services:
+  ghostarr:
+    image: sharkhunterr/ghostarr:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/config
+    environment:
+      - TZ=Europe/Paris
+      - APP_SECRET_KEY=your-secret-key-minimum-32-characters
+```
+
+### 🔗 Links
+
+- [🐳 Docker Hub](https://hub.docker.com/r/sharkhunterr/ghostarr)
+- [📖 Documentation](https://github.com/sharkhunterr/ghostarr/tree/master/docs)
+- [🐛 Report Issues](https://github.com/sharkhunterr/ghostarr/issues)
+
+---
+
 # v1.4.0
 
 ## 👻 Ghostarr v1.4.0 - Template Export & Import

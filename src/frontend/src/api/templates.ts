@@ -228,3 +228,59 @@ export async function exportTemplate(templateId: string): Promise<void> {
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
 }
+
+// Bulk export data format
+export interface BulkTemplateExportData {
+  version: string;
+  exportedAt: string;
+  count: number;
+  templates: Array<{
+    name: string;
+    description?: string | null;
+    html: string;
+    labels: string[];
+    preset_config: Record<string, unknown>;
+    is_default?: boolean;
+  }>;
+}
+
+// Bulk import result
+export interface BulkTemplateImportResult {
+  imported: string[];
+  skipped: string[];
+  errors: string[];
+  count: number;
+  templates: Template[];
+}
+
+// Export multiple templates
+export function useExportTemplatesBulk() {
+  return useMutation({
+    mutationFn: async (templateIds: string[]): Promise<BulkTemplateExportData> => {
+      const response = await apiClient.post<BulkTemplateExportData>(
+        '/templates/export-bulk',
+        templateIds
+      );
+      return response.data;
+    },
+  });
+}
+
+// Import multiple templates
+export function useImportTemplatesBulk() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: BulkTemplateExportData): Promise<BulkTemplateImportResult> => {
+      const response = await apiClient.post<BulkTemplateImportResult>(
+        '/templates/import-bulk',
+        data
+      );
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: templateKeys.all });
+      queryClient.invalidateQueries({ queryKey: ['labels'] });
+    },
+  });
+}

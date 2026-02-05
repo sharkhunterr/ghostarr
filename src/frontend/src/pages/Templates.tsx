@@ -4,7 +4,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderSearch, Tag } from 'lucide-react';
+import { FolderSearch, Tag, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -23,6 +23,7 @@ import {
   TemplateEditDialog,
   TemplatePresetConfigDialog,
   LabelManager,
+  BulkTemplateExportDialog,
 } from '@/components/templates';
 import { HelpPanel } from '@/components/help';
 import { useTemplates, useDeleteTemplate, useUpdateTemplate, useScanTemplates } from '@/api/templates';
@@ -43,6 +44,7 @@ export default function Templates() {
   const [presetConfigTemplate, setPresetConfigTemplate] = useState<Template | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Template | null>(null);
   const [labelManagerOpen, setLabelManagerOpen] = useState(false);
+  const [bulkExportOpen, setBulkExportOpen] = useState(false);
 
   const handleScan = async () => {
     try {
@@ -100,6 +102,14 @@ export default function Templates() {
     }
   };
 
+  const handleUploadSuccess = () => {
+    addNotification({
+      type: 'success',
+      title: t('templates.bulk.importSuccess'),
+      message: t('templates.bulk.importSuccessMessage'),
+    });
+  };
+
   if (error) {
     return (
       <div className="text-center text-destructive py-8">
@@ -111,7 +121,7 @@ export default function Templates() {
   return (
     <div className="space-y-4">
       {/* Actions bar */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <Button
           variant="outline"
           size="sm"
@@ -129,6 +139,19 @@ export default function Templates() {
           <FolderSearch className="h-4 w-4 sm:mr-2" />
           <span className="hidden sm:inline">{scanTemplates.isPending ? t('common.loading') : t('templates.scan.button')}</span>
         </Button>
+
+        {/* Bulk export button */}
+        <div className="ml-auto">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setBulkExportOpen(true)}
+            disabled={!templates || templates.length === 0}
+          >
+            <Download className="h-4 w-4 sm:mr-2" />
+            <span className="hidden sm:inline">{t('templates.bulk.export')}</span>
+          </Button>
+        </div>
       </div>
 
       {/* Grid - Full width responsive */}
@@ -143,10 +166,11 @@ export default function Templates() {
         onSetDefault={handleSetDefault}
       />
 
-      {/* Upload dialog */}
+      {/* Upload dialog (also handles bulk import) */}
       <TemplateUploadDialog
         open={uploadOpen}
         onOpenChange={setUploadOpen}
+        onSuccess={handleUploadSuccess}
       />
 
       {/* Preview dialog */}
@@ -203,6 +227,12 @@ export default function Templates() {
       <LabelManager
         open={labelManagerOpen}
         onOpenChange={setLabelManagerOpen}
+      />
+
+      {/* Bulk export dialog */}
+      <BulkTemplateExportDialog
+        open={bulkExportOpen}
+        onOpenChange={setBulkExportOpen}
       />
 
       {/* Help Panel */}

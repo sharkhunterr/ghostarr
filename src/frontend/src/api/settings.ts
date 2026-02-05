@@ -213,3 +213,100 @@ export function useImportServices() {
     },
   });
 }
+
+// Backup options
+export interface BackupOptions {
+  include_services: boolean;
+  include_preferences: boolean;
+  include_retention: boolean;
+  include_deletion_logging: boolean;
+  include_templates: boolean;
+  include_schedules: boolean;
+  include_labels: boolean;
+}
+
+// Backup data structure
+export interface BackupData {
+  version: string;
+  exportedAt: string;
+  type?: string;
+  services?: Record<string, ServiceExport>;
+  preferences?: PreferencesResponse;
+  retention?: RetentionSettings;
+  deletionLogging?: DeletionLoggingSettings;
+  templates?: Array<{
+    name: string;
+    description?: string | null;
+    html: string;
+    labels: string[];
+    preset_config: Record<string, unknown>;
+    is_default?: boolean;
+  }>;
+  schedules?: Array<{
+    name: string;
+    schedule_type: string;
+    cron_expression: string;
+    timezone: string;
+    is_active: boolean;
+    template_name?: string;
+    generation_config?: Record<string, unknown> | null;
+    deletion_config?: Record<string, unknown> | null;
+  }>;
+  labels?: Array<{
+    name: string;
+    color: string;
+  }>;
+}
+
+// Restore result
+export interface RestoreResult {
+  services_restored: number;
+  preferences_restored: boolean;
+  retention_restored: boolean;
+  deletion_logging_restored: boolean;
+  templates_restored: number;
+  templates_skipped: number;
+  schedules_restored: number;
+  schedules_skipped: number;
+  labels_restored: number;
+  labels_skipped: number;
+  errors: string[];
+}
+
+// Create backup
+export function useCreateBackup() {
+  return useMutation({
+    mutationFn: async (options: BackupOptions) => {
+      const { data } = await apiClient.post<BackupData>(
+        "/settings/backup",
+        options
+      );
+      return data;
+    },
+  });
+}
+
+// Restore backup
+export function useRestoreBackup() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (backupData: BackupData) => {
+      const { data } = await apiClient.post<RestoreResult>(
+        "/settings/restore",
+        backupData
+      );
+      return data;
+    },
+    onSuccess: () => {
+      // Invalidate all relevant queries
+      queryClient.invalidateQueries({ queryKey: SERVICES_KEY });
+      queryClient.invalidateQueries({ queryKey: PREFERENCES_KEY });
+      queryClient.invalidateQueries({ queryKey: RETENTION_KEY });
+      queryClient.invalidateQueries({ queryKey: DELETION_LOGGING_KEY });
+      queryClient.invalidateQueries({ queryKey: ["templates"] });
+      queryClient.invalidateQueries({ queryKey: ["schedules"] });
+      queryClient.invalidateQueries({ queryKey: ["labels"] });
+    },
+  });
+}

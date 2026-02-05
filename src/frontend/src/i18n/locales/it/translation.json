@@ -304,6 +304,28 @@
       "imported": "Modello \"{{name}}\" importato con successo",
       "invalidFormat": "Formato modello non valido. Campi richiesti: name, html",
       "parseError": "Impossibile leggere il file. Verifica che sia un file JSON valido."
+    },
+    "bulk": {
+      "export": "Esporta",
+      "import": "Importa",
+      "exportTitle": "Esporta modelli",
+      "exportDescription": "Seleziona i modelli da esportare in un unico file JSON",
+      "importTitle": "Importa modelli",
+      "importDescription": "Importa più modelli da un file di esportazione",
+      "selectAll": "Seleziona tutto",
+      "templates": "modelli",
+      "importSuccess": "Modelli importati",
+      "importSuccessMessage": "I modelli sono stati importati con successo",
+      "errors": {
+        "invalidFormat": "Formato file non valido. È atteso un array di modelli.",
+        "parseError": "Impossibile leggere il file. Verifica che sia un file JSON valido."
+      },
+      "results": {
+        "title": "Risultati importazione",
+        "imported": "{{count}} modello/i importato/i",
+        "skipped": "{{count}} saltato/i (esistono già)",
+        "errors": "{{count}} errore/i"
+      }
     }
   },
   "settings": {
@@ -367,6 +389,37 @@
       "results": {
         "title": "Risultati importazione",
         "services": "{{count}} servizio/i importato/i"
+      }
+    },
+    "backup": {
+      "exportTitle": "Esporta backup",
+      "exportDescription": "Crea un backup completo della tua configurazione Ghostarr",
+      "importTitle": "Ripristina backup",
+      "importDescription": "Ripristina la configurazione da un file di backup",
+      "export": "Esporta",
+      "restore": "Ripristina",
+      "fullBackup": "Backup completo",
+      "sections": {
+        "settings": "Impostazioni",
+        "data": "Dati"
+      },
+      "options": {
+        "templates": "Template",
+        "templatesDesc": "Template newsletter con contenuto HTML",
+        "schedules": "Pianificazioni",
+        "schedulesDesc": "Generazioni e eliminazioni pianificate",
+        "labels": "Etichette",
+        "labelsDesc": "Etichette per organizzare i template"
+      },
+      "results": {
+        "title": "Risultati del ripristino",
+        "services": "{{count}} servizio/i ripristinato/i",
+        "templates": "{{count}} template ripristinato/i",
+        "schedules": "{{count}} pianificazione/i ripristinata/e",
+        "labels": "{{count}} etichetta/e ripristinata/e",
+        "skipped": "{{count}} saltato/i",
+        "errors": "Errori",
+        "moreErrors": "{{count}} altri errori"
       }
     },
     "services": {

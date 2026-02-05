@@ -304,6 +304,28 @@
       "imported": "Plantilla \"{{name}}\" importada con éxito",
       "invalidFormat": "Formato de plantilla inválido. Campos requeridos: name, html",
       "parseError": "No se puede leer el archivo. Verifique que sea un archivo JSON válido."
+    },
+    "bulk": {
+      "export": "Exportar",
+      "import": "Importar",
+      "exportTitle": "Exportar plantillas",
+      "exportDescription": "Selecciona las plantillas a exportar en un único archivo JSON",
+      "importTitle": "Importar plantillas",
+      "importDescription": "Importar múltiples plantillas desde un archivo de exportación",
+      "selectAll": "Seleccionar todo",
+      "templates": "plantillas",
+      "importSuccess": "Plantillas importadas",
+      "importSuccessMessage": "Las plantillas se han importado con éxito",
+      "errors": {
+        "invalidFormat": "Formato de archivo inválido. Se esperaba un array de plantillas.",
+        "parseError": "No se puede leer el archivo. Verifique que sea un archivo JSON válido."
+      },
+      "results": {
+        "title": "Resultados de importación",
+        "imported": "{{count}} plantilla(s) importada(s)",
+        "skipped": "{{count}} omitida(s) (ya existen)",
+        "errors": "{{count}} error(es)"
+      }
     }
   },
   "settings": {
@@ -367,6 +389,37 @@
       "results": {
         "title": "Resultados de la importación",
         "services": "{{count}} servicio(s) importado(s)"
+      }
+    },
+    "backup": {
+      "exportTitle": "Exportar copia de seguridad",
+      "exportDescription": "Crea una copia de seguridad completa de tu configuración de Ghostarr",
+      "importTitle": "Restaurar copia de seguridad",
+      "importDescription": "Restaura la configuración desde un archivo de copia de seguridad",
+      "export": "Exportar",
+      "restore": "Restaurar",
+      "fullBackup": "Copia de seguridad completa",
+      "sections": {
+        "settings": "Configuración",
+        "data": "Datos"
+      },
+      "options": {
+        "templates": "Plantillas",
+        "templatesDesc": "Plantillas de newsletter con contenido HTML",
+        "schedules": "Programaciones",
+        "schedulesDesc": "Generaciones y eliminaciones programadas",
+        "labels": "Etiquetas",
+        "labelsDesc": "Etiquetas de organización de plantillas"
+      },
+      "results": {
+        "title": "Resultados de la restauración",
+        "services": "{{count}} servicio(s) restaurado(s)",
+        "templates": "{{count}} plantilla(s) restaurada(s)",
+        "schedules": "{{count}} programación(es) restaurada(s)",
+        "labels": "{{count}} etiqueta(s) restaurada(s)",
+        "skipped": "{{count}} omitido(s)",
+        "errors": "Errores",
+        "moreErrors": "{{count}} error(es) más"
       }
     },
     "services": {

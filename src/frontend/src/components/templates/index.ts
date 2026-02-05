@@ -7,3 +7,4 @@ export { TemplateSelect } from './TemplateSelect';
 export { TemplateUploadDialog } from './TemplateUploadDialog';
 export { LabelManager } from './LabelManager';
 export { LabelSelector } from './LabelSelector';
+export { BulkTemplateExportDialog } from './BulkTemplateExportDialog';

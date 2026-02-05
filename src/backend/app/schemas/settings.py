@@ -90,3 +90,31 @@ class ConfigExport(BaseModel):
     retention: RetentionSettings = Field(description="Retention settings")
     schedules: list = Field(description="Schedule configurations")
     templates: list = Field(description="Template metadata")
+
+
+class BackupOptions(BaseModel):
+    """Options for backup export."""
+
+    include_services: bool = Field(default=True, description="Include service configurations")
+    include_preferences: bool = Field(default=True, description="Include user preferences")
+    include_retention: bool = Field(default=True, description="Include retention settings")
+    include_deletion_logging: bool = Field(default=True, description="Include deletion logging settings")
+    include_templates: bool = Field(default=True, description="Include templates with HTML content")
+    include_schedules: bool = Field(default=True, description="Include schedules")
+    include_labels: bool = Field(default=True, description="Include labels")
+
+
+class RestoreResult(BaseModel):
+    """Result of backup restore operation."""
+
+    services_restored: int = Field(default=0)
+    preferences_restored: bool = Field(default=False)
+    retention_restored: bool = Field(default=False)
+    deletion_logging_restored: bool = Field(default=False)
+    templates_restored: int = Field(default=0)
+    templates_skipped: int = Field(default=0)
+    schedules_restored: int = Field(default=0)
+    schedules_skipped: int = Field(default=0)
+    labels_restored: int = Field(default=0)
+    labels_skipped: int = Field(default=0)
+    errors: list[str] = Field(default_factory=list)

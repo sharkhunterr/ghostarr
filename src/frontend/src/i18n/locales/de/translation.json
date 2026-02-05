@@ -304,6 +304,28 @@
       "imported": "Vorlage \"{{name}}\" erfolgreich importiert",
       "invalidFormat": "Ungültiges Vorlagenformat. Erforderliche Felder: name, html",
       "parseError": "Datei konnte nicht gelesen werden. Überprüfen Sie, ob es sich um eine gültige JSON-Datei handelt."
+    },
+    "bulk": {
+      "export": "Exportieren",
+      "import": "Importieren",
+      "exportTitle": "Vorlagen exportieren",
+      "exportDescription": "Wählen Sie Vorlagen aus, die als einzelne JSON-Datei exportiert werden sollen",
+      "importTitle": "Vorlagen importieren",
+      "importDescription": "Mehrere Vorlagen aus einer Exportdatei importieren",
+      "selectAll": "Alle auswählen",
+      "templates": "Vorlagen",
+      "importSuccess": "Vorlagen importiert",
+      "importSuccessMessage": "Die Vorlagen wurden erfolgreich importiert",
+      "errors": {
+        "invalidFormat": "Ungültiges Dateiformat. Ein Array von Vorlagen wird erwartet.",
+        "parseError": "Datei konnte nicht gelesen werden. Überprüfen Sie, ob es sich um eine gültige JSON-Datei handelt."
+      },
+      "results": {
+        "title": "Import-Ergebnisse",
+        "imported": "{{count}} Vorlage(n) importiert",
+        "skipped": "{{count}} übersprungen (existieren bereits)",
+        "errors": "{{count}} Fehler"
+      }
     }
   },
   "settings": {
@@ -367,6 +389,37 @@
       "results": {
         "title": "Import-Ergebnisse",
         "services": "{{count}} Dienst(e) importiert"
+      }
+    },
+    "backup": {
+      "exportTitle": "Sicherung exportieren",
+      "exportDescription": "Erstellen Sie eine vollständige Sicherung Ihrer Ghostarr-Konfiguration",
+      "importTitle": "Sicherung wiederherstellen",
+      "importDescription": "Konfiguration aus einer Sicherungsdatei wiederherstellen",
+      "export": "Exportieren",
+      "restore": "Wiederherstellen",
+      "fullBackup": "Vollständige Sicherung",
+      "sections": {
+        "settings": "Einstellungen",
+        "data": "Daten"
+      },
+      "options": {
+        "templates": "Vorlagen",
+        "templatesDesc": "Newsletter-Vorlagen mit HTML-Inhalt",
+        "schedules": "Zeitpläne",
+        "schedulesDesc": "Geplante Generierungen und Löschungen",
+        "labels": "Labels",
+        "labelsDesc": "Labels zur Vorlagen-Organisation"
+      },
+      "results": {
+        "title": "Wiederherstellungsergebnisse",
+        "services": "{{count}} Dienst(e) wiederhergestellt",
+        "templates": "{{count}} Vorlage(n) wiederhergestellt",
+        "schedules": "{{count}} Zeitplan/Zeitpläne wiederhergestellt",
+        "labels": "{{count}} Label(s) wiederhergestellt",
+        "skipped": "{{count}} übersprungen",
+        "errors": "Fehler",
+        "moreErrors": "{{count}} weitere Fehler"
       }
     },
     "services": {
