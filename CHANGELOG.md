@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.4.0...v1.5.0) (2026-02-05)
+
+
+### Features
+
+* Add bulk template export/import and full backup/restore ([b5077a1](https://github.com/sharkhunterr/ghostarr/-/commit/b5077a122e8492bcdb9bf2b1e0362467eabcf806))
+
+
+### Bug Fixes
+
+* Implement Ghost email publication modes with newsletter selection ([1967e99](https://github.com/sharkhunterr/ghostarr/-/commit/1967e99d4e49072d947a550243f107a8934a2a65))
+
 ## [1.4.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.3.4...v1.4.0) (2026-02-04)
 
 
