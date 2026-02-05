@@ -4,7 +4,7 @@
 
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Upload, Loader2, Shield, AlertTriangle, FileJson, CheckCircle, XCircle, FileText, Calendar, Tag } from 'lucide-react';
+import { Upload, Loader2, Shield, AlertTriangle, FileJson, CheckCircle, FileText, Calendar, Tag } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
