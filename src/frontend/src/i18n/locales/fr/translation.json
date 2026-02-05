@@ -96,6 +96,9 @@
         "emailPublish": "Email + Publication",
         "email+publish": "Email + Publication"
       },
+      "ghostNewsletter": "Canal de diffusion Ghost",
+      "ghostNewsletterAuto": "Automatique (premier canal actif)",
+      "ghostNewsletterHelp": "Sélectionnez le canal Ghost pour l'envoi des emails",
       "days": "Période (jours)",
       "maxItems": "Nombre max d'éléments",
       "maxItemsHelp": "Limite le nombre total d'éléments dans la newsletter",

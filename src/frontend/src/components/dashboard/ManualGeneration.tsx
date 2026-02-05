@@ -35,6 +35,7 @@ import { MaintenanceConfig } from './MaintenanceConfig';
 import { StatisticsConfig } from './StatisticsConfig';
 import { TemplateSelect } from '@/components/templates';
 import { useTemplates } from '@/api/templates';
+import { useGhostNewsletters } from '@/api/integrations';
 import type { GenerationConfig, PublicationMode, Template } from '@/types';
 
 interface ManualGenerationProps {
@@ -102,6 +103,10 @@ export function ManualGeneration({
 }: ManualGenerationProps) {
   const { t } = useTranslation();
   const { data: templates, isLoading: isLoadingTemplates } = useTemplates();
+  const { data: ghostNewsletters } = useGhostNewsletters();
+
+  // Check if email mode is selected
+  const isEmailMode = (mode: string) => mode === 'email' || mode === 'email+publish';
 
   const [config, setConfig] = useState<GenerationConfig>(() => {
     const defaultTemplate = templates?.find((t) => t.is_default);
@@ -225,6 +230,38 @@ export function ManualGeneration({
               </SelectContent>
             </Select>
           </div>
+
+          {/* Ghost Newsletter selection - only shown for email modes */}
+          {isEmailMode(config.publication_mode) && (
+            <div className="space-y-2">
+              <Label htmlFor="ghost_newsletter">
+                {t('dashboard.config.ghostNewsletter')}
+              </Label>
+              <Select
+                value={config.ghost_newsletter_id || 'auto'}
+                onValueChange={(value) =>
+                  updateConfig('ghost_newsletter_id', value === 'auto' ? null : value)
+                }
+              >
+                <SelectTrigger id="ghost_newsletter">
+                  <SelectValue placeholder={t('dashboard.config.ghostNewsletterAuto')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="auto">
+                    {t('dashboard.config.ghostNewsletterAuto')}
+                  </SelectItem>
+                  {ghostNewsletters?.map((newsletter) => (
+                    <SelectItem key={newsletter.id} value={newsletter.id}>
+                      {newsletter.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground">
+                {t('dashboard.config.ghostNewsletterHelp')}
+              </p>
+            </div>
+          )}
         </div>
 
         <Separator />

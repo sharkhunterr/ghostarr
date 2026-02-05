@@ -871,20 +871,35 @@ class NewsletterGenerator:
 
             integration = GhostIntegration(url=url, api_key=api_key)
 
-            # Determine status and email settings
+            # Determine status and email settings based on publication mode
             status = "draft"
             send_email = False
+            email_only = False
 
-            if self.config.publication_mode == PublicationMode.PUBLISH:
+            if self.config.publication_mode == PublicationMode.DRAFT:
+                # Just draft, no publication
+                status = "draft"
+            elif self.config.publication_mode == PublicationMode.PUBLISH:
+                # Publish to site only, no email
                 status = "published"
-            elif self.config.publication_mode == PublicationMode.EMAIL or self.config.publication_mode == PublicationMode.EMAIL_PUBLISH:
+            elif self.config.publication_mode == PublicationMode.EMAIL:
+                # Email only - not visible on site
                 status = "published"
                 send_email = True
+                email_only = True
+            elif self.config.publication_mode == PublicationMode.EMAIL_PUBLISH:
+                # Publish to site AND send email
+                status = "published"
+                send_email = True
+                email_only = False
 
             title = template_service.render_title(self.config.title)
 
-            # Debug: Log what we're sending to Ghost
-            logger.info(f"Publishing to Ghost: title='{title}', html_length={len(html)}, status={status}, send_email={send_email}")
+            # Log what we're sending to Ghost
+            logger.info(
+                f"Publishing to Ghost: title='{title}', mode={self.config.publication_mode.value}, "
+                f"status={status}, send_email={send_email}, email_only={email_only}"
+            )
 
             post = await integration.create_post(
                 title=title,
@@ -892,17 +907,26 @@ class NewsletterGenerator:
                 status=status,
                 newsletter_id=self.config.ghost_newsletter_id,
                 send_email=send_email,
+                email_only=email_only,
             )
             await integration.close()
 
             if post:
                 self.history.ghost_post_id = post.id
 
-                await self.tracker.complete_step(
-                    "publish_ghost",
-                    f"Published as {status}",
-                    1,
-                )
+                # Build a more descriptive completion message
+                if self.config.publication_mode == PublicationMode.DRAFT:
+                    message = "Saved as draft"
+                elif self.config.publication_mode == PublicationMode.PUBLISH:
+                    message = "Published to site"
+                elif self.config.publication_mode == PublicationMode.EMAIL:
+                    message = "Email sent"
+                elif self.config.publication_mode == PublicationMode.EMAIL_PUBLISH:
+                    message = "Published and email sent"
+                else:
+                    message = f"Published as {status}"
+
+                await self.tracker.complete_step("publish_ghost", message, 1)
                 return post.url
 
             await self.tracker.complete_step("publish_ghost", "Published", 1)

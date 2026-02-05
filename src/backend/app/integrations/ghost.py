@@ -148,6 +148,14 @@ class GhostIntegration(BaseIntegration[GhostNewsletter]):
             logger.error(f"Failed to fetch Ghost newsletters: {e}")
             return []
 
+    async def get_newsletter_slug_by_id(self, newsletter_id: str) -> str | None:
+        """Get newsletter slug by ID."""
+        newsletters = await self.get_newsletters()
+        for newsletter in newsletters:
+            if newsletter.id == newsletter_id:
+                return newsletter.slug
+        return None
+
     def _html_to_mobiledoc(self, html: str) -> str:
         """Convert HTML to Ghost MobileDoc format.
 
@@ -173,8 +181,22 @@ class GhostIntegration(BaseIntegration[GhostNewsletter]):
         status: str = "draft",
         newsletter_id: str | None = None,
         send_email: bool = False,
+        email_only: bool = False,
     ) -> GhostPost | None:
-        """Create a new post in Ghost."""
+        """Create a new post in Ghost.
+
+        Ghost's API requires a 2-step process for sending emails:
+        1. Create the post as draft
+        2. PUT to publish with newsletter slug in URL to send email
+
+        Args:
+            title: Post title
+            html: Post HTML content
+            status: Target status (draft, published)
+            newsletter_id: Newsletter ID for email sending
+            send_email: Whether to send email
+            email_only: If True, post is visible only via email (not on site)
+        """
         if not self.is_configured:
             return None
 
@@ -182,19 +204,14 @@ class GhostIntegration(BaseIntegration[GhostNewsletter]):
             # Convert HTML to MobileDoc format (Ghost's internal format)
             mobiledoc = self._html_to_mobiledoc(html)
 
+            # Step 1: Always create as draft first
             post_data: dict[str, Any] = {
                 "title": title,
                 "mobiledoc": mobiledoc,
-                "status": status,
+                "status": "draft",  # Always create as draft first
             }
 
-            # Add newsletter settings for email
-            if newsletter_id and send_email:
-                post_data["newsletter_id"] = newsletter_id
-                post_data["email_segment"] = "all"
-
-            logger.info(f"Creating Ghost post with data: title={post_data.get('title')}, status={post_data.get('status')}, mobiledoc_length={len(mobiledoc)}")
-            logger.debug(f"Post data keys: {list(post_data.keys())}")
+            logger.info(f"Creating Ghost post: title='{title}', target_status={status}, send_email={send_email}, email_only={email_only}")
 
             response = await self._request(
                 "POST",
@@ -202,27 +219,111 @@ class GhostIntegration(BaseIntegration[GhostNewsletter]):
                 json={"posts": [post_data]},
             )
 
-            logger.info("Ghost response: post created successfully")
-
             posts = response.get("posts", [])
-            if posts:
-                p = posts[0]
-                return GhostPost(
-                    id=p["id"],
-                    uuid=p["uuid"],
-                    title=p["title"],
-                    slug=p["slug"],
-                    url=p["url"],
-                    status=p["status"],
-                    created_at=p["created_at"],
-                    updated_at=p["updated_at"],
-                    published_at=p.get("published_at"),
+            if not posts:
+                logger.error("No posts returned from Ghost API")
+                return None
+
+            post = posts[0]
+            post_id = post["id"]
+            updated_at = post["updated_at"]
+
+            logger.info(f"Ghost post created as draft: id={post_id}")
+
+            # Step 2: If email is requested, publish with newsletter
+            if send_email:
+                # Get newsletter slug - either from provided ID or auto-select first active
+                newsletter_slug = None
+
+                if newsletter_id:
+                    # Get slug from provided ID
+                    newsletter_slug = await self.get_newsletter_slug_by_id(newsletter_id)
+                    if not newsletter_slug:
+                        logger.warning(f"Newsletter with ID {newsletter_id} not found, trying auto-select")
+
+                # Auto-select first active newsletter if none specified or not found
+                if not newsletter_slug:
+                    newsletters = await self.get_newsletters()
+                    if newsletters:
+                        newsletter_slug = newsletters[0].slug
+                        logger.info(f"Newsletter auto-selected: {newsletters[0].name} ({newsletter_slug})")
+                    else:
+                        logger.error("No active newsletter found, cannot send email - falling back to publish only")
+                        # Fall through to publish without email
+
+                if newsletter_slug:
+                    logger.info(f"Publishing with email via newsletter: {newsletter_slug}")
+
+                    # Build PUT URL with newsletter slug
+                    put_url = f"/ghost/api/admin/posts/{post_id}/?newsletter={newsletter_slug}"
+
+                    # Prepare PUT data
+                    put_data: dict[str, Any] = {
+                        "updated_at": updated_at,
+                        "status": "published",
+                    }
+
+                    # Add email_only if needed (post won't be visible on site)
+                    if email_only:
+                        put_data["email_only"] = True
+
+                    # Publish and send email
+                    put_response = await self._request(
+                        "PUT",
+                        put_url,
+                        json={"posts": [put_data]},
+                    )
+
+                    put_posts = put_response.get("posts", [])
+                    if put_posts:
+                        if email_only:
+                            logger.info(f"Email sent (email only) via newsletter: {newsletter_slug}")
+                        else:
+                            logger.info(f"Post published AND email sent via newsletter: {newsletter_slug}")
+                        return self._post_to_model(put_posts[0])
+
+            # Step 2b: If just publish (no email) or email failed, update status
+            if status == "published":
+                logger.info("Publishing post without email")
+
+                put_data = {
+                    "updated_at": updated_at,
+                    "status": "published",
+                }
+
+                put_response = await self._request(
+                    "PUT",
+                    f"/ghost/api/admin/posts/{post_id}/",
+                    json={"posts": [put_data]},
                 )
+
+                put_posts = put_response.get("posts", [])
+                if put_posts:
+                    logger.info("Post published successfully (no email)")
+                    return self._post_to_model(put_posts[0])
+
+            # Stay as draft
+            logger.info("Post stays as draft")
+            return self._post_to_model(post)
 
         except Exception as e:
             logger.error(f"Failed to create Ghost post: {e}")
 
         return None
+
+    def _post_to_model(self, post_data: dict[str, Any]) -> GhostPost:
+        """Convert API post data to GhostPost model."""
+        return GhostPost(
+            id=post_data["id"],
+            uuid=post_data["uuid"],
+            title=post_data["title"],
+            slug=post_data["slug"],
+            url=post_data["url"],
+            status=post_data["status"],
+            created_at=post_data["created_at"],
+            updated_at=post_data["updated_at"],
+            published_at=post_data.get("published_at"),
+        )
 
     async def update_post(
         self,
