@@ -4,9 +4,9 @@
 
 ---
 
-# v1.5.0
+# v1.5.1
 
-## 👻 Ghostarr v1.5.0 - Bulk Operations, Full Backup & Ghost Email Fix
+## 👻 Ghostarr v1.5.1 - Bulk Operations, Full Backup & Ghost Email Fix
 
 This release introduces bulk template operations, a comprehensive backup/restore system, and fixes critical Ghost email publishing issues with newsletter channel selection.
 
