@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.5.1](https://github.com/sharkhunterr/ghostarr/-/compare/v1.5.0...v1.5.1) (2026-02-05)
+
+
+### Bug Fixes
+
+* Remove unused XCircle import ([04460c7](https://github.com/sharkhunterr/ghostarr/-/commit/04460c7e65289838c048e8ac380fac8993f44e0f))
+
 ## [1.5.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.4.0...v1.5.0) (2026-02-05)
 
 
