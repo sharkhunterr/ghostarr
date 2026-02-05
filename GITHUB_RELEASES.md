@@ -4,23 +4,46 @@
 
 ---
 
-# v1.4.1
+# v1.5.0
 
-## 👻 Ghostarr v1.4.1 - Ghost Email Publishing Fix
+## 👻 Ghostarr v1.5.0 - Bulk Operations, Full Backup & Ghost Email Fix
 
-This release fixes a critical issue with Ghost email publishing and adds newsletter channel selection for better control over your email distribution.
-
-### 🐛 Bug Fixes
-
-**📧 Ghost Email Publishing**
-- Fixed an issue where email modes (Email, Email+Publish) weren't sending newsletters
-- Implemented Ghost API 2-step process for email sending:
-  1. Create post as draft
-  2. PUT request with newsletter slug in URL to trigger email
-- Email-only mode now correctly sets posts as visible only via email (not on site)
-- Publish+Email mode now correctly publishes on site AND sends email
+This release introduces bulk template operations, a comprehensive backup/restore system, and fixes critical Ghost email publishing issues with newsletter channel selection.
 
 ### ✨ What's New
+
+**📦 Bulk Template Export**
+- Export multiple templates at once with a new selection dialog
+- Select all or pick specific templates to export
+- Single JSON file containing all selected templates with:
+  - HTML content
+  - Labels
+  - Preset configurations
+  - Metadata
+
+**📥 Smart Bulk Import**
+- Drag & drop a bulk export file into the upload dialog
+- Auto-detection of file format (single template vs bulk export)
+- Preview list of templates before importing
+- Skip existing templates to avoid duplicates
+- Detailed import results with success/skipped/error counts
+
+**💾 Full Configuration Backup**
+- New backup system in Settings to export your entire configuration:
+  - Service configurations (with credentials)
+  - User preferences (theme, language, timezone)
+  - Retention settings
+  - Templates (with HTML content)
+  - Schedules (generation & cleanup)
+  - Labels
+- Selective backup: choose which components to include
+- Restore with conflict handling (skip existing items)
+
+**🔄 Improved Upload Dialog**
+- Unified upload experience for all template formats
+- Accepts: HTML, ZIP, single JSON, or bulk JSON
+- Format auto-detection with appropriate UI
+- Bulk imports show template list preview
 
 **📬 Newsletter Channel Selection**
 - New dropdown to select which Ghost newsletter to use for email sending
@@ -33,8 +56,23 @@ This release fixes a critical issue with Ghost email publishing and adds newslet
 - Backwards compatible with existing schedules that don't have a newsletter configured
 - Detailed logging of newsletter selection for troubleshooting
 
-**🌍 Multi-language Support**
-- Newsletter selector fully translated in 5 languages (EN, FR, DE, ES, IT)
+### 🐛 Bug Fixes
+
+**📧 Ghost Email Publishing**
+- Fixed an issue where email modes (Email, Email+Publish) weren't sending newsletters
+- Implemented Ghost API 2-step process for email sending:
+  1. Create post as draft
+  2. PUT request with newsletter slug in URL to trigger email
+- Email-only mode now correctly sets posts as visible only via email (not on site)
+- Publish+Email mode now correctly publishes on site AND sends email
+
+**🔧 API Route Ordering**
+- Fixed 405 errors on bulk export/import endpoints
+- Reordered FastAPI routes to ensure static paths match before dynamic ones
+
+### 🌍 Multi-language Support
+- All new features fully translated in 5 languages (EN, FR, DE, ES, IT)
+- Newsletter selector, bulk operations, and backup/restore dialogs fully localized
 
 ### 🔧 Technical Details
 
@@ -44,6 +82,22 @@ PUT /ghost/api/admin/posts/{id}/?newsletter={slug}
 ```
 
 This is different from the documented `newsletter_id` body parameter, which only links the post to a newsletter but doesn't trigger email delivery.
+
+### 📋 Backup File Format
+
+```json
+{
+  "version": "3.0",
+  "exportedAt": "2026-02-05T12:00:00",
+  "type": "full_backup",
+  "services": { ... },
+  "preferences": { ... },
+  "retention": { ... },
+  "templates": [ ... ],
+  "schedules": [ ... ],
+  "labels": [ ... ]
+}
+```
 
 ### 🐳 Docker Quick Start
 
