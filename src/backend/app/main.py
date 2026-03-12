@@ -27,20 +27,128 @@ logger = get_logger(__name__)
 
 
 async def seed_default_templates():
-    """Seed all templates found in the templates directory into the database."""
+    """Seed all templates found in the templates directory into the database with labels."""
     from sqlalchemy import select
 
     from app.database import AsyncSessionLocal
+    from app.models.label import Label
     from app.models.template import Template
 
     templates_path = Path(settings.templates_dir)
     if not templates_path.exists():
         return
 
+    # Label definitions: name -> hex color
+    BUILTIN_LABELS = {
+        "Cinéma": "#ef4444",
+        "Rétro": "#f59e0b",
+        "Minimal": "#6366f1",
+        "Festif": "#10b981",
+        "Sci-Fi": "#8b5cf6",
+        "Streaming": "#3b82f6",
+        "Fun": "#f97316",
+        "Statistiques": "#06b6d4",
+        "Programme TV": "#14b8a6",
+        "Complet": "#ec4899",
+        "Nouveautés": "#84cc16",
+    }
+
+    # Template -> labels mapping (by filename without template_ prefix and .html suffix)
+    TEMPLATE_LABELS = {
+        "airport": ["Fun"],
+        "alien": ["Sci-Fi"],
+        "anime": ["Fun"],
+        "apple": ["Minimal"],
+        "art_deco": ["Rétro"],
+        "bento": ["Minimal"],
+        "blog": ["Minimal"],
+        "blueprint": ["Sci-Fi"],
+        "bobine_cinema": ["Cinéma", "Rétro"],
+        "bookclub": ["Fun"],
+        "brutalist": ["Minimal"],
+        "casino": ["Fun"],
+        "cinema_tickets": ["Cinéma"],
+        "comic": ["Fun"],
+        "complet_small": ["Complet", "Statistiques", "Nouveautés"],
+        "cyberpunk": ["Sci-Fi"],
+        "dark_minimal": ["Minimal"],
+        "disco": ["Rétro", "Fun"],
+        "fanart": ["Fun"],
+        "film_noir": ["Cinéma", "Rétro"],
+        "gaming": ["Fun"],
+        "glassmorphism": ["Minimal"],
+        "gradient_mesh": ["Minimal"],
+        "halloween": ["Festif"],
+        "harry_potter": ["Fun"],
+        "horror": ["Cinéma"],
+        "instagram": ["Streaming"],
+        "iphone": ["Minimal"],
+        "jellyfin": ["Streaming"],
+        "journal_papier": ["Rétro"],
+        "magazine": ["Minimal"],
+        "magazine_jv": ["Fun"],
+        "maintenance": ["Minimal"],
+        "minimalist": ["Minimal"],
+        "minority_report": ["Sci-Fi"],
+        "mixe": ["Complet"],
+        "monochrome": ["Minimal"],
+        "mosaique": ["Fun"],
+        "multimedia_complet": ["Complet", "Nouveautés"],
+        "nasa": ["Sci-Fi"],
+        "neon": ["Sci-Fi"],
+        "neon_retro": ["Rétro", "Sci-Fi"],
+        "netflix": ["Streaming"],
+        "netflix_preview": ["Streaming"],
+        "netflix_top10": ["Streaming"],
+        "noel": ["Festif"],
+        "noel_calendrier": ["Festif"],
+        "noel_carte": ["Festif"],
+        "notion": ["Minimal"],
+        "nouveautes_complet": ["Nouveautés", "Complet"],
+        "nouveautes_small": ["Nouveautés"],
+        "pastel": ["Minimal"],
+        "people": ["Fun"],
+        "plex": ["Streaming"],
+        "polaroid": ["Rétro"],
+        "programme_tv": ["Programme TV"],
+        "radio": ["Rétro"],
+        "revue_presse": ["Rétro"],
+        "scrapbook": ["Fun"],
+        "simple_mixe": ["Complet", "Statistiques"],
+        "spotify": ["Streaming"],
+        "star_wars": ["Sci-Fi"],
+        "statistiques_small": ["Statistiques"],
+        "stats_dashboard": ["Statistiques"],
+        "steampunk": ["Rétro", "Sci-Fi"],
+        "summer": ["Festif"],
+        "swiss": ["Minimal"],
+        "terminal": ["Sci-Fi"],
+        "tuiles": ["Minimal"],
+        "tunarr": ["Programme TV"],
+        "tv_guide": ["Programme TV"],
+        "twitch": ["Streaming"],
+        "vhs_videoclub": ["Cinéma", "Rétro"],
+        "western": ["Rétro"],
+        "youtube": ["Streaming"],
+    }
+
     async with AsyncSessionLocal() as db:
+        # Ensure all built-in labels exist
+        label_cache: dict[str, Label] = {}
+        for label_name, label_color in BUILTIN_LABELS.items():
+            result = await db.execute(select(Label).where(Label.name == label_name))
+            label = result.scalar_one_or_none()
+            if not label:
+                label = Label(name=label_name, color=label_color)
+                db.add(label)
+                logger.info(f"Created label: {label_name}")
+            label_cache[label_name] = label
+
+        await db.flush()
+
+        # Seed templates
         for template_file in sorted(templates_path.glob("*.html")):
             file_name = template_file.name
-            # Check if template already exists by file_path
             result = await db.execute(
                 select(Template).where(Template.file_path == file_name)
             )
@@ -48,8 +156,8 @@ async def seed_default_templates():
 
             if not existing:
                 # Generate a readable name from the filename
-                # template_cyber_punk.html -> Cyber Punk
                 name = file_name.replace("template_", "").replace(".html", "")
+                template_key = name  # Keep the key for label lookup
                 name = name.replace("_", " ").title()
 
                 template = Template(
@@ -60,7 +168,14 @@ async def seed_default_templates():
                     is_default=False,
                 )
                 db.add(template)
-                logger.info(f"Seeded template: {name}")
+
+                # Assign labels to built-in templates
+                label_names = TEMPLATE_LABELS.get(template_key, [])
+                for label_name in label_names:
+                    if label_name in label_cache:
+                        template.labels.append(label_cache[label_name])
+
+                logger.info(f"Seeded template: {name} (labels: {label_names})")
 
         await db.commit()
 
