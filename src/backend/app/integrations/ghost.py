@@ -1,9 +1,11 @@
 """Ghost CMS integration for newsletter publishing."""
 
+import io
 import json
 import time
 from typing import Any
 
+import httpx
 import jwt
 from pydantic import BaseModel
 
@@ -100,6 +102,56 @@ class GhostIntegration(BaseIntegration[GhostNewsletter]):
         client = await self._get_client()
         client.headers["Authorization"] = f"Ghost {self._get_auth_token()}"
         return await super()._request(method, path, params, json, **kwargs)
+
+    async def upload_image(self, image_bytes: bytes, filename: str, content_type: str = "image/jpeg") -> str | None:
+        """Upload an image to Ghost and return the hosted URL.
+
+        Uses Ghost Admin API /images/upload/ endpoint.
+
+        Args:
+            image_bytes: Raw image bytes
+            filename: Filename for the upload (e.g., "cover.jpg")
+            content_type: MIME type of the image
+
+        Returns:
+            Ghost-hosted image URL, or None if upload failed
+        """
+        try:
+            # Use a separate client for uploads to avoid Content-Type conflicts
+            # (default client has Content-Type: application/json, but uploads need multipart)
+            async with httpx.AsyncClient(
+                base_url=self.url,
+                timeout=httpx.Timeout(60),
+                headers={
+                    "Authorization": f"Ghost {self._get_auth_token()}",
+                    "User-Agent": "Ghostarr/1.0",
+                },
+            ) as upload_client:
+                files = {
+                    "file": (filename, io.BytesIO(image_bytes), content_type),
+                }
+                data = {"ref": filename}
+
+                response = await upload_client.post(
+                    "/ghost/api/admin/images/upload/",
+                    files=files,
+                    data=data,
+                )
+                response.raise_for_status()
+
+            result = response.json()
+            images = result.get("images", [])
+            if images:
+                url = images[0].get("url")
+                logger.debug(f"Image uploaded to Ghost: {url}")
+                return url
+
+            logger.warning("Ghost image upload returned no images")
+            return None
+
+        except Exception as e:
+            logger.warning(f"Failed to upload image to Ghost: {e}")
+            return None
 
     async def test_connection(self) -> tuple[bool, str, int | None]:
         """Test connection to Ghost."""

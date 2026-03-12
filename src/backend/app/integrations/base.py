@@ -133,11 +133,12 @@ class BaseIntegration(ABC, Generic[T]):
 
         try:
             client = await self._get_client()
-            # Override Accept header for image requests
-            headers = {
-                "Accept": "image/webp,image/png,image/jpeg,image/*,*/*",
-            }
+            # Merge with default headers to preserve auth (Authorization, etc.)
+            headers = dict(self._get_default_headers())
+            headers["Accept"] = "image/webp,image/png,image/jpeg,image/*,*/*"
+            logger.debug(f"Fetching image: {image_url}")
             response = await client.get(image_url, headers=headers)
+            logger.debug(f"Image response: {response.status_code} content-type={response.headers.get('content-type')} size={len(response.content)}")
             response.raise_for_status()
 
             # Determine content type
@@ -147,6 +148,7 @@ class BaseIntegration(ABC, Generic[T]):
 
             # Encode to base64
             image_data = base64.b64encode(response.content).decode("utf-8")
+            logger.debug(f"Image encoded: {content_type} ({len(image_data)} chars)")
             return f"data:{content_type};base64,{image_data}"
 
         except Exception as e:

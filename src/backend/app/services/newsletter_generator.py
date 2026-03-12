@@ -81,6 +81,7 @@ class NewsletterGenerator:
 
         # Service URLs (populated during fetch)
         self._tautulli_url: str = ""
+        self._ghost_integration: GhostIntegration | None = None
 
     async def create_history_entry(
         self,
@@ -269,6 +270,66 @@ class NewsletterGenerator:
 
         return await self._finalize()
 
+    async def _get_ghost_integration(self) -> GhostIntegration | None:
+        """Get or create a Ghost integration for image uploads."""
+        if self._ghost_integration is not None:
+            return self._ghost_integration
+
+        url, api_key = await get_service_credentials(self.db, "ghost")
+        if not url or not api_key:
+            return None
+
+        self._ghost_integration = GhostIntegration(url=url, api_key=api_key)
+        return self._ghost_integration
+
+    async def _upload_image_to_ghost(
+        self,
+        source_integration: Any,
+        image_url: str,
+        filename: str,
+    ) -> str | None:
+        """Fetch an image from a source service and upload it to Ghost.
+
+        This re-hosts images on Ghost so they work in emails (email clients
+        block base64 data URIs but can fetch Ghost-hosted URLs).
+
+        Falls back to base64 data URI if Ghost upload fails.
+        """
+        import base64
+
+        if not image_url:
+            return None
+
+        ghost = await self._get_ghost_integration()
+
+        # Fetch raw image bytes from source (with auth headers)
+        try:
+            client = await source_integration._get_client()
+            headers = dict(source_integration._get_default_headers())
+            headers["Accept"] = "image/webp,image/png,image/jpeg,image/*,*/*"
+            response = await client.get(image_url, headers=headers)
+            response.raise_for_status()
+        except Exception as e:
+            logger.warning(f"Failed to fetch image {image_url}: {e}")
+            return None
+
+        image_bytes = response.content
+        content_type = response.headers.get("content-type", "image/jpeg")
+        if ";" in content_type:
+            content_type = content_type.split(";")[0].strip()
+
+        # Try uploading to Ghost first (works in emails)
+        if ghost:
+            ghost_url = await ghost.upload_image(image_bytes, filename, content_type)
+            if ghost_url:
+                logger.debug(f"Image re-hosted on Ghost: {ghost_url}")
+                return ghost_url
+            logger.warning("Ghost image upload failed, falling back to base64")
+
+        # Fallback to base64 (works in web, not in email)
+        image_data = base64.b64encode(image_bytes).decode("utf-8")
+        return f"data:{content_type};base64,{image_data}"
+
     async def _fetch_tautulli(self) -> None:
         """Fetch media from Tautulli."""
         if not self.config.tautulli.enabled:
@@ -442,15 +503,18 @@ class NewsletterGenerator:
                 max_items=self.config.komga.max_items,
             )
 
-            # Convert items and fetch images as base64 for external accessibility
+            # Convert items and re-host images on Ghost for email compatibility
             self.books = []
-            for item in items:
+            for idx, item in enumerate(items):
                 book_dict = item.model_dump()
-                # Convert thumbnail URL to base64
                 if book_dict.get("thumbnail_url"):
-                    base64_image = await integration.fetch_image_as_base64(book_dict["thumbnail_url"])
-                    if base64_image:
-                        book_dict["thumbnail_url"] = base64_image
+                    hosted_url = await self._upload_image_to_ghost(
+                        integration,
+                        book_dict["thumbnail_url"],
+                        f"komga-book-{idx}.jpg",
+                    )
+                    if hosted_url:
+                        book_dict["thumbnail_url"] = hosted_url
                 self.books.append(book_dict)
 
             await integration.close()
@@ -485,15 +549,18 @@ class NewsletterGenerator:
                 max_items=self.config.audiobookshelf.max_items,
             )
 
-            # Convert items and fetch images as base64 for external accessibility
+            # Convert items and re-host images on Ghost for email compatibility
             self.audiobooks = []
-            for item in items:
+            for idx, item in enumerate(items):
                 audiobook_dict = item.model_dump()
-                # Convert cover URL to base64
                 if audiobook_dict.get("cover_url"):
-                    base64_image = await integration.fetch_image_as_base64(audiobook_dict["cover_url"])
-                    if base64_image:
-                        audiobook_dict["cover_url"] = base64_image
+                    hosted_url = await self._upload_image_to_ghost(
+                        integration,
+                        audiobook_dict["cover_url"],
+                        f"audiobook-cover-{idx}.jpg",
+                    )
+                    if hosted_url:
+                        audiobook_dict["cover_url"] = hosted_url
                 self.audiobooks.append(audiobook_dict)
 
             await integration.close()
@@ -939,6 +1006,11 @@ class NewsletterGenerator:
 
     async def _finalize(self) -> History:
         """Finalize the history entry."""
+        # Close Ghost integration if it was created for image uploads
+        if self._ghost_integration:
+            await self._ghost_integration.close()
+            self._ghost_integration = None
+
         self.history.completed_at = datetime.utcnow()
         self.history.duration_seconds = self.tracker.get_total_duration() if self.tracker else 0
         self.history.progress_log = self.tracker.get_progress_log() if self.tracker else []
