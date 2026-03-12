@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.5.1...v1.6.0) (2026-03-12)
+
+
+### Features
+
+* Add 6 email-optimized newsletter templates and template helpers ([56c16fc](https://github.com/sharkhunterr/ghostarr/-/commit/56c16fcf3964e39ca5955f6845a77eeca35e01a4))
+* Include all default templates in repository for Docker builds ([f24c281](https://github.com/sharkhunterr/ghostarr/-/commit/f24c281fb4eb3e72be767ae0da9db00652121cc3))
+
+
+### Bug Fixes
+
+* Allow default templates in git for Docker builds ([248b865](https://github.com/sharkhunterr/ghostarr/-/commit/248b865fe94b30ab9c8e49ece872830185411d1c))
+
 ### [1.5.1](https://github.com/sharkhunterr/ghostarr/-/compare/v1.5.0...v1.5.1) (2026-02-05)
 
 
