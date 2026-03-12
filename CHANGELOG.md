@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.3](https://github.com/sharkhunterr/ghostarr/-/compare/v1.6.2...v1.6.3) (2026-03-12)
+
+
+### Bug Fixes
+
+* Auto-seed all templates from directory instead of hardcoded list ([897c0e1](https://github.com/sharkhunterr/ghostarr/-/commit/897c0e1d4ab75a396023e0c1a094fd613d1bf8c0))
+
 ### [1.6.2](https://github.com/sharkhunterr/ghostarr/-/compare/v1.6.1...v1.6.2) (2026-03-12)
 
 
