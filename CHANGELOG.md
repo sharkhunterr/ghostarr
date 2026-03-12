@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.2](https://github.com/sharkhunterr/ghostarr/-/compare/v1.6.1...v1.6.2) (2026-03-12)
+
+
+### Bug Fixes
+
+* Fix database persistence in Docker and log filter crash ([9f7c344](https://github.com/sharkhunterr/ghostarr/-/commit/9f7c34497886e7f7919b6e6d9b6bd8596541c9e5))
+
 ### [1.6.1](https://github.com/sharkhunterr/ghostarr/-/compare/v1.6.0...v1.6.1) (2026-03-12)
 
 
