@@ -1,0 +1,135 @@
+<div style="max-width: 800px; margin: 0 auto; background: #ffffff; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; color: #1a1a1a; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.1); border: 1px solid rgba(0,0,0,0.05);">
+
+    <!-- Header minimaliste -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 32px 24px; text-align: center;">
+        <h1 style="margin: 0; font-size: 2.2em; font-weight: 700; letter-spacing: -1px; line-height: 1.2; color: #ffffff;">🔧 Serveur Média</h1>
+        <div style="font-size: 0.9em; margin-top: 12px; opacity: 0.85; color: rgba(255,255,255,0.8);">Envoyé le {{ now().strftime('%d %B %Y') }}</div>
+    </div>
+
+    <!-- Section Maintenance moderne -->
+    {% if include_maintenance %}
+    <div style="padding: 40px 24px;">
+
+        <!-- Badges en ligne pour les informations clés -->
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px;">
+
+            <!-- Badge Type -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.85em; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                {% if maintenance_type == 'maintenance' %}🛠️ Maintenance Programmée{% elif maintenance_type == 'panne' %}⚠️ Panne Technique{% elif maintenance_type == 'perturbation' %}📡 Perturbation Réseau{% elif maintenance_type == 'mise_a_jour' %}🔄 Mise à Jour Système{% elif maintenance_type == 'amelioration' %}⬆️ Amélioration Services{% elif maintenance_type == 'securite' %}🔒 Mise à Jour Sécurité{% else %}🔧 Maintenance{% endif %}
+            </div>
+
+            <!-- Badge Durée -->
+            {% if maintenance_duration_value %}
+            <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: #1a1a1a; padding: 8px 16px; border-radius: 20px; font-size: 0.85em; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                ⏱️ {{ maintenance_duration_value }}{% if maintenance_duration_unit == 'heures' %}h{% else %}j{% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Badge Date -->
+            {% if maintenance_start_date %}
+            <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: #1a1a1a; padding: 8px 16px; border-radius: 20px; font-size: 0.85em; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                📅
+                {% if 'T' in maintenance_start_date %}
+                    {{ maintenance_start_date.split('T')[0] }} à {{ maintenance_start_date.split('T')[1][:5] }}
+                {% else %}
+                    {{ maintenance_start_date }}
+                {% endif %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Description élégante -->
+        {% if maintenance_description %}
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 24px;">
+            <div style="color: #475569; font-size: 1em; line-height: 1.6; text-align: center;">
+                {{ maintenance_description }}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Note d'information discrète -->
+        <div style="background: rgba(102, 126, 234, 0.05); border: 1px solid rgba(102, 126, 234, 0.2); border-radius: 8px; padding: 16px; text-align: center;">
+            <p style="margin: 0; color: #475569; font-size: 0.9em; font-weight: 500;">
+                💡 Les services seront temporairement indisponibles pendant cette intervention
+            </p>
+        </div>
+
+    </div>
+    {% endif %}
+
+    <!-- Stats si demandées -->
+    {% if real_stats %}
+    <div style="padding: 20px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 20px; border-radius: 20px; font-size: 0.9em; font-weight: 700; display: inline-block;">📊 Activité récente</div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+            <td style="width: 33.33%; padding: 0 6px;">
+                <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: 900; color: #667eea;">{{ real_stats.total_plays or 0 }}</div>
+                    <div style="font-size: 0.8em; opacity: 0.8;">Lectures</div>
+                </div>
+            </td>
+            <td style="width: 33.33%; padding: 0 6px;">
+                <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: 900; color: #667eea;">
+                        {% if real_stats.total_watch_time %}{{ (real_stats.total_watch_time|int // 60) }}h{% else %}0h{% endif %}
+                    </div>
+                    <div style="font-size: 0.8em; opacity: 0.8;">Temps</div>
+                </div>
+            </td>
+            <td style="width: 33.33%; padding: 0 6px;">
+                <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: 900; color: #667eea;">{{ real_stats.total_viewers or 0 }}</div>
+                    <div style="font-size: 0.8em; opacity: 0.8;">Spectateurs</div>
+                </div>
+            </td>
+        </tr>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Film vedette pendant maintenance -->
+    {% if show_featured_movie and featured_movie %}
+    <div style="padding: 20px;">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 20px; border-radius: 20px; font-size: 0.9em; font-weight: 700; display: inline-block;">⭐ Disponible après maintenance</div>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.05); border-radius: 12px; overflow: hidden; padding: 20px;">
+            <h3 style="margin: 0 0 8px 0; color: #fff;">{{ featured_movie.title }}</h3>
+            {% if featured_movie.year %}
+            <div style="color: #b3b3b3; font-size: 0.9em; margin-bottom: 12px;">{{ featured_movie.year }}</div>
+            {% endif %}
+            {% if featured_movie.summary %}
+            <div style="color: #d1d1d1; font-size: 0.9em; line-height: 1.4;">
+                {{ featured_movie.summary[:200] }}{% if featured_movie.summary|length > 200 %}...{% endif %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Contenu disponible -->
+    {% if movies or episodes %}
+    <div style="padding: 20px;">
+        <div style="text-align: center; color: #b3b3b3; font-size: 1.1em;">
+            {% if movies %}<span style="color: #667eea; font-weight: 600;">{{ movies|length }}</span> films{% endif %}
+            {% if movies and episodes %} • {% endif %}
+            {% if episodes %}<span style="color: #667eea; font-weight: 600;">{{ episodes|length }}</span> épisodes{% endif %}
+            <div style="margin-top: 8px; font-size: 0.9em; opacity: 0.7;">
+                Disponibles après la maintenance
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer moderne -->
+    <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 24px; text-align: center;">
+        <div style="font-size: 0.85em; font-weight: 600; color: #667eea; margin-bottom: 4px;">🔧 Newsletter Maintenance</div>
+        <div style="font-size: 0.8em; color: #64748b;">Merci de votre patience pendant cette intervention</div>
+        <div style="font-size: 0.75em; color: #94a3b8; margin-top: 12px;">Service automatique • {{ now().strftime('%d/%m/%Y à %H:%M') }}</div>
+    </div>
+</div>

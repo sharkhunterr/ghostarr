@@ -1,0 +1,206 @@
+<!-- Template Bobine de Cinéma - Style pellicule rétro -->
+<div style="max-width: 800px; margin: 0 auto; background: #1a1a1a; padding: 0; font-family: 'Courier New', monospace;">
+
+    <!-- Header avec perforations pellicule -->
+    <div style="background: #0d0d0d; padding: 20px; display: flex; align-items: center; gap: 10px;">
+        <!-- Perforations gauche -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            {% for i in range(4) %}
+            <div style="width: 20px; height: 12px; background: #1a1a1a; border-radius: 2px;"></div>
+            {% endfor %}
+        </div>
+
+        <!-- Contenu central -->
+        <div style="flex: 1; text-align: center;">
+            <div style="font-size: 0.8em; color: #666; letter-spacing: 3px;">KODAK SAFETY FILM 5247</div>
+            <h1 style="margin: 10px 0; font-size: 2.5em; color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.5);">
+                🎬 CINÉ-CLUB
+            </h1>
+            <div style="font-size: 0.9em; color: #888;">Programme du {{ now().strftime('%d/%m/%Y') }}</div>
+        </div>
+
+        <!-- Perforations droite -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            {% for i in range(4) %}
+            <div style="width: 20px; height: 12px; background: #1a1a1a; border-radius: 2px;"></div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Section Films en format pellicule -->
+    {% if movies %}
+    <div style="padding: 0;">
+        {% for movie in movies %}
+        <div style="display: flex; background: #0d0d0d; border-top: 1px solid #333; border-bottom: 1px solid #333;">
+            <!-- Bande de perforations gauche -->
+            <div style="width: 40px; background: #1a1a1a; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 10px 0;">
+                {% for i in range(6) %}
+                <div style="width: 20px; height: 12px; background: #0d0d0d; border-radius: 2px;"></div>
+                {% endfor %}
+            </div>
+
+            <!-- Frame du film (contenu principal) -->
+            <div style="flex: 1; padding: 20px; display: flex; gap: 20px; background: linear-gradient(90deg, #1a1a1a 0%, #252525 50%, #1a1a1a 100%); position: relative;">
+                <!-- Numéro de frame -->
+                <div style="position: absolute; top: 5px; left: 10px; font-size: 0.65em; color: #ffd700; font-family: monospace;">
+                    FRAME {{ "%04d"|format(loop.index) }}
+                </div>
+                <div style="position: absolute; top: 5px; right: 10px; font-size: 0.65em; color: #666; font-family: monospace;">
+                    {{ movie.year }}
+                </div>
+
+                <!-- Affiche style polaroid -->
+                {% if movie.poster_url %}
+                <div style="flex-shrink: 0; background: #fff; padding: 8px 8px 25px 8px; box-shadow: 3px 3px 10px rgba(0,0,0,0.5); transform: rotate(-1deg);">
+                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100px; height: 150px; object-fit: cover;">
+                </div>
+                {% endif %}
+
+                <!-- Détails du film -->
+                <div style="flex: 1; padding-top: 15px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.4em; color: #ffd700; text-shadow: 0 0 5px rgba(255,215,0,0.3);">
+                        {{ movie.title }}
+                    </h3>
+
+                    {% if movie.tagline %}
+                    <p style="margin: 0 0 12px 0; font-size: 0.9em; color: #aaa; font-style: italic;">
+                        "{{ movie.tagline }}"
+                    </p>
+                    {% endif %}
+
+                    <div style="display: flex; flex-wrap: wrap; gap: 15px; font-size: 0.85em; color: #888; margin-bottom: 12px;">
+                        {% if movie.director %}
+                        <span>🎬 {{ movie.director }}</span>
+                        {% endif %}
+                        {% if movie.duration %}
+                        <span>⏱️ {{ format_duration(movie.duration) }}</span>
+                        {% endif %}
+                        {% if movie.rating %}
+                        <span style="color: #ffd700;">⭐ {{ movie.rating }}/10</span>
+                        {% endif %}
+                    </div>
+
+                    {% if movie.genres %}
+                    <div style="margin-bottom: 12px;">
+                        {% for genre in movie.genres[:3] %}
+                        <span style="display: inline-block; border: 1px solid #ffd700; color: #ffd700; padding: 2px 10px; font-size: 0.7em; margin-right: 5px; border-radius: 0;">{{ genre }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if movie.summary %}
+                    <p style="margin: 0; font-size: 0.85em; color: #999; line-height: 1.5;">
+                        {{ truncate_text(movie.summary, 180) }}
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Bande de perforations droite -->
+            <div style="width: 40px; background: #1a1a1a; display: flex; flex-direction: column; justify-content: space-around; align-items: center; padding: 10px 0;">
+                {% for i in range(6) %}
+                <div style="width: 20px; height: 12px; background: #0d0d0d; border-radius: 2px;"></div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Séparation bobine -->
+    <div style="background: #0d0d0d; padding: 20px; text-align: center; display: flex; align-items: center; gap: 15px;">
+        <div style="flex: 1; height: 2px; background: repeating-linear-gradient(90deg, #ffd700, #ffd700 10px, transparent 10px, transparent 20px);"></div>
+        <div style="font-size: 2em;">🎞️</div>
+        <div style="flex: 1; height: 2px; background: repeating-linear-gradient(90deg, #ffd700, #ffd700 10px, transparent 10px, transparent 20px);"></div>
+    </div>
+
+    <!-- Section Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 20px 40px; background: #1a1a1a;">
+        <h2 style="margin: 0 0 25px 0; font-size: 1.3em; color: #ffd700; text-align: center; letter-spacing: 3px;">
+            📺 SÉRIES EN PROJECTION
+        </h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="background: #0d0d0d; border: 1px solid #333; position: relative; overflow: hidden;">
+                <!-- Mini perforations -->
+                <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 15px; background: repeating-linear-gradient(180deg, #1a1a1a 0px, #1a1a1a 8px, #0d0d0d 8px, #0d0d0d 16px);"></div>
+                <div style="position: absolute; right: 0; top: 0; bottom: 0; width: 15px; background: repeating-linear-gradient(180deg, #1a1a1a 0px, #1a1a1a 8px, #0d0d0d 8px, #0d0d0d 16px);"></div>
+
+                <div style="padding: 15px 25px;">
+                    {% if episodes[0].poster_url %}
+                    <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 100%; height: 120px; object-fit: cover; margin-bottom: 10px;">
+                    {% endif %}
+                    <h4 style="margin: 0 0 8px 0; font-size: 1em; color: #ffd700;">{{ series_title }}</h4>
+                    <div style="font-size: 0.8em; color: #888; margin-bottom: 8px;">
+                        {{ episodes|length }} épisode{{ 's' if episodes|length > 1 else '' }}
+                    </div>
+                    <div style="font-size: 0.75em; color: #666;">
+                        {% for episode in episodes[:3] %}
+                        S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %} • {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section Jeux vidéo -->
+    {% if games %}
+    <div style="padding: 20px 40px; background: #0d0d0d;">
+        <h2 style="margin: 0 0 25px 0; font-size: 1.3em; color: #ffd700; text-align: center; letter-spacing: 3px;">
+            🎮 BONUS - JEUX VIDÉO
+        </h2>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+            {% for game in games[:6] %}
+            <div style="width: 120px; text-align: center;">
+                {% if game.cover_url %}
+                <div style="background: #fff; padding: 5px 5px 15px 5px; margin-bottom: 8px;">
+                    <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; height: 140px; object-fit: cover;">
+                </div>
+                {% endif %}
+                <div style="font-size: 0.8em; color: #ffd700;">{{ game.name }}</div>
+                {% if game.platform %}
+                <div style="font-size: 0.7em; color: #666;">{{ game.platform }}</div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer pellicule -->
+    <div style="background: #0d0d0d; padding: 20px; display: flex; align-items: center; gap: 10px;">
+        <!-- Perforations gauche -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            {% for i in range(3) %}
+            <div style="width: 20px; height: 12px; background: #1a1a1a; border-radius: 2px;"></div>
+            {% endfor %}
+        </div>
+
+        <!-- Contenu central -->
+        <div style="flex: 1; text-align: center;">
+            <div style="font-size: 0.7em; color: #666; letter-spacing: 2px; margin-bottom: 5px;">
+                EASTMAN KODAK COMPANY • ROCHESTER NY
+            </div>
+            <div style="font-size: 0.8em; color: #888;">
+                🎬 Fin de la bobine • {{ now().strftime('%d/%m/%Y %H:%M') }}
+            </div>
+            <div style="font-size: 0.65em; color: #555; margin-top: 5px; letter-spacing: 3px;">
+                ▪▪▪ THE END ▪▪▪
+            </div>
+        </div>
+
+        <!-- Perforations droite -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            {% for i in range(3) %}
+            <div style="width: 20px; height: 12px; background: #1a1a1a; border-radius: 2px;"></div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>

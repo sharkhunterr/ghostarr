@@ -1,0 +1,131 @@
+<!-- Template Anime/Manga - Style japonais avec effets manga -->
+<div style="max-width: 850px; margin: 0 auto; background: #fff; font-family: 'Segoe UI', 'Yu Gothic', sans-serif; color: #333; overflow: hidden;">
+
+    <!-- Header - Style manga -->
+    <div style="background: linear-gradient(135deg, #ff6b9d 0%, #c44569 50%, #6c5ce7 100%); padding: 25px; position: relative; overflow: hidden;">
+        <!-- Speed lines effect -->
+        <div style="position: absolute; top: 50%; left: 50%; width: 200%; height: 200%; transform: translate(-50%, -50%); background: repeating-conic-gradient(from 0deg, transparent 0deg 5deg, rgba(255,255,255,0.1) 5deg 10deg);"></div>
+
+        <div style="position: relative; z-index: 1; text-align: center;">
+            <div style="display: inline-block; background: #fff; color: #c44569; padding: 15px 40px; transform: skewX(-5deg); box-shadow: 5px 5px 0 #000;">
+                <div style="transform: skewX(5deg);">
+                    <div style="font-size: 2.5em; font-weight: 900; letter-spacing: -2px;">メディア</div>
+                    <div style="font-size: 1.5em; font-weight: bold;">MEDIA ANIME</div>
+                </div>
+            </div>
+            <div style="color: #fff; margin-top: 15px; font-size: 0.9em; text-shadow: 2px 2px 0 rgba(0,0,0,0.3);">
+                ★ {{ now().strftime('%Y年%m月%d日') }} ★
+            </div>
+        </div>
+    </div>
+
+    <!-- Films - Manga panels -->
+    {% if movies %}
+    <div style="padding: 20px; background: #f5f5f5;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <div style="background: #000; color: #fff; padding: 8px 20px; clip-path: polygon(0 0, 100% 0, 95% 100%, 0 100%); font-weight: bold;">
+                🎬 新作映画 NEW FILMS
+            </div>
+            <div style="flex: 1; height: 3px; background: linear-gradient(90deg, #000, transparent);"></div>
+        </div>
+
+        <!-- Manga panel layout -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: #000; padding: 4px;">
+            {% for movie in movies %}
+            <div style="background: #fff; position: relative; overflow: hidden; {% if loop.index == 1 %}grid-column: span 2; grid-row: span 2;{% endif %}">
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: {% if loop.index == 1 %}350px{% else %}170px{% endif %}; object-fit: cover;">
+                {% else %}
+                <div style="width: 100%; height: {% if loop.index == 1 %}350px{% else %}170px{% endif %}; background: linear-gradient(135deg, #ff6b9d, #6c5ce7); display: flex; align-items: center; justify-content: center; font-size: {% if loop.index == 1 %}4em{% else %}2em{% endif %};">🎬</div>
+                {% endif %}
+
+                <!-- Speech bubble for title -->
+                <div style="position: absolute; bottom: 10px; left: 10px; right: 10px; background: #fff; border: 3px solid #000; border-radius: 20px; padding: 10px; font-size: {% if loop.index == 1 %}1em{% else %}0.75em{% endif %}; font-weight: bold;">
+                    {{ movie.title[:{% if loop.index == 1 %}35{% else %}18{% endif %}] }}{% if movie.title|length > (35 if loop.index == 1 else 18) %}...{% endif %}
+                    <!-- Bubble tail -->
+                    <div style="position: absolute; bottom: -12px; left: 20px; width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-top: 12px solid #000;"></div>
+                    <div style="position: absolute; bottom: -8px; left: 22px; width: 0; height: 0; border-left: 8px solid transparent; border-right: 8px solid transparent; border-top: 10px solid #fff;"></div>
+                </div>
+
+                <!-- Rating badge -->
+                {% if movie.rating %}
+                <div style="position: absolute; top: 10px; right: 10px; background: #ff6b9d; color: #fff; padding: 5px 10px; font-weight: bold; transform: rotate(5deg); box-shadow: 2px 2px 0 #000;">
+                    ★{{ movie.rating }}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Series - Anime episode cards -->
+    {% if shows_grouped %}
+    <div style="padding: 20px; background: linear-gradient(180deg, #6c5ce7 0%, #a29bfe 100%);">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <div style="background: #fff; color: #6c5ce7; padding: 8px 20px; clip-path: polygon(5% 0, 100% 0, 100% 100%, 0 100%); font-weight: bold;">
+                📺 連続ドラマ SERIES
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="flex: 0 0 auto; width: 180px; background: #fff; border: 4px solid #000; position: relative;">
+                <!-- Manga effect corners -->
+                <div style="position: absolute; top: -4px; left: -4px; width: 15px; height: 15px; background: #000;"></div>
+                <div style="position: absolute; top: -4px; right: -4px; width: 15px; height: 15px; background: #000;"></div>
+
+                {% if episodes[0].poster_url %}
+                <img src="{{ episodes[0].poster_url }}" style="width: 100%; height: 120px; object-fit: cover;">
+                {% else %}
+                <div style="width: 100%; height: 120px; background: linear-gradient(135deg, #ff6b9d, #feca57); display: flex; align-items: center; justify-content: center; font-size: 3em;">📺</div>
+                {% endif %}
+
+                <div style="padding: 12px; background: #fff;">
+                    <div style="font-size: 0.85em; font-weight: bold; margin-bottom: 8px; line-height: 1.2;">
+                        {{ series_title[:20] }}{% if series_title|length > 20 %}...{% endif %}
+                    </div>
+
+                    <!-- Episode count with effect -->
+                    <div style="background: #000; color: #fff; padding: 8px; text-align: center; position: relative;">
+                        <div style="font-size: 1.5em; font-weight: 900;">+{{ episodes|length }}</div>
+                        <div style="font-size: 0.7em;">NEW EPISODES!</div>
+                        <!-- Explosion effect -->
+                        <div style="position: absolute; top: -8px; right: -8px; background: #ff6b9d; color: #fff; padding: 3px 8px; transform: rotate(15deg); font-size: 0.6em; font-weight: bold;">NEW!</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Games - Power-up style -->
+    {% if games %}
+    <div style="padding: 20px; background: #feca57;">
+        <div style="text-align: center; margin-bottom: 15px;">
+            <span style="background: #000; color: #feca57; padding: 10px 25px; font-weight: bold; font-size: 1.2em;">🎮 GAME ZONE ゲーム</span>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+            {% for game in games %}
+            <div style="background: #fff; border: 3px solid #000; padding: 10px 20px; transform: rotate({{ [-3, 2, -1, 3, -2][loop.index0 % 5] }}deg); box-shadow: 3px 3px 0 #000;">
+                <span style="font-weight: bold;">{{ game.name[:15] }}{% if game.name|length > 15 %}...{% endif %}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="background: #000; padding: 25px; text-align: center;">
+        <div style="display: inline-block; border: 3px solid #fff; padding: 15px 30px;">
+            <div style="font-size: 1.5em; color: #ff6b9d; font-weight: bold;">つづく...</div>
+            <div style="font-size: 0.8em; color: #fff; margin-top: 5px;">TO BE CONTINUED</div>
+        </div>
+        <div style="color: #666; font-size: 0.8em; margin-top: 15px;">
+            {{ now().strftime('%d/%m/%Y %H:%M') }}
+        </div>
+    </div>
+
+</div>

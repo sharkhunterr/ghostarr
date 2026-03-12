@@ -1,0 +1,124 @@
+<!-- Template Halloween - Films & Séries Horrifiques -->
+<div style="max-width: 800px; margin: 0 auto; background: #0d0d0d; color: #e0e0e0; font-family: 'Georgia', serif; border-radius: 0; overflow: hidden; border: 3px solid #8b0000;">
+
+    <!-- Header Halloween -->
+    <div style="background: linear-gradient(180deg, #1a0a0a 0%, #2d0a0a 50%, #0d0d0d 100%); padding: 40px 20px; text-align: center; position: relative; border-bottom: 2px solid #8b0000;">
+        <div style="position: absolute; top: 10px; left: 10px; font-size: 2em; opacity: 0.3;">🦇</div>
+        <div style="position: absolute; top: 10px; right: 10px; font-size: 2em; opacity: 0.3;">🦇</div>
+        <div style="position: absolute; bottom: 10px; left: 20px; font-size: 1.5em; opacity: 0.2;">🕸️</div>
+        <div style="position: absolute; bottom: 10px; right: 20px; font-size: 1.5em; opacity: 0.2;">🕷️</div>
+
+        <div style="font-size: 3em; margin-bottom: 10px;">🎃</div>
+        <h1 style="margin: 0; font-size: 2.5em; color: #ff6600; text-shadow: 0 0 20px #ff6600, 0 0 40px #8b0000; letter-spacing: 3px; font-weight: normal;">
+            HALLOWEEN SPECIAL
+        </h1>
+        <p style="margin: 15px 0 0 0; font-size: 1.1em; color: #cc5500; letter-spacing: 2px;">
+            {{ now().strftime('%d %B %Y') }} - Édition Frissons
+        </p>
+    </div>
+
+    <!-- Message d'ambiance -->
+    <div style="background: #1a0505; padding: 20px; text-align: center; border-bottom: 1px solid #3d0000;">
+        <p style="margin: 0; color: #888; font-style: italic; font-size: 1.1em;">
+            "Les ténèbres s'éveillent... Préparez-vous pour une nuit d'horreur" 👻
+        </p>
+    </div>
+
+    <!-- Section Films -->
+    {% if movies %}
+    <div style="padding: 30px; background: linear-gradient(180deg, #0d0d0d 0%, #1a0a0a 100%);">
+        <h2 style="color: #ff6600; font-size: 1.8em; text-align: center; margin-bottom: 25px; font-weight: normal; letter-spacing: 2px;">
+            🔪 FILMS TERRIFIANTS 🔪
+        </h2>
+
+        {% for movie in movies %}
+        <div style="background: linear-gradient(135deg, #1a0808 0%, #0d0505 100%); border-radius: 8px; margin-bottom: 20px; display: flex; overflow: hidden; border: 1px solid #3d0000; box-shadow: 0 5px 20px rgba(139, 0, 0, 0.3);">
+            <div style="position: relative;">
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 130px; height: 195px; object-fit: cover; filter: contrast(1.1) saturate(0.8);">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, transparent, rgba(26,8,8,0.8));"></div>
+            </div>
+            <div style="padding: 20px; flex: 1;">
+                <h3 style="color: #ff6600; font-size: 1.4em; margin: 0 0 8px 0; font-weight: normal;">{{ movie.title }}</h3>
+                {% if movie.tagline %}
+                <p style="color: #8b0000; font-style: italic; margin: 0 0 12px 0; font-size: 0.9em;">"{{ movie.tagline }}"</p>
+                {% endif %}
+
+                <div style="color: #888; font-size: 0.85em; margin-bottom: 12px;">
+                    <span>📅 {{ movie.year }}</span>
+                    {% if movie.rating %} • <span style="color: #ff6600;">⭐ {{ movie.rating }}</span>{% endif %}
+                    {% if movie.duration %} • <span>⏱️ {{ format_duration(movie.duration) }}</span>{% endif %}
+                </div>
+
+                {% if movie.genres %}
+                <div style="margin-bottom: 12px;">
+                    {% for genre in movie.genres[:3] %}
+                    <span style="background: #3d0000; color: #ff6600; padding: 3px 10px; border-radius: 3px; font-size: 0.75em; margin-right: 5px;">{{ genre }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if movie.summary %}
+                <p style="color: #aaa; line-height: 1.5; margin: 0; font-size: 0.9em;">{{ truncate_text(movie.summary, 180) }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Section Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 30px; background: linear-gradient(180deg, #1a0a0a 0%, #0d0d0d 100%);">
+        <h2 style="color: #ff6600; font-size: 1.8em; text-align: center; margin-bottom: 25px; font-weight: normal; letter-spacing: 2px;">
+            📺 SÉRIES CAUCHEMARDESQUES 📺
+        </h2>
+
+        {% for series_title, episodes in shows_grouped.items() %}
+        <div style="background: linear-gradient(135deg, #1a0808 0%, #0d0505 100%); border-radius: 8px; margin-bottom: 20px; display: flex; overflow: hidden; border: 1px solid #3d0000; box-shadow: 0 5px 20px rgba(139, 0, 0, 0.3);">
+            <div style="position: relative;">
+                <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 130px; height: 195px; object-fit: cover; filter: contrast(1.1) saturate(0.8);">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, transparent, rgba(26,8,8,0.8));"></div>
+            </div>
+            <div style="padding: 20px; flex: 1;">
+                <h3 style="color: #ff6600; font-size: 1.4em; margin: 0 0 8px 0; font-weight: normal;">{{ series_title }}</h3>
+
+                <div style="background: #8b0000; color: #fff; padding: 4px 10px; border-radius: 3px; font-size: 0.8em; margin-bottom: 12px; display: inline-block;">
+                    {{ episodes|length }} épisode{{ 's' if episodes|length > 1 else '' }} ajouté{{ 's' if episodes|length > 1 else '' }}
+                </div>
+
+                <div style="margin-bottom: 12px;">
+                    {% for episode in episodes[:4] %}
+                    <span style="color: #ff6600; font-size: 0.85em;">S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}</span>{% if not loop.last %} • {% endif %}
+                    {% endfor %}
+                    {% if episodes|length > 4 %}<span style="color: #888;"> +{{ episodes|length - 4 }} autres</span>{% endif %}
+                </div>
+
+                {% if episodes[0].genres %}
+                <div style="margin-bottom: 12px;">
+                    {% for genre in episodes[0].genres[:3] %}
+                    <span style="background: #3d0000; color: #ff6600; padding: 3px 10px; border-radius: 3px; font-size: 0.75em; margin-right: 5px;">{{ genre }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if episodes[0].summary %}
+                <p style="color: #aaa; line-height: 1.5; margin: 0; font-size: 0.9em;">{{ truncate_text(episodes[0].summary, 180) }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Footer Halloween -->
+    <div style="background: #0d0505; padding: 25px; text-align: center; border-top: 2px solid #8b0000;">
+        <div style="font-size: 1.5em; margin-bottom: 10px;">🎃 👻 🦇 💀 🕷️</div>
+        <p style="margin: 0; color: #666; font-size: 0.9em; font-style: italic;">
+            Bonne nuit... si vous osez dormir
+        </p>
+        <p style="margin: 10px 0 0 0; color: #555; font-size: 0.8em;">
+            Généré le {{ now().strftime('%d/%m/%Y à %H:%M') }}
+        </p>
+    </div>
+
+</div>

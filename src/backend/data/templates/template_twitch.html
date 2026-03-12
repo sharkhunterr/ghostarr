@@ -1,0 +1,194 @@
+<!-- Template Twitch - Interface streaming live -->
+<div style="max-width: 100%; margin: 0 auto; background: #0e0e10; font-family: 'Inter', 'Roobert', 'Helvetica Neue', sans-serif; color: #efeff1;">
+
+    <!-- Header Twitch -->
+    <div style="background: #18181b; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2f2f35;">
+        <div style="display: flex; align-items: center; gap: 25px;">
+            <div style="font-size: 1.8em; font-weight: 900; color: #9147ff;">📺 MediaStream</div>
+            <nav style="display: flex; gap: 20px; font-size: 0.95em;">
+                <span style="color: #bf94ff; font-weight: 600;">Suivis</span>
+                <span style="color: #adadb8;">Parcourir</span>
+            </nav>
+        </div>
+        <div style="font-size: 0.85em; color: #adadb8;">{{ now().strftime('%d %B %Y') }}</div>
+    </div>
+
+    <!-- Main Content -->
+    <div style="display: flex;">
+
+        <!-- Sidebar - Chaînes suivies -->
+        <div style="width: 240px; background: #1f1f23; padding: 15px 10px; flex-shrink: 0;">
+            <div style="font-size: 0.8em; color: #adadb8; text-transform: uppercase; letter-spacing: 0.5px; padding: 0 10px; margin-bottom: 15px;">
+                Chaînes suivies
+            </div>
+
+            {% if shows_grouped %}
+            {% for series_title, episodes in shows_grouped.items() %}
+            {% if loop.index <= 8 %}
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 6px; margin-bottom: 2px;">
+                {% if episodes[0].poster_url %}
+                <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 30px; height: 30px; border-radius: 50%; object-fit: cover;">
+                {% else %}
+                <div style="width: 30px; height: 30px; border-radius: 50%; background: #9147ff; display: flex; align-items: center; justify-content: center;">📺</div>
+                {% endif %}
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 0.9em; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ series_title[:15] }}{% if series_title|length > 15 %}...{% endif %}</div>
+                    <div style="font-size: 0.75em; color: #adadb8;">Séries</div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <div style="width: 8px; height: 8px; background: #eb0400; border-radius: 50%;"></div>
+                    <span style="font-size: 0.8em; color: #eb0400;">{{ episodes|length }}</span>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Content Area -->
+        <div style="flex: 1; padding: 20px;">
+
+            <!-- Featured Stream - Film principal -->
+            {% if movies and movies|length > 0 %}
+            {% set featured = movies[0] %}
+            <div style="position: relative; margin-bottom: 30px; border-radius: 10px; overflow: hidden;">
+                {% if featured.backdrop_url %}
+                <img src="{{ featured.backdrop_url }}" alt="{{ featured.title }}" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+                {% elif featured.poster_url %}
+                <div style="width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #9147ff, #772ce8); display: flex; align-items: center; justify-content: center;">
+                    <img src="{{ featured.poster_url }}" style="height: 90%; object-fit: contain;">
+                </div>
+                {% endif %}
+
+                <!-- Live badge -->
+                <div style="position: absolute; top: 15px; left: 15px; background: #eb0400; color: #fff; padding: 3px 8px; border-radius: 4px; font-size: 0.8em; font-weight: 700;">
+                    NOUVEAU
+                </div>
+
+                <!-- Viewers -->
+                <div style="position: absolute; bottom: 15px; left: 15px; background: rgba(0,0,0,0.7); padding: 5px 10px; border-radius: 4px; font-size: 0.85em;">
+                    {% if featured.rating %}{{ (featured.rating * 1000)|int }} spectateurs{% endif %}
+                </div>
+
+                <!-- Stream info overlay -->
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 60px 20px 20px;">
+                    <h2 style="margin: 0 0 10px 0; font-size: 1.5em; font-weight: 700;">{{ featured.title }}</h2>
+                    <div style="display: flex; gap: 15px; align-items: center;">
+                        <span style="background: #9147ff; padding: 3px 10px; border-radius: 20px; font-size: 0.8em;">{{ featured.year }}</span>
+                        {% if featured.genres %}
+                        {% for genre in featured.genres[:2] %}
+                        <span style="background: rgba(255,255,255,0.2); padding: 3px 10px; border-radius: 20px; font-size: 0.8em;">{{ genre }}</span>
+                        {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Live Channels Grid - Films -->
+            {% if movies and movies|length > 1 %}
+            <div style="margin-bottom: 40px;">
+                <h2 style="margin: 0 0 20px 0; font-size: 1.2em; font-weight: 700;">🎬 Films en direct</h2>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+                    {% for movie in movies[1:9] %}
+                    <div>
+                        <div style="position: relative; border-radius: 8px; overflow: hidden; margin-bottom: 12px;">
+                            {% if movie.backdrop_url %}
+                            <img src="{{ movie.backdrop_url }}" alt="{{ movie.title }}" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+                            {% elif movie.poster_url %}
+                            <div style="width: 100%; aspect-ratio: 16/9; background: #1f1f23; display: flex; align-items: center; justify-content: center;">
+                                <img src="{{ movie.poster_url }}" style="height: 100%; object-fit: cover;">
+                            </div>
+                            {% endif %}
+
+                            <div style="position: absolute; top: 10px; left: 10px; background: #eb0400; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: 700;">LIVE</div>
+                            {% if movie.duration %}
+                            <div style="position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 4px; font-size: 0.75em;">{{ format_duration(movie.duration) }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div style="display: flex; gap: 10px;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #9147ff, #772ce8); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">🎬</div>
+                            <div style="flex: 1; min-width: 0;">
+                                <h3 style="margin: 0 0 4px 0; font-size: 0.95em; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ movie.title }}</h3>
+                                <div style="font-size: 0.85em; color: #adadb8;">{{ movie.director if movie.director else 'Films' }}</div>
+                                <div style="font-size: 0.85em; color: #adadb8;">{{ movie.genres[0] if movie.genres else movie.year }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Categories - Séries -->
+            {% if shows_grouped %}
+            <div style="margin-bottom: 40px;">
+                <h2 style="margin: 0 0 20px 0; font-size: 1.2em; font-weight: 700;">📺 Catégories Séries</h2>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+                    {% for series_title, episodes in shows_grouped.items() %}
+                    <div style="position: relative;">
+                        <div style="position: relative; border-radius: 8px; overflow: hidden; margin-bottom: 10px;">
+                            {% if episodes[0].poster_url %}
+                            <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 100%; aspect-ratio: 3/4; object-fit: cover;">
+                            {% else %}
+                            <div style="width: 100%; aspect-ratio: 3/4; background: linear-gradient(135deg, #9147ff, #772ce8);"></div>
+                            {% endif %}
+
+                            <!-- Viewers overlay -->
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 30px 10px 10px;">
+                                <div style="display: flex; align-items: center; gap: 5px;">
+                                    <div style="width: 8px; height: 8px; background: #eb0400; border-radius: 50%;"></div>
+                                    <span style="font-size: 0.85em;">{{ episodes|length }} épisodes</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 style="margin: 0 0 5px 0; font-size: 0.95em; font-weight: 700;">{{ series_title[:25] }}{% if series_title|length > 25 %}...{% endif %}</h3>
+                        <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                            {% for episode in episodes[:2] %}
+                            <span style="background: #2f2f35; padding: 2px 8px; border-radius: 20px; font-size: 0.75em; color: #adadb8;">
+                                S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Games Section -->
+            {% if games %}
+            <div>
+                <h2 style="margin: 0 0 20px 0; font-size: 1.2em; font-weight: 700;">🎮 Gaming</h2>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px;">
+                    {% for game in games[:10] %}
+                    <div>
+                        <div style="position: relative; border-radius: 8px; overflow: hidden; margin-bottom: 10px;">
+                            {% if game.cover_url %}
+                            <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; aspect-ratio: 3/4; object-fit: cover;">
+                            {% else %}
+                            <div style="width: 100%; aspect-ratio: 3/4; background: linear-gradient(135deg, #9147ff, #00ff7f);"></div>
+                            {% endif %}
+                        </div>
+                        <h4 style="margin: 0; font-size: 0.9em; font-weight: 600; line-height: 1.3;">{{ game.name[:20] }}{% if game.name|length > 20 %}...{% endif %}</h4>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div style="background: #18181b; padding: 20px; text-align: center; border-top: 1px solid #2f2f35;">
+        <div style="font-size: 1.3em; font-weight: 900; color: #9147ff; margin-bottom: 10px;">📺 MediaStream</div>
+        <p style="margin: 0; font-size: 0.85em; color: #adadb8;">{{ now().strftime('%d/%m/%Y à %H:%M') }}</p>
+    </div>
+
+</div>

@@ -1,0 +1,141 @@
+<!-- Template Alien - Style Weyland-Yutani Corporation Terminal -->
+<div style="max-width: 900px; margin: 0 auto; background: #0a0c0a; font-family: 'Courier New', 'VT323', monospace; color: #33ff33; padding: 0; border: 3px solid #1a3a1a; position: relative;">
+
+    <!-- CRT effect overlay -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.1), rgba(0,0,0,0.1) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 10;"></div>
+
+    <!-- Content -->
+    <div style="position: relative; z-index: 1;">
+
+        <!-- Terminal Header -->
+        <header style="background: #0d120d; padding: 20px 25px; border-bottom: 1px solid #1a3a1a;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <div style="font-size: 1.5em; font-weight: bold; letter-spacing: 3px;">WEYLAND-YUTANI</div>
+                    <div style="font-size: 0.7em; color: #1a5a1a; margin-top: 5px;">BUILDING BETTER WORLDS</div>
+                </div>
+                <div style="text-align: right; font-size: 0.85em;">
+                    <div style="color: #1a5a1a;">TERMINAL ID: WY-{{ now().strftime('%j') }}</div>
+                    <div>{{ now().strftime('%Y.%m.%d') }} {{ now().strftime('%H:%M:%S') }}</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- System status -->
+        <div style="background: #0a0c0a; padding: 15px 25px; border-bottom: 1px solid #1a3a1a; font-size: 0.8em;">
+            <span style="color: #1a5a1a;">&gt;</span> SYSTEM STATUS: <span style="color: #33ff33;">OPERATIONAL</span>
+            <span style="margin-left: 30px; color: #1a5a1a;">|</span>
+            <span style="margin-left: 30px;">CLEARANCE: LEVEL 5</span>
+            <span style="margin-left: 30px; color: #1a5a1a;">|</span>
+            <span style="margin-left: 30px;">CREW: ACTIVE</span>
+        </div>
+
+        <!-- Boot sequence -->
+        <div style="padding: 20px 25px; background: #080a08; font-size: 0.75em; line-height: 1.8; border-bottom: 1px solid #1a3a1a;">
+            <div style="color: #1a5a1a;">&gt; INITIALIZING MEDIA DATABASE...</div>
+            <div style="color: #1a5a1a;">&gt; LOADING ENTERTAINMENT MODULES...</div>
+            <div>&gt; MEDIA COUNT: {{ (movies|length if movies else 0) + (shows_grouped|length if shows_grouped else 0) }} ENTRIES FOUND</div>
+            <div style="color: #ffff00;">&gt; WARNING: SPECIAL ORDER 937 - CREW EXPENDABLE</div>
+            <div>&gt; DATABASE READY_</div>
+        </div>
+
+        <!-- Films as Data Logs -->
+        {% if movies %}
+        <section style="padding: 25px;">
+            <div style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #1a3a1a;">
+                <span style="color: #1a5a1a;">&gt;&gt;</span> VISUAL MEDIA LOG <span style="color: #1a5a1a;">&lt;&lt;</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
+                {% for movie in movies %}
+                <div style="background: #0d120d; border: 1px solid #1a3a1a; padding: 15px;">
+                    <!-- File header -->
+                    <div style="display: flex; justify-content: space-between; font-size: 0.7em; color: #1a5a1a; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px dotted #1a3a1a;">
+                        <span>FILE_{{ "%04d"|format(loop.index) }}.dat</span>
+                        <span>{{ movie.year }}</span>
+                    </div>
+
+                    {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" style="width: 100%; height: 180px; object-fit: cover; filter: brightness(0.7) contrast(1.2) saturate(0.5) sepia(0.3) hue-rotate(80deg); border: 1px solid #1a3a1a;">
+                    {% else %}
+                    <div style="width: 100%; height: 180px; background: #080a08; display: flex; align-items: center; justify-content: center; border: 1px solid #1a3a1a; color: #1a3a1a; font-size: 2em;">[NO IMAGE]</div>
+                    {% endif %}
+
+                    <div style="margin-top: 12px;">
+                        <div style="font-size: 0.95em; margin-bottom: 8px; word-break: break-word;">
+                            {{ movie.title[:28] }}{% if movie.title|length > 28 %}...{% endif %}
+                        </div>
+                        <div style="font-size: 0.75em; color: #1a5a1a;">
+                            {% if movie.rating %}RATING: {{ movie.rating }}/10{% endif %}
+                            {% if movie.duration %} | {{ format_duration(movie.duration) }}{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Series as Transmissions -->
+        {% if shows_grouped %}
+        <section style="padding: 0 25px 25px;">
+            <div style="margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px dashed #1a3a1a;">
+                <span style="color: #1a5a1a;">&gt;&gt;</span> INCOMING TRANSMISSIONS <span style="color: #1a5a1a;">&lt;&lt;</span>
+            </div>
+
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="background: #0d120d; border: 1px solid #1a3a1a; padding: 15px; margin-bottom: 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <div style="font-size: 0.7em; color: #1a5a1a; margin-bottom: 5px;">TRANSMISSION_{{ "%03d"|format(loop.index) }}</div>
+                        <div style="font-size: 1.1em;">{{ series_title }}</div>
+                        <div style="font-size: 0.75em; color: #1a5a1a; margin-top: 8px;">
+                            PACKETS: {% for episode in episodes[:4] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %} | {% endif %}{% endfor %}
+                        </div>
+                    </div>
+                    <div style="background: #1a3a1a; padding: 10px 15px; text-align: center;">
+                        <div style="font-size: 1.5em; font-weight: bold;">{{ episodes|length }}</div>
+                        <div style="font-size: 0.6em; color: #33ff33;">NEW</div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        <!-- Games -->
+        {% if games %}
+        <section style="padding: 0 25px 25px;">
+            <div style="margin-bottom: 15px; font-size: 0.85em;">
+                <span style="color: #1a5a1a;">&gt;</span> RECREATION MODULES:
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                {% for game in games %}
+                <span style="background: #1a3a1a; padding: 8px 12px; font-size: 0.8em;">
+                    {{ game.name[:20] }}{% if game.name|length > 20 %}...{% endif %}
+                </span>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Warning -->
+        <div style="background: #3a1a0a; border-top: 1px solid #5a2a0a; border-bottom: 1px solid #5a2a0a; padding: 15px 25px; color: #ff6633;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <span style="font-size: 1.5em;">⚠</span>
+                <div>
+                    <div style="font-size: 0.85em; font-weight: bold;">PRIORITY ONE</div>
+                    <div style="font-size: 0.75em; color: #cc5533;">ENSURE RETURN OF ORGANISM FOR ANALYSIS. ALL OTHER CONSIDERATIONS SECONDARY. CREW EXPENDABLE.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer style="padding: 20px 25px; font-size: 0.75em; color: #1a5a1a; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+            <div>WEYLAND-YUTANI CORP © 2179</div>
+            <div>{{ now().strftime('%Y.%m.%d %H:%M:%S') }} UTC</div>
+            <div>END OF LINE_</div>
+        </footer>
+
+    </div>
+</div>

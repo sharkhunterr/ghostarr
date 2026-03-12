@@ -1,0 +1,150 @@
+<!-- Template Film Noir - Style détective années 40/50 -->
+<div style="max-width: 800px; margin: 0 auto; background: #0a0a0a; font-family: 'Times New Roman', Georgia, serif; color: #d0d0d0; overflow: hidden;">
+
+    <!-- Header - Venetian blinds effect -->
+    <div style="background: linear-gradient(180deg, #1a1a1a 0%, #0a0a0a 100%); padding: 40px 30px; position: relative; overflow: hidden;">
+        <!-- Shadow lines -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(180deg, transparent, transparent 15px, rgba(0,0,0,0.5) 15px, rgba(0,0,0,0.5) 20px);"></div>
+
+        <div style="position: relative; z-index: 1; text-align: center;">
+            <div style="font-size: 0.9em; color: #888; letter-spacing: 5px; margin-bottom: 10px;">THE</div>
+            <h1 style="margin: 0; font-size: 3.5em; font-style: italic; color: #fff; text-shadow: 3px 3px 6px rgba(0,0,0,0.8); letter-spacing: 3px;">
+                Media Noir
+            </h1>
+            <div style="font-size: 1em; color: #888; letter-spacing: 3px; margin-top: 10px;">
+                {{ now().strftime('%B %d, %Y') }} • A DARK TALE
+            </div>
+        </div>
+    </div>
+
+    <!-- Intro text - Typewriter style -->
+    <div style="padding: 30px; background: #111; border-bottom: 1px solid #333;">
+        <p style="font-style: italic; color: #999; line-height: 1.8; margin: 0; font-size: 1.1em; text-align: center;">
+            "La nuit tombait sur la ville. Les néons clignotaient comme des promesses brisées.
+            {% if movies %}{{ movies|length }} nouveaux suspects{% endif %}{% if shows_grouped %}, {{ shows_grouped|length }} affaires en cours{% endif %}..."
+        </p>
+    </div>
+
+    <!-- Films - Case files -->
+    {% if movies %}
+    <div style="padding: 30px;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+            <div style="font-size: 1.5em;">🔍</div>
+            <h2 style="margin: 0; font-size: 1.5em; font-style: italic; color: #fff; border-bottom: 1px solid #444; padding-bottom: 10px; flex: 1;">
+                Case Files: Films
+            </h2>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px;">
+            {% for movie in movies %}
+            <div style="background: #151515; position: relative; filter: grayscale(100%); transition: filter 0.3s;">
+                <!-- Paper clip -->
+                <div style="position: absolute; top: -10px; right: 20px; width: 20px; height: 40px; border: 3px solid #888; border-radius: 10px 10px 0 0; background: transparent;"></div>
+
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 280px; object-fit: cover; filter: contrast(1.2) brightness(0.9);">
+                {% else %}
+                <div style="width: 100%; height: 280px; background: linear-gradient(180deg, #222 0%, #111 100%); display: flex; align-items: center; justify-content: center; font-size: 4em; color: #333;">🎬</div>
+                {% endif %}
+
+                <!-- Info overlay -->
+                <div style="background: rgba(0,0,0,0.9); padding: 20px;">
+                    <div style="color: #888; font-size: 0.75em; margin-bottom: 5px;">DOSSIER N°{{ "%03d"|format(loop.index) }}</div>
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.1em; color: #fff; font-style: italic;">
+                        {{ movie.title[:28] }}{% if movie.title|length > 28 %}...{% endif %}
+                    </h3>
+                    <div style="font-size: 0.85em; color: #666;">
+                        {{ movie.year }}{% if movie.rating %} • Suspect Rating: {{ movie.rating }}/10{% endif %}
+                    </div>
+                </div>
+
+                <!-- Stamp effect -->
+                <div style="position: absolute; bottom: 80px; right: 15px; border: 3px solid #8b0000; color: #8b0000; padding: 5px 10px; transform: rotate(-15deg); font-size: 0.8em; font-weight: bold; opacity: 0.8;">
+                    CLASSIFIED
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Series - Ongoing investigations -->
+    {% if shows_grouped %}
+    <div style="padding: 30px; background: #0d0d0d;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+            <div style="font-size: 1.5em;">🕵️</div>
+            <h2 style="margin: 0; font-size: 1.5em; font-style: italic; color: #fff; border-bottom: 1px solid #444; padding-bottom: 10px; flex: 1;">
+                Ongoing Investigations
+            </h2>
+        </div>
+
+        {% for series_title, episodes in shows_grouped.items() %}
+        <div style="background: #151515; padding: 20px; margin-bottom: 15px; border-left: 4px solid #8b0000; position: relative;">
+            <!-- Redacted effect on some text -->
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <div style="font-size: 0.75em; color: #666; margin-bottom: 5px;">INVESTIGATION #{{ "%03d"|format(loop.index) }}</div>
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.2em; color: #fff; font-style: italic;">
+                        {{ series_title }}
+                    </h3>
+                    <div style="font-size: 0.85em; color: #888;">
+                        {% for episode in episodes[:3] %}
+                        S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %} • {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                <div style="text-align: center;">
+                    <div style="font-size: 2em; color: #8b0000;">{{ episodes|length }}</div>
+                    <div style="font-size: 0.7em; color: #666;">NEW LEADS</div>
+                </div>
+            </div>
+
+            <!-- Evidence tag -->
+            <div style="position: absolute; top: -5px; right: 20px; background: #8b0000; color: #fff; padding: 3px 10px; font-size: 0.7em;">
+                EVIDENCE
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Games & Books - Informants -->
+    {% if games or books %}
+    <div style="padding: 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px;">
+        {% if games %}
+        <div style="background: #151515; padding: 20px; border: 1px dashed #333;">
+            <h3 style="margin: 0 0 15px 0; font-size: 1.1em; color: #888; font-style: italic;">🎮 Underground Games</h3>
+            {% for game in games[:5] %}
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px dotted #333;">
+                <span style="color: #8b0000;">▸</span>
+                <span style="font-size: 0.9em;">{{ game.name[:25] }}{% if game.name|length > 25 %}...{% endif %}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if books %}
+        <div style="background: #151515; padding: 20px; border: 1px dashed #333;">
+            <h3 style="margin: 0 0 15px 0; font-size: 1.1em; color: #888; font-style: italic;">📚 Secret Dossiers</h3>
+            {% for book in books[:5] %}
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px dotted #333;">
+                <span style="color: #8b0000;">▸</span>
+                <span style="font-size: 0.9em;">{{ book.name[:25] }}{% if book.name|length > 25 %}...{% endif %}</span>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="background: #111; padding: 30px; text-align: center; border-top: 1px solid #333;">
+        <p style="font-style: italic; color: #666; margin: 0 0 15px 0; font-size: 1em;">
+            "Dans cette ville, tout le monde a quelque chose à cacher..."
+        </p>
+        <div style="font-size: 0.8em; color: #444;">
+            {{ now().strftime('%d/%m/%Y %H:%M') }} • THE END?
+        </div>
+    </div>
+
+</div>

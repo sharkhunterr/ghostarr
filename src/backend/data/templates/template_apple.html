@@ -1,0 +1,141 @@
+<!-- Template Apple - Design épuré style Apple -->
+<div style="max-width: 100%; margin: 0 auto; background: #fbfbfd; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif; color: #1d1d1f;">
+
+    <!-- Header Apple style -->
+    <div style="background: #000; padding: 12px 4%;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: 1.3em; color: #fff;"></div>
+            <div style="font-size: 0.85em; color: #999;">{{ now().strftime('%d %B %Y') }}</div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div style="background: linear-gradient(180deg, #000 0%, #1d1d1f 100%); padding: 80px 4%; text-align: center; color: #fff;">
+        <h1 style="margin: 0; font-size: clamp(2.5em, 8vw, 4.5em); font-weight: 700; letter-spacing: -2px; line-height: 1.1;">
+            Nouveautés<br>de la semaine.
+        </h1>
+        <p style="margin: 25px auto 0; font-size: clamp(1.1em, 3vw, 1.4em); color: #a1a1a6; max-width: 600px; line-height: 1.5;">
+            Découvrez les derniers films, séries et contenus ajoutés à votre bibliothèque.
+        </p>
+    </div>
+
+    <!-- Films - Style produit Apple -->
+    {% if movies and movies|length > 0 %}
+    {% set featured = movies[0] %}
+    <div style="padding: 80px 4%; text-align: center;">
+        <h2 style="margin: 0 0 15px 0; font-size: clamp(1.8em, 5vw, 2.8em); font-weight: 700; letter-spacing: -1px;">Film à la une.</h2>
+        <p style="margin: 0 0 40px 0; font-size: 1.2em; color: #86868b;">{{ featured.title }}</p>
+
+        <div style="max-width: 800px; margin: 0 auto; position: relative;">
+            {% if featured.backdrop_url %}
+            <img src="{{ featured.backdrop_url }}" alt="{{ featured.title }}" style="width: 100%; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            {% elif featured.poster_url %}
+            <img src="{{ featured.poster_url }}" alt="{{ featured.title }}" style="width: 300px; border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+            {% endif %}
+        </div>
+
+        <div style="margin-top: 40px; max-width: 600px; margin-left: auto; margin-right: auto;">
+            <div style="display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; font-size: 0.95em; color: #86868b;">
+                <span>{{ featured.year }}</span>
+                {% if featured.duration %}<span>{{ format_duration(featured.duration) }}</span>{% endif %}
+                {% if featured.rating %}<span>★ {{ featured.rating }}/10</span>{% endif %}
+            </div>
+            {% if featured.summary %}
+            <p style="margin: 0; font-size: 1.1em; color: #1d1d1f; line-height: 1.6;">{{ truncate_text(featured.summary, 250) }}</p>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Grille Films -->
+    {% if movies and movies|length > 1 %}
+    <div style="padding: 60px 4%; background: #f5f5f7;">
+        <h2 style="margin: 0 0 40px 0; font-size: clamp(1.5em, 4vw, 2.2em); font-weight: 700; text-align: center; letter-spacing: -1px;">Tous les films.</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 30px; max-width: 1200px; margin: 0 auto;">
+            {% for movie in movies[1:9] %}
+            <div style="text-align: center;">
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); margin-bottom: 15px;">
+                {% endif %}
+                <h3 style="margin: 0 0 5px 0; font-size: 1em; font-weight: 600;">{{ movie.title[:30] }}{% if movie.title|length > 30 %}...{% endif %}</h3>
+                <p style="margin: 0; font-size: 0.9em; color: #86868b;">{{ movie.year }}{% if movie.rating %} • ★ {{ movie.rating }}{% endif %}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 80px 4%;">
+        <h2 style="margin: 0 0 15px 0; font-size: clamp(1.8em, 5vw, 2.8em); font-weight: 700; text-align: center; letter-spacing: -1px;">Séries TV.</h2>
+        <p style="margin: 0 0 50px 0; font-size: 1.2em; color: #86868b; text-align: center;">Nouveaux épisodes disponibles.</p>
+
+        <div style="display: flex; flex-direction: column; gap: 25px; max-width: 900px; margin: 0 auto;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="display: flex; gap: 25px; padding: 25px; background: #f5f5f7; border-radius: 20px;">
+                {% if episodes[0].poster_url %}
+                <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 120px; height: 180px; object-fit: cover; border-radius: 12px; flex-shrink: 0;">
+                {% endif %}
+                <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.4em; font-weight: 600;">{{ series_title }}</h3>
+                    <p style="margin: 0 0 15px 0; font-size: 1em; color: #0066cc;">{{ episodes|length }} nouveau{{ 's' if episodes|length > 1 else '' }} épisode{{ 's' if episodes|length > 1 else '' }}</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        {% for episode in episodes[:5] %}
+                        <span style="background: #1d1d1f; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.85em; font-weight: 500;">
+                            S{{ "%02d"|format(episode.season_number or 0) }} E{{ "%02d"|format(episode.episode_number or 0) }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Jeux & Livres -->
+    {% if games or books %}
+    <div style="padding: 60px 4%; background: #000; color: #fff;">
+        <h2 style="margin: 0 0 50px 0; font-size: clamp(1.5em, 4vw, 2.2em); font-weight: 700; text-align: center; letter-spacing: -1px;">
+            {% if games %}Arcade.{% endif %}{% if games and books %} {% endif %}{% if books %}Livres.{% endif %}
+        </h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 25px; max-width: 1000px; margin: 0 auto;">
+            {% if games %}
+            {% for game in games[:6] %}
+            <div style="text-align: center;">
+                {% if game.cover_url %}
+                <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 22px; margin-bottom: 12px;">
+                {% else %}
+                <div style="width: 100%; aspect-ratio: 1; background: linear-gradient(135deg, #5e5ce6, #bf5af2); border-radius: 22px; margin-bottom: 12px; display: flex; align-items: center; justify-content: center; font-size: 2em;">🎮</div>
+                {% endif %}
+                <h4 style="margin: 0; font-size: 0.9em; font-weight: 500;">{{ game.name[:20] }}{% if game.name|length > 20 %}...{% endif %}</h4>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            {% if books %}
+            {% for book in books[:6] %}
+            <div style="text-align: center;">
+                {% if book.thumbnail_url %}
+                <img src="{{ book.thumbnail_url }}" alt="{{ book.name }}" style="width: 100%; aspect-ratio: 0.7; object-fit: cover; border-radius: 12px; margin-bottom: 12px;">
+                {% endif %}
+                <h4 style="margin: 0; font-size: 0.9em; font-weight: 500;">{{ book.name[:20] }}{% if book.name|length > 20 %}...{% endif %}</h4>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer Apple -->
+    <div style="background: #f5f5f7; padding: 40px 4%; text-align: center; border-top: 1px solid #d2d2d7;">
+        <div style="font-size: 1.5em; color: #1d1d1f; margin-bottom: 10px;"></div>
+        <p style="margin: 0; font-size: 0.85em; color: #86868b;">
+            Newsletter • {{ now().strftime('%d/%m/%Y à %H:%M') }}
+        </p>
+    </div>
+
+</div>

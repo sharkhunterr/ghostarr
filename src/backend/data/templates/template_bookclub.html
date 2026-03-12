@@ -1,0 +1,161 @@
+<!-- Template Book Club - BD/Comics (Komga) + Audiobooks (Audiobookshelf) -->
+<div style="max-width: 800px; margin: 0 auto; background: #faf8f5; color: #333; font-family: 'Merriweather', Georgia, serif; border-radius: 0; overflow: hidden; border: 1px solid #d4c4a8;">
+
+    <!-- Header élégant style librairie -->
+    <div style="background: linear-gradient(180deg, #2c1810 0%, #3d261a 100%); padding: 40px 20px; text-align: center; border-bottom: 4px solid #c9a961;">
+        <div style="font-size: 2.5em; margin-bottom: 10px;">📖</div>
+        <h1 style="margin: 0; font-size: 2.2em; color: #c9a961; font-weight: normal; letter-spacing: 3px;">
+            LE COIN LECTURE
+        </h1>
+        <p style="margin: 15px 0 0 0; font-size: 1em; color: #a89070; font-style: italic;">
+            Vos nouveautés littéraires du {{ now().strftime('%d %B %Y') }}
+        </p>
+    </div>
+
+    <!-- Compteurs -->
+    <div style="background: #f5f0e8; padding: 20px; display: flex; justify-content: center; gap: 40px; border-bottom: 1px solid #d4c4a8;">
+        {% if books %}
+        <div style="text-align: center;">
+            <div style="font-size: 2.5em; font-weight: normal; color: #8b4513;">{{ books|length }}</div>
+            <div style="font-size: 0.85em; color: #666; text-transform: uppercase; letter-spacing: 1px;">📚 BD & Comics</div>
+        </div>
+        {% endif %}
+        {% if audiobooks %}
+        <div style="text-align: center;">
+            <div style="font-size: 2.5em; font-weight: normal; color: #6b4423;">{{ audiobooks|length }}</div>
+            <div style="font-size: 0.85em; color: #666; text-transform: uppercase; letter-spacing: 1px;">🎧 Audiobooks</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Section BD/Comics -->
+    {% if books %}
+    <div style="padding: 30px; background: #faf8f5;">
+        <h2 style="color: #8b4513; font-size: 1.6em; text-align: center; margin-bottom: 25px; font-weight: normal; border-bottom: 2px solid #c9a961; padding-bottom: 10px;">
+            📚 Bandes Dessinées & Comics
+        </h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;">
+            {% for book in books %}
+            <div style="background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 15px rgba(0,0,0,0.1); border: 1px solid #e8e0d0; transition: transform 0.2s;">
+                <!-- Couverture -->
+                <div style="position: relative; background: #f0ebe3;">
+                    {% if book.thumbnail_url %}
+                    <img src="{{ book.thumbnail_url }}" alt="{{ book.name }}" style="width: 100%; height: 240px; object-fit: cover;">
+                    {% else %}
+                    <div style="width: 100%; height: 240px; background: linear-gradient(135deg, #8b4513, #a0522d); display: flex; align-items: center; justify-content: center; font-size: 4em; color: #fff;">📕</div>
+                    {% endif %}
+                    <!-- Badge Nouveau -->
+                    <div style="position: absolute; top: 10px; right: 10px; background: #c9a961; color: #fff; padding: 4px 10px; border-radius: 3px; font-size: 0.7em; font-weight: bold; text-transform: uppercase;">
+                        Nouveau
+                    </div>
+                </div>
+
+                <!-- Infos -->
+                <div style="padding: 15px;">
+                    <h3 style="color: #2c1810; font-size: 1em; margin: 0 0 8px 0; font-weight: 600; line-height: 1.3;">{{ book.name }}</h3>
+
+                    {% if book.series_name %}
+                    <p style="color: #8b4513; font-size: 0.8em; margin: 0 0 8px 0; font-style: italic;">{{ book.series_name }}</p>
+                    {% endif %}
+
+                    {% if book.publisher %}
+                    <p style="color: #888; font-size: 0.75em; margin: 0;">{{ book.publisher }}</p>
+                    {% endif %}
+
+                    {% if book.page_count %}
+                    <div style="margin-top: 10px; color: #666; font-size: 0.75em;">
+                        📄 {{ book.page_count }} pages
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Séparateur décoratif -->
+    {% if books and audiobooks %}
+    <div style="padding: 20px; text-align: center; background: #f5f0e8;">
+        <div style="display: inline-block; padding: 0 30px; position: relative;">
+            <span style="font-size: 1.5em;">✦</span>
+            <div style="position: absolute; top: 50%; left: -100px; width: 100px; height: 1px; background: linear-gradient(to right, transparent, #c9a961);"></div>
+            <div style="position: absolute; top: 50%; right: -100px; width: 100px; height: 1px; background: linear-gradient(to left, transparent, #c9a961);"></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section Audiobooks -->
+    {% if audiobooks %}
+    <div style="padding: 30px; background: linear-gradient(180deg, #f5f0e8 0%, #faf8f5 100%);">
+        <h2 style="color: #6b4423; font-size: 1.6em; text-align: center; margin-bottom: 25px; font-weight: normal; border-bottom: 2px solid #c9a961; padding-bottom: 10px;">
+            🎧 Livres Audio
+        </h2>
+
+        {% for audiobook in audiobooks %}
+        <div style="background: #fff; border-radius: 10px; margin-bottom: 20px; display: flex; overflow: hidden; box-shadow: 0 3px 15px rgba(0,0,0,0.08); border: 1px solid #e8e0d0;">
+            <!-- Couverture -->
+            <div style="flex-shrink: 0;">
+                {% if audiobook.cover_url %}
+                <img src="{{ audiobook.cover_url }}" alt="{{ audiobook.title }}" style="width: 120px; height: 120px; object-fit: cover;">
+                {% else %}
+                <div style="width: 120px; height: 120px; background: linear-gradient(135deg, #6b4423, #8b5a2b); display: flex; align-items: center; justify-content: center; font-size: 3em; color: #fff;">🎧</div>
+                {% endif %}
+            </div>
+
+            <!-- Infos -->
+            <div style="padding: 20px; flex: 1;">
+                <h3 style="color: #2c1810; font-size: 1.2em; margin: 0 0 8px 0; font-weight: 600;">{{ audiobook.title }}</h3>
+
+                {% if audiobook.author %}
+                <p style="color: #8b4513; font-size: 0.9em; margin: 0 0 10px 0;">
+                    <span style="color: #999;">par</span> {{ audiobook.author }}
+                </p>
+                {% endif %}
+
+                <div style="display: flex; gap: 15px; flex-wrap: wrap; color: #666; font-size: 0.85em;">
+                    {% if audiobook.narrator %}
+                    <span>🎙️ {{ audiobook.narrator }}</span>
+                    {% endif %}
+                    {% if audiobook.duration %}
+                    <span>⏱️ {{ (audiobook.duration / 3600)|round(1) }}h</span>
+                    {% endif %}
+                </div>
+
+                {% if audiobook.description %}
+                <p style="color: #666; line-height: 1.5; margin: 12px 0 0 0; font-size: 0.85em;">{{ audiobook.description[:150] }}{% if audiobook.description|length > 150 %}...{% endif %}</p>
+                {% endif %}
+            </div>
+
+            <!-- Bouton écouter -->
+            <div style="padding: 20px; display: flex; align-items: center;">
+                <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #c9a961, #daa520); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2em; color: #fff; box-shadow: 0 3px 10px rgba(201,169,97,0.4);">
+                    ▶️
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Pas de contenu -->
+    {% if not books and not audiobooks %}
+    <div style="padding: 60px 30px; text-align: center; background: #faf8f5;">
+        <div style="font-size: 4em; margin-bottom: 20px; opacity: 0.3;">📚</div>
+        <p style="color: #666; font-size: 1.2em; font-style: italic;">Aucune nouveauté cette semaine</p>
+        <p style="color: #999; font-size: 0.9em;">Revenez bientôt pour de nouvelles lectures !</p>
+    </div>
+    {% endif %}
+
+    <!-- Footer élégant -->
+    <div style="background: linear-gradient(180deg, #3d261a 0%, #2c1810 100%); padding: 25px; text-align: center; border-top: 4px solid #c9a961;">
+        <p style="margin: 0; color: #c9a961; font-size: 1em; font-style: italic;">
+            "Un livre est un jardin que l'on porte dans sa poche"
+        </p>
+        <p style="margin: 15px 0 0 0; color: #6b5a4a; font-size: 0.8em;">
+            Newsletter générée le {{ now().strftime('%d/%m/%Y à %H:%M') }}
+        </p>
+    </div>
+
+</div>

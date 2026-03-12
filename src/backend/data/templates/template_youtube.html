@@ -1,0 +1,164 @@
+<!-- Template YouTube - Interface vidéo avec vignettes -->
+<div style="max-width: 100%; margin: 0 auto; background: #0f0f0f; font-family: 'Roboto', Arial, sans-serif; color: #fff;">
+
+    <!-- Header YouTube -->
+    <div style="background: #0f0f0f; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #303030; position: sticky; top: 0; z-index: 100;">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="font-size: 1.5em; font-weight: 900; color: #ff0000;">▶ MediaTube</div>
+        </div>
+
+        <!-- Search bar -->
+        <div style="flex: 1; max-width: 600px; margin: 0 40px;">
+            <div style="display: flex; background: #121212; border: 1px solid #303030; border-radius: 40px; overflow: hidden;">
+                <input type="text" placeholder="Rechercher" style="flex: 1; background: transparent; border: none; padding: 10px 20px; color: #fff; font-size: 1em;" disabled>
+                <div style="background: #222; padding: 10px 20px; display: flex; align-items: center;">🔍</div>
+            </div>
+        </div>
+
+        <div style="font-size: 0.85em; color: #aaa;">{{ now().strftime('%d/%m/%Y') }}</div>
+    </div>
+
+    <!-- Chips de filtres -->
+    <div style="padding: 15px 20px; display: flex; gap: 12px; overflow-x: auto; background: #0f0f0f; border-bottom: 1px solid #303030;">
+        <span style="background: #fff; color: #0f0f0f; padding: 8px 16px; border-radius: 8px; font-size: 0.9em; font-weight: 500; white-space: nowrap;">Tous</span>
+        {% if movies %}<span style="background: #272727; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 0.9em; white-space: nowrap;">Films</span>{% endif %}
+        {% if shows_grouped %}<span style="background: #272727; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 0.9em; white-space: nowrap;">Séries</span>{% endif %}
+        {% if games %}<span style="background: #272727; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 0.9em; white-space: nowrap;">Gaming</span>{% endif %}
+        <span style="background: #272727; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 0.9em; white-space: nowrap;">Récemment ajoutés</span>
+        <span style="background: #272727; color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 0.9em; white-space: nowrap;">Non vus</span>
+    </div>
+
+    <!-- Main Content -->
+    <div style="padding: 20px;">
+
+        <!-- Films Grid - Style vignettes YouTube -->
+        {% if movies %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; margin-bottom: 40px;">
+            {% for movie in movies %}
+            <div style="cursor: pointer;">
+                <!-- Thumbnail -->
+                <div style="position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 12px;">
+                    {% if movie.backdrop_url %}
+                    <img src="{{ movie.backdrop_url }}" alt="{{ movie.title }}" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+                    {% elif movie.poster_url %}
+                    <div style="width: 100%; aspect-ratio: 16/9; background: #1a1a1a; display: flex; align-items: center; justify-content: center;">
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="height: 100%; object-fit: cover;">
+                    </div>
+                    {% else %}
+                    <div style="width: 100%; aspect-ratio: 16/9; background: linear-gradient(135deg, #ff0000, #cc0000); display: flex; align-items: center; justify-content: center; font-size: 4em;">🎬</div>
+                    {% endif %}
+
+                    <!-- Duration badge -->
+                    {% if movie.duration %}
+                    <div style="position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #fff; padding: 3px 6px; border-radius: 4px; font-size: 0.8em; font-weight: 500;">
+                        {{ format_duration(movie.duration) }}
+                    </div>
+                    {% endif %}
+
+                    <!-- Progress bar -->
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 4px; background: rgba(255,255,255,0.3);">
+                        <div style="width: 0%; height: 100%; background: #ff0000;"></div>
+                    </div>
+                </div>
+
+                <!-- Video Info -->
+                <div style="display: flex; gap: 12px;">
+                    <!-- Channel avatar -->
+                    <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #ff0000, #cc0000); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.2em;">
+                        🎬
+                    </div>
+
+                    <div style="flex: 1; min-width: 0;">
+                        <h3 style="margin: 0 0 6px 0; font-size: 1em; font-weight: 500; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                            {{ movie.title }}
+                        </h3>
+                        <div style="font-size: 0.85em; color: #aaa; line-height: 1.4;">
+                            {% if movie.director %}{{ movie.director }}{% else %}Films{% endif %}
+                        </div>
+                        <div style="font-size: 0.85em; color: #aaa;">
+                            {% if movie.rating %}{{ (movie.rating * 1000)|int }}K vues{% endif %} • {{ movie.year }}
+                        </div>
+                    </div>
+
+                    <div style="color: #aaa; font-size: 1.2em;">⋮</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Séries Section -->
+        {% if shows_grouped %}
+        <div style="margin-bottom: 40px;">
+            <h2 style="margin: 0 0 20px 0; font-size: 1.3em; font-weight: 500;">📺 Séries - Nouveaux épisodes</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px;">
+                {% for series_title, episodes in shows_grouped.items() %}
+                <div>
+                    <div style="position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 12px;">
+                        {% if episodes[0].backdrop_url %}
+                        <img src="{{ episodes[0].backdrop_url }}" alt="{{ series_title }}" style="width: 100%; aspect-ratio: 16/9; object-fit: cover;">
+                        {% elif episodes[0].poster_url %}
+                        <div style="width: 100%; aspect-ratio: 16/9; background: #1a1a1a; display: flex; align-items: center; justify-content: center;">
+                            <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="height: 100%; object-fit: cover;">
+                        </div>
+                        {% endif %}
+
+                        <!-- Playlist badge -->
+                        <div style="position: absolute; bottom: 0; right: 0; background: rgba(0,0,0,0.8); padding: 8px 12px; display: flex; align-items: center; gap: 8px;">
+                            <span style="font-size: 1.2em;">▶</span>
+                            <span style="font-size: 0.9em;">{{ episodes|length }} épisodes</span>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; gap: 12px;">
+                        <div style="width: 40px; height: 40px; background: #272727; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2em;">📺</div>
+                        <div>
+                            <h3 style="margin: 0 0 6px 0; font-size: 1em; font-weight: 500;">{{ series_title }}</h3>
+                            <div style="font-size: 0.85em; color: #aaa;">
+                                {% for episode in episodes[:3] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %}, {% endif %}{% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Shorts style - Jeux -->
+        {% if games %}
+        <div style="margin-bottom: 40px;">
+            <h2 style="margin: 0 0 20px 0; font-size: 1.3em; font-weight: 500; display: flex; align-items: center; gap: 10px;">
+                <span style="background: #ff0000; color: #fff; padding: 4px 8px; border-radius: 4px; font-size: 0.7em;">Shorts</span>
+                Gaming
+            </h2>
+
+            <div style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px;">
+                {% for game in games[:8] %}
+                <div style="flex: 0 0 auto; width: 180px;">
+                    <div style="position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 10px;">
+                        {% if game.cover_url %}
+                        <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; aspect-ratio: 9/16; object-fit: cover;">
+                        {% else %}
+                        <div style="width: 100%; aspect-ratio: 9/16; background: linear-gradient(135deg, #ff0000, #272727); display: flex; align-items: center; justify-content: center; font-size: 3em;">🎮</div>
+                        {% endif %}
+                    </div>
+                    <h4 style="margin: 0; font-size: 0.9em; font-weight: 500; line-height: 1.3;">{{ game.name[:30] }}{% if game.name|length > 30 %}...{% endif %}</h4>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- Footer -->
+    <div style="background: #0f0f0f; padding: 20px; text-align: center; border-top: 1px solid #303030;">
+        <div style="font-size: 1.3em; font-weight: 900; color: #ff0000; margin-bottom: 10px;">▶ MediaTube</div>
+        <p style="margin: 0; font-size: 0.85em; color: #717171;">
+            Newsletter générée le {{ now().strftime('%d/%m/%Y à %H:%M') }}
+        </p>
+    </div>
+
+</div>

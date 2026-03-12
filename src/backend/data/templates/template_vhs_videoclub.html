@@ -1,0 +1,164 @@
+<!-- Template VHS Vidéoclub - Style années 80/90 location vidéo -->
+<div style="max-width: 800px; margin: 0 auto; background: linear-gradient(180deg, #1a0a2e 0%, #0d0520 100%); font-family: 'Arial Black', Arial, sans-serif; overflow: hidden; border: 5px solid #00ffff;">
+
+    <!-- Enseigne néon du vidéoclub -->
+    <div style="background: #000; padding: 30px 20px; text-align: center; border-bottom: 3px solid #ff00ff;">
+        <div style="display: inline-block; border: 3px solid #00ffff; padding: 15px 40px; position: relative;">
+            <div style="position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: #000; padding: 0 10px; font-size: 0.7em; color: #ff00ff;">OPEN 24H</div>
+            <h1 style="margin: 0; font-size: 2.5em; color: #00ffff; text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff; letter-spacing: 3px;">
+                VIDEO CLUB
+            </h1>
+            <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #ff00ff; text-shadow: 0 0 10px #ff00ff;">
+                📼 Nouveautés de la semaine 📼
+            </p>
+        </div>
+        <div style="margin-top: 15px; font-size: 0.8em; color: #888;">
+            {{ now().strftime('%d/%m/%Y') }} • Catalogue N°{{ now().strftime('%W') }}
+        </div>
+    </div>
+
+    <!-- Catégorie Films - Style étagère VHS -->
+    {% if movies %}
+    <div style="padding: 25px; background: linear-gradient(180deg, #2a1a4a 0%, #1a0a2e 100%);">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <span style="font-size: 1.5em;">🎬</span>
+            <h2 style="margin: 0; font-size: 1.3em; color: #00ffff; text-transform: uppercase; letter-spacing: 2px;">Nouveaux Films</h2>
+            <div style="flex: 1; height: 2px; background: linear-gradient(90deg, #00ffff, transparent);"></div>
+        </div>
+
+        <!-- Étagère de cassettes VHS -->
+        <div style="background: linear-gradient(180deg, #3d2a5a 0%, #2a1a4a 100%); padding: 20px; border-radius: 5px; box-shadow: inset 0 5px 15px rgba(0,0,0,0.5);">
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+                {% for movie in movies %}
+                <!-- Cassette VHS -->
+                <div style="width: 120px; perspective: 500px;">
+                    <div style="background: linear-gradient(135deg, #1a1a1a 0%, #333 50%, #1a1a1a 100%); border-radius: 3px; overflow: hidden; box-shadow: 3px 3px 10px rgba(0,0,0,0.5); transform: rotateY(-5deg);">
+                        <!-- Étiquette VHS -->
+                        <div style="background: linear-gradient(180deg, #222 0%, #111 100%); padding: 5px; text-align: center; border-bottom: 2px solid #444;">
+                            <div style="font-size: 0.5em; color: #ff00ff; letter-spacing: 1px;">VHS HI-FI</div>
+                        </div>
+
+                        <!-- Jaquette -->
+                        {% if movie.poster_url %}
+                        <div style="position: relative;">
+                            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 160px; object-fit: cover;">
+                            {% if movie.rating and movie.rating >= 8 %}
+                            <div style="position: absolute; top: 5px; right: 5px; background: #ff00ff; color: #fff; padding: 2px 6px; font-size: 0.55em; font-weight: bold; transform: rotate(10deg);">
+                                TOP!
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Info cassette -->
+                        <div style="background: #111; padding: 8px; text-align: center;">
+                            <div style="font-size: 0.7em; color: #00ffff; font-weight: bold; line-height: 1.2; margin-bottom: 5px;">
+                                {{ movie.title[:20] }}{% if movie.title|length > 20 %}...{% endif %}
+                            </div>
+                            <div style="font-size: 0.6em; color: #888;">
+                                {{ movie.year }}{% if movie.duration %} • {{ format_duration(movie.duration) }}{% endif %}
+                            </div>
+                            {% if movie.rating %}
+                            <div style="font-size: 0.65em; color: #ff00ff; margin-top: 3px;">
+                                ⭐ {{ movie.rating }}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Prix location -->
+        <div style="margin-top: 15px; text-align: center; padding: 10px; background: rgba(255,0,255,0.1); border: 1px dashed #ff00ff;">
+            <span style="font-size: 0.85em; color: #ff00ff;">💰 Location : 2€/jour • Abonnement : 15€/mois illimité</span>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Séparation VHS -->
+    <div style="background: #000; padding: 10px; display: flex; justify-content: center; gap: 20px;">
+        <span style="font-size: 1.5em;">📼</span>
+        <span style="font-size: 1.5em;">📼</span>
+        <span style="font-size: 1.5em;">📼</span>
+    </div>
+
+    <!-- Catégorie Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 25px; background: linear-gradient(180deg, #1a0a2e 0%, #2a1a4a 100%);">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <span style="font-size: 1.5em;">📺</span>
+            <h2 style="margin: 0; font-size: 1.3em; color: #ff00ff; text-transform: uppercase; letter-spacing: 2px;">Séries TV</h2>
+            <div style="flex: 1; height: 2px; background: linear-gradient(90deg, #ff00ff, transparent);"></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <!-- Coffret VHS série -->
+            <div style="background: linear-gradient(135deg, #333 0%, #1a1a1a 100%); border-radius: 5px; overflow: hidden; border: 2px solid #444;">
+                <div style="display: flex;">
+                    {% if episodes[0].poster_url %}
+                    <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 70px; height: 100px; object-fit: cover;">
+                    {% endif %}
+                    <div style="padding: 10px; flex: 1;">
+                        <h4 style="margin: 0 0 8px 0; font-size: 0.9em; color: #00ffff; line-height: 1.2;">{{ series_title }}</h4>
+                        <div style="display: inline-block; background: #ff00ff; color: #fff; padding: 2px 8px; font-size: 0.65em; border-radius: 2px; margin-bottom: 5px;">
+                            {{ episodes|length }} CASSETTES
+                        </div>
+                        <div style="font-size: 0.7em; color: #888;">
+                            {% for episode in episodes[:2] %}
+                            S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section Jeux vidéo (style cartouches) -->
+    {% if games %}
+    <div style="padding: 25px; background: #000;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+            <span style="font-size: 1.5em;">🎮</span>
+            <h2 style="margin: 0; font-size: 1.3em; color: #00ff00; text-transform: uppercase; letter-spacing: 2px;">Rayon Jeux Vidéo</h2>
+            <div style="flex: 1; height: 2px; background: linear-gradient(90deg, #00ff00, transparent);"></div>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+            {% for game in games[:8] %}
+            <div style="width: 100px; background: linear-gradient(180deg, #333 0%, #1a1a1a 100%); border-radius: 5px; overflow: hidden; border: 2px solid #00ff00;">
+                {% if game.cover_url %}
+                <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; height: 130px; object-fit: cover;">
+                {% endif %}
+                <div style="padding: 8px; text-align: center;">
+                    <div style="font-size: 0.65em; color: #00ff00; font-weight: bold; line-height: 1.2;">{{ game.name[:15] }}{% if game.name|length > 15 %}...{% endif %}</div>
+                    {% if game.platform %}
+                    <div style="font-size: 0.55em; color: #888; margin-top: 3px;">{{ game.platform }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer rétro -->
+    <div style="background: #000; padding: 20px; text-align: center; border-top: 3px solid #00ffff;">
+        <div style="font-size: 0.8em; color: #666; margin-bottom: 10px;">
+            ⚠️ Pensez à rembobiner vos cassettes ! ⚠️
+        </div>
+        <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; font-size: 0.75em;">
+            <span style="color: #00ffff;">📍 123 Rue du Cinéma</span>
+            <span style="color: #ff00ff;">📞 01.23.45.67.89</span>
+            <span style="color: #888;">{{ now().strftime('%d/%m/%Y %H:%M') }}</span>
+        </div>
+        <div style="margin-top: 15px; font-size: 2em;">
+            📼 🎬 📺 🎮
+        </div>
+    </div>
+
+</div>

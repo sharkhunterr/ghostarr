@@ -1,0 +1,126 @@
+<!-- Template iPhone - Interface iOS avec apps -->
+<div style="max-width: 430px; margin: 0 auto; background: linear-gradient(180deg, #667eea 0%, #764ba2 50%, #f093fb 100%); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; color: #fff; border-radius: 45px; overflow: hidden; box-shadow: 0 25px 80px rgba(0,0,0,0.4);">
+
+    <!-- Encoche -->
+    <div style="display: flex; justify-content: center; padding-top: 12px;">
+        <div style="width: 130px; height: 35px; background: #000; border-radius: 20px;"></div>
+    </div>
+
+    <!-- Barre de statut -->
+    <div style="display: flex; justify-content: space-between; padding: 8px 25px 15px; font-size: 0.85em; font-weight: 600;">
+        <span>{{ now().strftime('%H:%M') }}</span>
+        <div style="display: flex; gap: 5px; align-items: center;">
+            <span style="font-size: 0.9em;">📶</span>
+            <span style="font-size: 0.9em;">📡</span>
+            <span style="font-size: 0.9em;">🔋</span>
+        </div>
+    </div>
+
+    <!-- Date et heure style iOS -->
+    <div style="text-align: center; padding: 20px 0 30px;">
+        <div style="font-size: 0.9em; color: rgba(255,255,255,0.8); margin-bottom: 5px;">{{ now().strftime('%A') }}</div>
+        <div style="font-size: 4em; font-weight: 300; letter-spacing: -3px; line-height: 1;">{{ now().strftime('%d') }}</div>
+        <div style="font-size: 1.1em; color: rgba(255,255,255,0.9); margin-top: 5px;">{{ now().strftime('%B') }}</div>
+    </div>
+
+    <!-- Widget Films -->
+    {% if movies %}
+    <div style="margin: 0 15px 15px; background: rgba(255,255,255,0.2); backdrop-filter: blur(20px); border-radius: 25px; padding: 20px; overflow: hidden;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 35px; height: 35px; background: linear-gradient(135deg, #ff3b30, #ff9500); border-radius: 10px; display: flex; align-items: center; justify-content: center;">🎬</div>
+                <span style="font-weight: 600;">Films</span>
+            </div>
+            <span style="font-size: 0.85em; color: rgba(255,255,255,0.7);">{{ movies|length }} nouveaux</span>
+        </div>
+
+        <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px;">
+            {% for movie in movies[:5] %}
+            {% if movie.poster_url %}
+            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 80px; height: 120px; object-fit: cover; border-radius: 12px; flex-shrink: 0;">
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Widget Séries -->
+    {% if shows_grouped %}
+    <div style="margin: 0 15px 15px; background: rgba(255,255,255,0.2); backdrop-filter: blur(20px); border-radius: 25px; padding: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 35px; height: 35px; background: linear-gradient(135deg, #5856d6, #af52de); border-radius: 10px; display: flex; align-items: center; justify-content: center;">📺</div>
+                <span style="font-weight: 600;">Séries</span>
+            </div>
+            <span style="font-size: 0.85em; color: rgba(255,255,255,0.7);">{{ shows_grouped|length }} actives</span>
+        </div>
+
+        {% for series_title, episodes in shows_grouped.items() %}
+        {% if loop.index <= 3 %}
+        <div style="display: flex; gap: 12px; padding: 10px 0; {% if not loop.last %}border-bottom: 1px solid rgba(255,255,255,0.1);{% endif %}">
+            {% if episodes[0].poster_url %}
+            <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 10px;">
+            {% endif %}
+            <div style="flex: 1;">
+                <div style="font-weight: 600; font-size: 0.95em;">{{ series_title[:25] }}{% if series_title|length > 25 %}...{% endif %}</div>
+                <div style="font-size: 0.8em; color: rgba(255,255,255,0.7);">+{{ episodes|length }} épisodes</div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Grille d'apps -->
+    <div style="padding: 20px 25px 30px;">
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+            <!-- Apps Films -->
+            {% if movies %}
+            {% for movie in movies[:4] %}
+            <div style="text-align: center;">
+                {% if movie.poster_url %}
+                <div style="width: 60px; height: 60px; margin: 0 auto 6px; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                {% else %}
+                <div style="width: 60px; height: 60px; margin: 0 auto 6px; border-radius: 14px; background: linear-gradient(135deg, #ff3b30, #ff9500); display: flex; align-items: center; justify-content: center; font-size: 1.5em;">🎬</div>
+                {% endif %}
+                <div style="font-size: 0.65em; line-height: 1.2;">{{ movie.title[:10] }}{% if movie.title|length > 10 %}...{% endif %}</div>
+            </div>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Apps Jeux -->
+            {% if games %}
+            {% for game in games[:4] %}
+            <div style="text-align: center;">
+                {% if game.cover_url %}
+                <div style="width: 60px; height: 60px; margin: 0 auto 6px; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                {% else %}
+                <div style="width: 60px; height: 60px; margin: 0 auto 6px; border-radius: 14px; background: linear-gradient(135deg, #30d158, #34c759); display: flex; align-items: center; justify-content: center; font-size: 1.5em;">🎮</div>
+                {% endif %}
+                <div style="font-size: 0.65em; line-height: 1.2;">{{ game.name[:10] }}{% if game.name|length > 10 %}...{% endif %}</div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Dock -->
+    <div style="background: rgba(255,255,255,0.25); backdrop-filter: blur(30px); margin: 0 15px 15px; border-radius: 30px; padding: 15px 25px;">
+        <div style="display: flex; justify-content: space-around;">
+            <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #30d158, #34c759); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5em;">📱</div>
+            <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #5856d6, #007aff); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5em;">🎬</div>
+            <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #ff9500, #ff3b30); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5em;">📺</div>
+            <div style="width: 55px; height: 55px; background: linear-gradient(135deg, #af52de, #5856d6); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.5em;">🎵</div>
+        </div>
+    </div>
+
+    <!-- Home indicator -->
+    <div style="display: flex; justify-content: center; padding-bottom: 10px;">
+        <div style="width: 140px; height: 5px; background: rgba(255,255,255,0.5); border-radius: 3px;"></div>
+    </div>
+
+</div>

@@ -1,0 +1,144 @@
+<!-- Template Steampunk - Style victorien mécanique avec engrenages -->
+<div style="max-width: 850px; margin: 0 auto; background: linear-gradient(180deg, #2c1810 0%, #1a0f0a 100%); font-family: 'Copperplate Gothic', 'Times New Roman', serif; color: #d4a574; overflow: hidden; border: 8px solid #8b4513; position: relative;">
+
+    <!-- Gear decoration -->
+    <div style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; border: 8px solid #8b4513; border-radius: 50%; opacity: 0.3;"></div>
+    <div style="position: absolute; bottom: -40px; left: -40px; width: 120px; height: 120px; border: 10px solid #8b4513; border-radius: 50%; opacity: 0.2;"></div>
+
+    <!-- Header - Victorian brass plate -->
+    <div style="background: linear-gradient(180deg, #b8860b 0%, #8b6914 50%, #b8860b 100%); padding: 5px; margin: 20px;">
+        <div style="background: linear-gradient(180deg, #2c1810 0%, #1a0f0a 100%); padding: 25px; border: 2px solid #b8860b;">
+            <div style="text-align: center;">
+                <div style="display: flex; justify-content: center; gap: 20px; margin-bottom: 15px;">
+                    <span style="font-size: 2em;">⚙️</span>
+                    <span style="font-size: 2em;">🔧</span>
+                    <span style="font-size: 2em;">⚙️</span>
+                </div>
+                <h1 style="margin: 0; font-size: 2.5em; color: #d4a574; letter-spacing: 5px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+                    AETHERIC MEDIA
+                </h1>
+                <div style="font-size: 1em; color: #8b6914; margin-top: 10px; letter-spacing: 3px;">
+                    ═══ GAZETTE MÉCANIQUE ═══
+                </div>
+                <div style="font-size: 0.85em; color: #b8860b; margin-top: 5px;">
+                    {{ now().strftime('%d %B %Y') }} • Édition N°{{ now().strftime('%W') }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pressure gauges - Stats -->
+    <div style="display: flex; justify-content: center; gap: 30px; padding: 20px; flex-wrap: wrap;">
+        {% if movies %}
+        <div style="text-align: center;">
+            <div style="width: 80px; height: 80px; border: 4px solid #b8860b; border-radius: 50%; background: radial-gradient(circle, #1a0f0a 0%, #2c1810 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; position: relative;">
+                <div style="font-size: 1.8em; color: #d4a574;">{{ movies|length }}</div>
+                <!-- Gauge needle -->
+                <div style="position: absolute; bottom: 10px; left: 50%; width: 2px; height: 30px; background: #ff6600; transform-origin: bottom; transform: translateX(-50%) rotate({{ (movies|length * 15) - 45 }}deg);"></div>
+            </div>
+            <div style="font-size: 0.75em; color: #8b6914; letter-spacing: 1px;">FILMS</div>
+        </div>
+        {% endif %}
+        {% if shows_grouped %}
+        <div style="text-align: center;">
+            <div style="width: 80px; height: 80px; border: 4px solid #b8860b; border-radius: 50%; background: radial-gradient(circle, #1a0f0a 0%, #2c1810 100%); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; position: relative;">
+                <div style="font-size: 1.8em; color: #d4a574;">{{ shows_grouped|length }}</div>
+            </div>
+            <div style="font-size: 0.75em; color: #8b6914; letter-spacing: 1px;">SÉRIES</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Films - Brass plates -->
+    {% if movies %}
+    <div style="padding: 20px;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+            <span style="font-size: 1.5em;">⚙️</span>
+            <h2 style="margin: 0; font-size: 1.3em; color: #d4a574; letter-spacing: 3px; border-bottom: 2px solid #8b6914; padding-bottom: 10px; flex: 1;">
+                KINÉTOSCOPE • FILMS
+            </h2>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+            {% for movie in movies %}
+            <div style="background: linear-gradient(135deg, #3d2817 0%, #2c1810 100%); border: 3px solid #8b6914; position: relative; overflow: hidden;">
+                <!-- Corner rivets -->
+                <div style="position: absolute; top: 8px; left: 8px; width: 8px; height: 8px; background: #b8860b; border-radius: 50%;"></div>
+                <div style="position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; background: #b8860b; border-radius: 50%;"></div>
+                <div style="position: absolute; bottom: 8px; left: 8px; width: 8px; height: 8px; background: #b8860b; border-radius: 50%;"></div>
+                <div style="position: absolute; bottom: 8px; right: 8px; width: 8px; height: 8px; background: #b8860b; border-radius: 50%;"></div>
+
+                {% if movie.poster_url %}
+                <div style="padding: 15px; padding-bottom: 0;">
+                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 200px; object-fit: cover; border: 2px solid #8b6914; filter: sepia(40%);">
+                </div>
+                {% endif %}
+
+                <div style="padding: 15px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 1em; color: #d4a574; border-bottom: 1px solid #8b6914; padding-bottom: 8px;">
+                        {{ movie.title[:22] }}{% if movie.title|length > 22 %}...{% endif %}
+                    </h3>
+
+                    <div style="font-size: 0.8em; color: #8b6914;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Année:</span>
+                            <span style="color: #d4a574;">{{ movie.year }}</span>
+                        </div>
+                        {% if movie.rating %}
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Qualité:</span>
+                            <span style="color: #d4a574;">{{ movie.rating }}/10 ⚙️</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Series - Telegraph messages -->
+    {% if shows_grouped %}
+    <div style="padding: 20px; background: rgba(0,0,0,0.2);">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+            <span style="font-size: 1.5em;">📡</span>
+            <h2 style="margin: 0; font-size: 1.3em; color: #d4a574; letter-spacing: 3px;">
+                TÉLÉGRAMMES • SÉRIES
+            </h2>
+        </div>
+
+        {% for series_title, episodes in shows_grouped.items() %}
+        <div style="background: #f5e6c8; color: #2c1810; padding: 20px; margin-bottom: 15px; position: relative; border: none;">
+            <!-- Tape effect -->
+            <div style="position: absolute; top: -8px; left: 30px; width: 60px; height: 16px; background: rgba(184,134,11,0.5);"></div>
+            <div style="position: absolute; top: -8px; right: 30px; width: 60px; height: 16px; background: rgba(184,134,11,0.5);"></div>
+
+            <div style="font-family: 'Courier New', monospace; text-transform: uppercase;">
+                <div style="font-size: 0.7em; color: #8b6914; margin-bottom: 5px;">TRANSMISSION N°{{ "%03d"|format(loop.index) }}</div>
+                <div style="font-size: 1.1em; font-weight: bold; margin-bottom: 10px;">{{ series_title }} [STOP]</div>
+                <div style="font-size: 0.9em;">
+                    {{ episodes|length }} NOUVEAUX ÉPISODES TRANSMIS [STOP]
+                    {% for episode in episodes[:3] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }} {% endfor %}[FIN]
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Footer - Brass plate -->
+    <div style="background: linear-gradient(180deg, #b8860b 0%, #8b6914 100%); padding: 3px; margin: 20px;">
+        <div style="background: #2c1810; padding: 25px; text-align: center;">
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 10px;">
+                <span>⚙️</span>
+                <span style="font-size: 1.3em; color: #d4a574; letter-spacing: 3px;">AETHERIC MEDIA CO.</span>
+                <span>⚙️</span>
+            </div>
+            <div style="font-size: 0.8em; color: #8b6914;">
+                Transmission du {{ now().strftime('%d/%m/%Y à %H:%M') }} • Alimenté par vapeur et imagination
+            </div>
+        </div>
+    </div>
+
+</div>

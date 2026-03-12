@@ -1,0 +1,126 @@
+<!-- Template Casino - Style Las Vegas et machines à sous -->
+<div style="max-width: 800px; margin: 0 auto; background: linear-gradient(180deg, #1a0a2e 0%, #0d0015 100%); font-family: 'Playfair Display', Georgia, serif; color: #fff; overflow: hidden;">
+
+    <!-- Header Vegas -->
+    <div style="background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%); padding: 5px;">
+        <div style="background: #1a0a2e; padding: 30px; text-align: center;">
+            <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px;">
+                <span style="font-size: 2em;">♠️</span>
+                <span style="font-size: 2em;">♥️</span>
+                <span style="font-size: 2em;">♦️</span>
+                <span style="font-size: 2em;">♣️</span>
+            </div>
+            <h1 style="margin: 0; font-size: 2.8em; background: linear-gradient(180deg, #ffd700 0%, #ff6b6b 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-shadow: 0 0 30px rgba(255,215,0,0.5); letter-spacing: 5px;">
+                MEDIA CASINO
+            </h1>
+            <div style="font-size: 1em; color: #ffd700; margin-top: 10px; letter-spacing: 3px;">
+                ✦ JACKPOT DU {{ now().strftime('%d/%m/%Y') }} ✦
+            </div>
+        </div>
+    </div>
+
+    <!-- Slot Machine - Films -->
+    {% if movies %}
+    <div style="padding: 30px;">
+        <div style="background: linear-gradient(180deg, #8b0000 0%, #4a0000 100%); border: 8px solid #ffd700; border-radius: 20px; padding: 25px; box-shadow: 0 0 50px rgba(255,215,0,0.3);">
+            <!-- Machine Header -->
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div style="background: #ffd700; color: #000; padding: 10px 30px; display: inline-block; font-size: 1.5em; font-weight: bold; border-radius: 5px;">
+                    🎰 JACKPOT FILMS 🎰
+                </div>
+            </div>
+
+            <!-- Slot Reels -->
+            <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 25px;">
+                {% for movie in movies[:3] %}
+                <div style="width: 120px; background: #fff; border: 4px solid #333; border-radius: 10px; overflow: hidden;">
+                    {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 180px; object-fit: cover;">
+                    {% else %}
+                    <div style="width: 100%; height: 180px; background: linear-gradient(180deg, #ffd700, #ff6b6b); display: flex; align-items: center; justify-content: center; font-size: 3em;">🎬</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Winning Line -->
+            <div style="background: #000; padding: 15px; text-align: center; border-radius: 10px; margin-bottom: 20px;">
+                <div style="font-size: 0.9em; color: #ffd700; margin-bottom: 5px;">COMBINAISON GAGNANTE</div>
+                <div style="font-size: 1.3em; color: #fff;">
+                    {% for movie in movies[:3] %}{{ movie.title[:12] }}{% if movie.title|length > 12 %}...{% endif %}{% if not loop.last %} • {% endif %}{% endfor %}
+                </div>
+            </div>
+
+            <!-- Other Films as Chips -->
+            {% if movies|length > 3 %}
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;">
+                {% for movie in movies[3:] %}
+                <div style="background: {{ ['#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#f39c12'][loop.index0 % 5] }}; width: 60px; height: 60px; border-radius: 50%; border: 4px dashed #ffd700; display: flex; align-items: center; justify-content: center; font-size: 0.6em; text-align: center; padding: 5px; box-sizing: border-box;">
+                    {{ movie.title[:8] }}...
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Roulette - Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 0 30px 30px;">
+        <div style="background: #0d3d0d; border: 8px solid #ffd700; border-radius: 20px; padding: 25px;">
+            <div style="text-align: center; margin-bottom: 25px;">
+                <div style="background: #ffd700; color: #000; padding: 10px 30px; display: inline-block; font-size: 1.3em; font-weight: bold; border-radius: 5px;">
+                    🎡 ROULETTE SÉRIES 🎡
+                </div>
+            </div>
+
+            <!-- Roulette Wheel representation -->
+            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
+                {% for series_title, episodes in shows_grouped.items() %}
+                <div style="position: relative; width: 150px;">
+                    <!-- Chip style -->
+                    <div style="background: {{ ['#e74c3c', '#000'][loop.index0 % 2] }}; border: 4px solid #ffd700; border-radius: 50%; padding: 20px; text-align: center; aspect-ratio: 1;">
+                        <div style="font-size: 2em; font-weight: bold; color: #ffd700;">{{ episodes|length }}</div>
+                        <div style="font-size: 0.7em; color: #fff;">épisodes</div>
+                    </div>
+                    <div style="text-align: center; margin-top: 10px; font-size: 0.85em; color: #ffd700;">
+                        {{ series_title[:18] }}{% if series_title|length > 18 %}...{% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Card Table - Games -->
+    {% if games %}
+    <div style="padding: 0 30px 30px;">
+        <div style="background: #0d5d0d; border: 5px solid #8b4513; border-radius: 15px; padding: 25px;">
+            <div style="text-align: center; margin-bottom: 20px; font-size: 1.3em; color: #ffd700;">
+                🃏 TABLE DE JEUX 🃏
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+                {% for game in games %}
+                <div style="width: 100px; background: #fff; border-radius: 10px; padding: 10px; text-align: center; box-shadow: 3px 3px 10px rgba(0,0,0,0.5); transform: rotate({{ [-5, 3, -2, 5, -3][loop.index0 % 5] }}deg);">
+                    <div style="font-size: 2em; color: {{ ['#e74c3c', '#000'][loop.index0 % 2] }};">{{ ['♠', '♥', '♦', '♣'][loop.index0 % 4] }}</div>
+                    <div style="font-size: 0.7em; color: #333; margin-top: 5px;">{{ game.name[:12] }}{% if game.name|length > 12 %}...{% endif %}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="background: linear-gradient(180deg, #ffd700 0%, #b8860b 100%); padding: 3px;">
+        <div style="background: #1a0a2e; padding: 25px; text-align: center;">
+            <div style="font-size: 1.5em; color: #ffd700; margin-bottom: 10px;">🎰 VIVA LAS MEDIA! 🎰</div>
+            <div style="font-size: 0.85em; color: #888;">
+                {{ now().strftime('%d/%m/%Y %H:%M') }} • La maison gagne toujours... du divertissement !
+            </div>
+        </div>
+    </div>
+
+</div>

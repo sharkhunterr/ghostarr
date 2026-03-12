@@ -1,0 +1,121 @@
+<!-- Template NASA/Space - Style mission control spatial -->
+<div style="max-width: 100%; margin: 0 auto; background: #000; font-family: 'Roboto Mono', 'Consolas', monospace; color: #fff; overflow: hidden;">
+
+    <!-- Header Mission Control -->
+    <div style="background: linear-gradient(180deg, #0a1628 0%, #000 100%); padding: 30px 20px; border-bottom: 2px solid #00aaff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 60px; height: 60px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <span style="font-size: 2em;">🚀</span>
+                </div>
+                <div>
+                    <div style="font-size: 1.8em; font-weight: bold; letter-spacing: 3px;">MEDIA SPACE CENTER</div>
+                    <div style="font-size: 0.85em; color: #00aaff;">Mission Control • Houston</div>
+                </div>
+            </div>
+            <div style="text-align: right; font-size: 0.9em; color: #888;">
+                <div>MISSION DATE</div>
+                <div style="color: #00ff00; font-size: 1.3em;">{{ now().strftime('%Y.%m.%d') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div style="display: flex; background: #0a1628; padding: 15px 20px; gap: 30px; flex-wrap: wrap; border-bottom: 1px solid #1a3a5c;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 10px; height: 10px; background: #00ff00; border-radius: 50%; box-shadow: 0 0 10px #00ff00;"></div>
+            <span style="font-size: 0.85em; color: #00ff00;">SYSTEM ONLINE</span>
+        </div>
+        <div style="font-size: 0.85em; color: #888;">
+            UPLINK: <span style="color: #00aaff;">ACTIVE</span>
+        </div>
+        <div style="font-size: 0.85em; color: #888;">
+            TELEMETRY: <span style="color: #00ff00;">NOMINAL</span>
+        </div>
+    </div>
+
+    <!-- Mission Briefing - Films -->
+    {% if movies %}
+    <div style="padding: 30px 20px;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+            <div style="background: #00aaff; color: #000; padding: 8px 15px; font-weight: bold;">MISSION BRIEFING</div>
+            <div style="color: #00aaff; font-size: 0.9em;">// FILM PAYLOADS: {{ movies|length }}</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+            {% for movie in movies %}
+            <div style="background: linear-gradient(135deg, #0a1628 0%, #1a2a3c 100%); border: 1px solid #1a3a5c; overflow: hidden;">
+                <!-- Header de carte -->
+                <div style="background: #1a3a5c; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.8em; color: #00aaff;">PAYLOAD_{{ "%03d"|format(loop.index) }}</span>
+                    <span style="font-size: 0.75em; color: #888;">{{ movie.year }}</span>
+                </div>
+
+                <div style="display: flex; padding: 15px; gap: 15px;">
+                    {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 80px; height: 120px; object-fit: cover; border: 1px solid #1a3a5c;">
+                    {% endif %}
+                    <div style="flex: 1;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 1em; color: #fff;">{{ movie.title[:28] }}{% if movie.title|length > 28 %}...{% endif %}</h3>
+                        {% if movie.rating %}
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-size: 0.75em; color: #888; margin-bottom: 3px;">RATING</div>
+                            <div style="background: #0a1628; height: 6px; border-radius: 3px; overflow: hidden;">
+                                <div style="width: {{ movie.rating * 10 }}%; height: 100%; background: linear-gradient(90deg, #00aaff, #00ff00);"></div>
+                            </div>
+                            <div style="font-size: 0.8em; color: #00ff00; margin-top: 3px;">{{ movie.rating }}/10</div>
+                        </div>
+                        {% endif %}
+                        {% if movie.duration %}
+                        <div style="font-size: 0.8em; color: #888;">
+                            DURATION: <span style="color: #00aaff;">{{ format_duration(movie.duration) }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Séries - Orbital Status -->
+    {% if shows_grouped %}
+    <div style="padding: 30px 20px; background: linear-gradient(180deg, #000 0%, #0a1628 100%);">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+            <div style="background: #ff6600; color: #000; padding: 8px 15px; font-weight: bold;">ORBITAL STATUS</div>
+            <div style="color: #ff6600; font-size: 0.9em;">// SERIES TRACKING: {{ shows_grouped|length }}</div>
+        </div>
+
+        {% for series_title, episodes in shows_grouped.items() %}
+        <div style="background: #0a1628; border-left: 3px solid #ff6600; padding: 15px; margin-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h4 style="margin: 0 0 8px 0; color: #fff; font-size: 1.1em;">{{ series_title }}</h4>
+                    <div style="display: flex; gap: 15px; font-size: 0.85em;">
+                        <span style="color: #888;">NEW EPISODES:</span>
+                        <span style="color: #00ff00;">{{ episodes|length }}</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    {% for episode in episodes[:4] %}
+                    <div style="background: #1a3a5c; padding: 5px 10px; font-size: 0.8em; color: #00aaff;">
+                        S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="background: #0a1628; padding: 25px 20px; border-top: 2px solid #00aaff; text-align: center;">
+        <div style="font-size: 1.2em; color: #00aaff; letter-spacing: 3px; margin-bottom: 10px;">🚀 MISSION COMPLETE 🚀</div>
+        <div style="font-size: 0.85em; color: #888;">
+            TRANSMISSION END: {{ now().strftime('%Y-%m-%d %H:%M:%S') }} UTC
+        </div>
+    </div>
+
+</div>

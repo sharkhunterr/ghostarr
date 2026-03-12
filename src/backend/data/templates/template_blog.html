@@ -1,0 +1,150 @@
+<!-- Template Blog - Style blog personnel moderne -->
+<div style="max-width: 900px; margin: 0 auto; background: #fff; font-family: 'Merriweather', Georgia, serif; color: #333;">
+
+    <!-- Header Blog -->
+    <div style="padding: 40px 30px; border-bottom: 1px solid #eee;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h1 style="margin: 0; font-size: 2em; font-weight: 400; color: #1a1a1a; letter-spacing: -1px;">
+                    <span style="color: #e63946;">●</span> Le Blog Ciné
+                </h1>
+                <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #666; font-style: italic;">
+                    Chroniques et découvertes audiovisuelles
+                </p>
+            </div>
+            <div style="font-size: 0.85em; color: #999;">
+                {{ now().strftime('%A %d %B %Y') }}
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav style="margin-top: 25px; display: flex; gap: 25px; font-size: 0.9em;">
+            <a style="color: #e63946; text-decoration: none; font-weight: 600;">Accueil</a>
+            <a style="color: #666; text-decoration: none;">Films</a>
+            <a style="color: #666; text-decoration: none;">Séries</a>
+            <a style="color: #666; text-decoration: none;">À propos</a>
+        </nav>
+    </div>
+
+    <!-- Article Principal - Film vedette -->
+    {% if movies and movies|length > 0 %}
+    {% set featured = movies[0] %}
+    <article style="padding: 40px 30px; border-bottom: 1px solid #eee;">
+        <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+            <span style="background: #e63946; color: #fff; padding: 4px 12px; font-size: 0.7em; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">À la une</span>
+            <span style="background: #f0f0f0; color: #666; padding: 4px 12px; font-size: 0.7em; text-transform: uppercase;">{{ now().strftime('%d %b %Y') }}</span>
+        </div>
+
+        <h2 style="margin: 0 0 20px 0; font-size: 2.2em; font-weight: 400; line-height: 1.3; color: #1a1a1a;">
+            {{ featured.title }} — Un film à ne pas manquer
+        </h2>
+
+        {% if featured.backdrop_url %}
+        <img src="{{ featured.backdrop_url }}" alt="{{ featured.title }}" style="width: 100%; height: 400px; object-fit: cover; margin-bottom: 25px;">
+        {% elif featured.poster_url %}
+        <img src="{{ featured.poster_url }}" alt="{{ featured.title }}" style="width: 300px; height: auto; float: left; margin: 0 25px 15px 0;">
+        {% endif %}
+
+        <div style="font-size: 0.9em; color: #666; margin-bottom: 20px; line-height: 1.8;">
+            <strong>{{ featured.year }}</strong>{% if featured.director %} • Réalisé par <strong>{{ featured.director }}</strong>{% endif %}{% if featured.duration %} • {{ format_duration(featured.duration) }}{% endif %}
+        </div>
+
+        {% if featured.tagline %}
+        <blockquote style="margin: 0 0 25px 0; padding: 20px 25px; background: #f9f9f9; border-left: 4px solid #e63946; font-style: italic; font-size: 1.2em; color: #555;">
+            "{{ featured.tagline }}"
+        </blockquote>
+        {% endif %}
+
+        {% if featured.summary %}
+        <p style="margin: 0 0 20px 0; font-size: 1.1em; line-height: 1.9; color: #444; text-align: justify;">
+            {{ featured.summary }}
+        </p>
+        {% endif %}
+
+        {% if featured.genres %}
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 25px;">
+            {% for genre in featured.genres %}
+            <span style="border: 1px solid #ddd; color: #666; padding: 6px 15px; font-size: 0.8em; border-radius: 20px;">{{ genre }}</span>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% if featured.rating %}
+        <div style="margin-top: 25px; padding: 15px 20px; background: #1a1a1a; color: #fff; display: inline-block;">
+            <span style="font-size: 2em; font-weight: 700;">{{ featured.rating }}</span><span style="font-size: 0.9em; color: #999;">/10</span>
+        </div>
+        {% endif %}
+    </article>
+    {% endif %}
+
+    <!-- Autres Films - Style liste d'articles -->
+    {% if movies and movies|length > 1 %}
+    <section style="padding: 40px 30px; border-bottom: 1px solid #eee;">
+        <h3 style="margin: 0 0 30px 0; font-size: 1.2em; color: #999; text-transform: uppercase; letter-spacing: 2px; font-weight: 400;">
+            Autres films récents
+        </h3>
+
+        <div style="display: grid; gap: 30px;">
+            {% for movie in movies[1:5] %}
+            <article style="display: flex; gap: 25px; padding-bottom: 30px; {% if not loop.last %}border-bottom: 1px solid #eee;{% endif %}">
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 120px; height: 180px; object-fit: cover; flex-shrink: 0;">
+                {% endif %}
+                <div>
+                    <h4 style="margin: 0 0 10px 0; font-size: 1.4em; font-weight: 400; color: #1a1a1a;">{{ movie.title }}</h4>
+                    <div style="font-size: 0.85em; color: #999; margin-bottom: 12px;">
+                        {{ movie.year }}{% if movie.director %} • {{ movie.director }}{% endif %}{% if movie.rating %} • ★ {{ movie.rating }}{% endif %}
+                    </div>
+                    {% if movie.summary %}
+                    <p style="margin: 0; font-size: 0.95em; color: #666; line-height: 1.7;">{{ truncate_text(movie.summary, 200) }}</p>
+                    {% endif %}
+                    <a style="display: inline-block; margin-top: 12px; color: #e63946; font-size: 0.9em; text-decoration: none; font-weight: 600;">Lire la suite →</a>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Séries - Sidebar style -->
+    {% if shows_grouped %}
+    <section style="padding: 40px 30px; background: #f9f9f9;">
+        <h3 style="margin: 0 0 25px 0; font-size: 1.2em; color: #999; text-transform: uppercase; letter-spacing: 2px; font-weight: 400;">
+            Séries du moment
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="background: #fff; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <div style="display: flex; gap: 15px;">
+                    {% if episodes[0].poster_url %}
+                    <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 60px; height: 90px; object-fit: cover;">
+                    {% endif %}
+                    <div>
+                        <h4 style="margin: 0 0 8px 0; font-size: 1em; font-weight: 600; color: #1a1a1a;">{{ series_title }}</h4>
+                        <div style="font-size: 0.85em; color: #e63946; margin-bottom: 8px;">{{ episodes|length }} nouveaux épisodes</div>
+                        <div style="font-size: 0.8em; color: #999;">
+                            {% for episode in episodes[:3] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %}, {% endif %}{% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Footer Blog -->
+    <footer style="padding: 40px 30px; text-align: center; border-top: 1px solid #eee;">
+        <h2 style="margin: 0 0 10px 0; font-size: 1.3em; font-weight: 400; color: #1a1a1a;">
+            <span style="color: #e63946;">●</span> Le Blog Ciné
+        </h2>
+        <p style="margin: 0 0 20px 0; font-size: 0.9em; color: #999;">
+            Merci de votre lecture !
+        </p>
+        <div style="font-size: 0.8em; color: #ccc;">
+            {{ now().strftime('%d/%m/%Y à %H:%M') }}
+        </div>
+    </footer>
+
+</div>

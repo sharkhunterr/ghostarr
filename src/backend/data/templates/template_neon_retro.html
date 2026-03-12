@@ -1,0 +1,152 @@
+<!-- Template Neon Retro 80s - Style Synthwave -->
+<div style="max-width: 800px; margin: 0 auto; background: linear-gradient(180deg, #0a0015 0%, #1a0030 50%, #0a0015 100%); color: #fff; font-family: 'Orbitron', 'Segoe UI', sans-serif; border-radius: 0; overflow: hidden; border: 3px solid #ff00ff;">
+
+    <!-- Header Synthwave -->
+    <div style="padding: 40px 20px; text-align: center; position: relative; overflow: hidden;">
+        <!-- Grille perspective -->
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 100px; background: linear-gradient(to bottom, transparent 0%, rgba(255,0,255,0.1) 100%); transform: perspective(200px) rotateX(60deg); transform-origin: bottom;"></div>
+
+        <!-- Soleil couchant -->
+        <div style="position: absolute; top: 20px; left: 50%; transform: translateX(-50%); width: 150px; height: 75px; background: linear-gradient(180deg, #ff6b35 0%, #ff00ff 50%, transparent 100%); border-radius: 150px 150px 0 0; opacity: 0.3;"></div>
+
+        <div style="position: relative; z-index: 2;">
+            <h1 style="margin: 0; font-size: 3em; color: #00ffff; text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 40px #00ffff, 0 0 80px #ff00ff; letter-spacing: 8px; font-weight: bold;">
+                RETRO WAVE
+            </h1>
+            <p style="margin: 20px 0 0 0; font-size: 1.1em; color: #ff00ff; text-shadow: 0 0 10px #ff00ff; letter-spacing: 5px;">
+                ◢◤ {{ now().strftime('%d.%m.%Y') }} ◢◤
+            </p>
+        </div>
+
+        <!-- Lignes décoratives -->
+        <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; height: 2px; background: linear-gradient(90deg, transparent, #ff00ff, #00ffff, #ff00ff, transparent);"></div>
+    </div>
+
+    <!-- Compteurs néon -->
+    {% if movies or shows_grouped %}
+    <div style="background: rgba(255,0,255,0.1); padding: 20px; display: flex; justify-content: center; gap: 50px; border-top: 1px solid #ff00ff44; border-bottom: 1px solid #ff00ff44;">
+        {% if movies %}
+        <div style="text-align: center;">
+            <div style="font-size: 3em; font-weight: bold; color: #00ffff; text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;">{{ movies|length }}</div>
+            <div style="font-size: 0.8em; color: #ff00ff; text-transform: uppercase; letter-spacing: 3px;">Films</div>
+        </div>
+        {% endif %}
+        {% if shows_grouped %}
+        <div style="text-align: center;">
+            <div style="font-size: 3em; font-weight: bold; color: #ff00ff; text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff00ff;">{{ shows_grouped|length }}</div>
+            <div style="font-size: 0.8em; color: #00ffff; text-transform: uppercase; letter-spacing: 3px;">Séries</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Section Films -->
+    {% if movies %}
+    <div style="padding: 30px;">
+        <h2 style="color: #00ffff; font-size: 1.8em; text-align: center; margin-bottom: 30px; text-shadow: 0 0 10px #00ffff; letter-spacing: 5px; font-weight: normal;">
+            ▼ FILMS ▼
+        </h2>
+
+        {% for movie in movies %}
+        <div style="background: linear-gradient(135deg, rgba(255,0,255,0.1) 0%, rgba(0,255,255,0.05) 100%); border-radius: 0; margin-bottom: 20px; display: flex; overflow: hidden; border: 1px solid #ff00ff; box-shadow: 0 0 20px rgba(255,0,255,0.3), inset 0 0 20px rgba(0,255,255,0.1);">
+            <!-- Poster avec effet -->
+            <div style="position: relative;">
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 140px; height: 200px; object-fit: cover; filter: contrast(1.1) saturate(1.2);">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, transparent, rgba(10,0,21,0.7)); mix-blend-mode: multiply;"></div>
+            </div>
+
+            <!-- Infos -->
+            <div style="padding: 20px; flex: 1; position: relative;">
+                <!-- Ligne décorative -->
+                <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: linear-gradient(180deg, #00ffff, #ff00ff);"></div>
+
+                <h3 style="color: #fff; font-size: 1.4em; margin: 0 0 10px 0; text-shadow: 0 0 5px rgba(255,255,255,0.5);">{{ movie.title }}</h3>
+
+                {% if movie.tagline %}
+                <p style="color: #ff00ff; font-style: italic; margin: 0 0 15px 0; font-size: 0.9em; text-shadow: 0 0 5px #ff00ff;">"{{ movie.tagline }}"</p>
+                {% endif %}
+
+                <div style="color: #00ffff; font-size: 0.85em; margin-bottom: 15px; text-shadow: 0 0 3px #00ffff;">
+                    ◈ {{ movie.year }}{% if movie.rating %} ◈ {{ movie.rating }}/10{% endif %}{% if movie.duration %} ◈ {{ format_duration(movie.duration) }}{% endif %}
+                </div>
+
+                {% if movie.genres %}
+                <div style="margin-bottom: 15px;">
+                    {% for genre in movie.genres[:3] %}
+                    <span style="background: transparent; color: #ff00ff; padding: 4px 12px; font-size: 0.75em; margin-right: 8px; border: 1px solid #ff00ff; text-transform: uppercase; letter-spacing: 1px;">{{ genre }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if movie.summary %}
+                <p style="color: #aaa; line-height: 1.6; margin: 0; font-size: 0.85em;">{{ truncate_text(movie.summary, 180) }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Section Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 30px; background: rgba(0,255,255,0.05);">
+        <h2 style="color: #ff00ff; font-size: 1.8em; text-align: center; margin-bottom: 30px; text-shadow: 0 0 10px #ff00ff; letter-spacing: 5px; font-weight: normal;">
+            ▼ SÉRIES ▼
+        </h2>
+
+        {% for series_title, episodes in shows_grouped.items() %}
+        <div style="background: linear-gradient(135deg, rgba(0,255,255,0.1) 0%, rgba(255,0,255,0.05) 100%); border-radius: 0; margin-bottom: 20px; display: flex; overflow: hidden; border: 1px solid #00ffff; box-shadow: 0 0 20px rgba(0,255,255,0.3), inset 0 0 20px rgba(255,0,255,0.1);">
+            <!-- Poster -->
+            <div style="position: relative;">
+                <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 140px; height: 200px; object-fit: cover; filter: contrast(1.1) saturate(1.2);">
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to right, transparent, rgba(10,0,21,0.7)); mix-blend-mode: multiply;"></div>
+            </div>
+
+            <!-- Infos -->
+            <div style="padding: 20px; flex: 1; position: relative;">
+                <div style="position: absolute; top: 0; left: 0; width: 3px; height: 100%; background: linear-gradient(180deg, #ff00ff, #00ffff);"></div>
+
+                <h3 style="color: #fff; font-size: 1.4em; margin: 0 0 10px 0; text-shadow: 0 0 5px rgba(255,255,255,0.5);">{{ series_title }}</h3>
+
+                <div style="background: linear-gradient(90deg, #ff00ff, #00ffff); color: #0a0015; padding: 5px 12px; font-size: 0.8em; margin-bottom: 15px; display: inline-block; font-weight: bold;">
+                    +{{ episodes|length }} ÉPISODE{{ 'S' if episodes|length > 1 else '' }}
+                </div>
+
+                <div style="color: #00ffff; font-size: 0.85em; margin-bottom: 15px;">
+                    {% for episode in episodes[:4] %}
+                    ◈ S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %} {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if episodes[0].genres %}
+                <div style="margin-bottom: 15px;">
+                    {% for genre in episodes[0].genres[:3] %}
+                    <span style="background: transparent; color: #00ffff; padding: 4px 12px; font-size: 0.75em; margin-right: 8px; border: 1px solid #00ffff; text-transform: uppercase; letter-spacing: 1px;">{{ genre }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Footer Synthwave -->
+    <div style="padding: 30px; text-align: center; position: relative;">
+        <div style="position: absolute; top: 0; left: 20px; right: 20px; height: 2px; background: linear-gradient(90deg, transparent, #00ffff, #ff00ff, #00ffff, transparent);"></div>
+
+        <div style="font-size: 1.5em; margin-bottom: 15px; letter-spacing: 5px;">
+            <span style="color: #ff00ff; text-shadow: 0 0 10px #ff00ff;">◢</span>
+            <span style="color: #00ffff; text-shadow: 0 0 10px #00ffff;">◣</span>
+            <span style="color: #ff00ff; text-shadow: 0 0 10px #ff00ff;">◢</span>
+            <span style="color: #00ffff; text-shadow: 0 0 10px #00ffff;">◣</span>
+        </div>
+        <p style="margin: 0; color: #ff00ff; font-size: 0.9em; letter-spacing: 3px; text-shadow: 0 0 5px #ff00ff;">
+            STAY RETRO
+        </p>
+        <p style="margin: 15px 0 0 0; color: #555; font-size: 0.75em;">
+            {{ now().strftime('%d/%m/%Y %H:%M') }}
+        </p>
+    </div>
+
+</div>

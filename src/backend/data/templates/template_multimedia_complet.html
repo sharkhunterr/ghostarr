@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Newsletter Multimédia</title>
+</head>
+<body style="margin: 0; padding: 0; background: #0f0f0f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #fff;">
+
+<!-- Container principal -->
+<div style="max-width: 100%; margin: 0 auto; background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);">
+
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 50%, #3d7ab5 100%); padding: 30px 20px; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -50px; right: -50px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
+        <div style="position: absolute; bottom: -30px; left: -30px; width: 80px; height: 80px; background: rgba(255,255,255,0.08); border-radius: 20px; transform: rotate(45deg);"></div>
+
+        <div style="text-align: center; position: relative; z-index: 2;">
+            <div style="font-size: 0.8em; font-weight: 500; letter-spacing: 3px; margin-bottom: 8px; opacity: 0.85; text-transform: uppercase;">Votre Médiathèque</div>
+            <h1 style="margin: 0; font-size: clamp(2em, 7vw, 3em); font-weight: 900; letter-spacing: -1px; color: #ffffff; line-height: 1.1;">Nouveautés de la Semaine</h1>
+            <div style="font-size: clamp(0.9em, 3vw, 1.1em); margin-top: 12px; opacity: 0.9;">{{ now().strftime('%d %B %Y') }} • Semaine {{ now().isocalendar()[1] }}</div>
+        </div>
+
+        <!-- Compteurs rapides -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-top: 25px; position: relative; z-index: 2;">
+            {% if movies %}
+            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); padding: 10px 6px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                <div style="font-size: clamp(1.2em, 4vw, 1.6em); font-weight: 900;">{{ movies|length }}</div>
+                <div style="font-size: clamp(0.55em, 1.8vw, 0.7em); opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Films</div>
+            </div>
+            {% endif %}
+            {% if shows_grouped %}
+            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); padding: 10px 6px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                <div style="font-size: clamp(1.2em, 4vw, 1.6em); font-weight: 900;">{{ shows_grouped|length }}</div>
+                <div style="font-size: clamp(0.55em, 1.8vw, 0.7em); opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Séries</div>
+            </div>
+            {% endif %}
+            {% if games %}
+            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); padding: 10px 6px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                <div style="font-size: clamp(1.2em, 4vw, 1.6em); font-weight: 900;">{{ games|length }}</div>
+                <div style="font-size: clamp(0.55em, 1.8vw, 0.7em); opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Jeux</div>
+            </div>
+            {% endif %}
+            {% if books %}
+            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); padding: 10px 6px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                <div style="font-size: clamp(1.2em, 4vw, 1.6em); font-weight: 900;">{{ books|length }}</div>
+                <div style="font-size: clamp(0.55em, 1.8vw, 0.7em); opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">BD/Comics</div>
+            </div>
+            {% endif %}
+            {% if audiobooks %}
+            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); padding: 10px 6px; border-radius: 10px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                <div style="font-size: clamp(1.2em, 4vw, 1.6em); font-weight: 900;">{{ audiobooks|length }}</div>
+                <div style="font-size: clamp(0.55em, 1.8vw, 0.7em); opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Audiobooks</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ==================== SECTION FILMS ==================== -->
+    {% if movies %}
+    <div style="padding: 30px 20px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <h2 style="font-size: clamp(1.6em, 5vw, 2.2em); font-weight: 900; margin: 0; background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px;">🎬 Nouveaux Films</h2>
+            <div style="background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; padding: 5px 14px; border-radius: 20px; font-size: 0.75em; font-weight: 700; display: inline-block; margin-top: 10px;">{{ movies|length }} film{{ 's' if movies|length > 1 else '' }}</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            {% for movie in movies[:8] %}
+            <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;">
+                {% if movie.backdrop_url %}
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{ movie.backdrop_url }}'); background-size: cover; background-position: center; opacity: 0.08;"></div>
+                {% endif %}
+
+                <div style="display: flex; gap: 14px; position: relative; z-index: 2;">
+                    <!-- Affiche -->
+                    <div style="flex-shrink: 0;">
+                        {% if movie.poster_url %}
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 80px; height: 120px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                        {% else %}
+                        <div style="width: 80px; height: 120px; background: linear-gradient(135deg, #60a5fa, #3b82f6); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 2em;">🎬</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Infos -->
+                    <div style="flex: 1; min-width: 0;">
+                        <h3 style="font-size: clamp(1em, 3.5vw, 1.2em); font-weight: 800; margin: 0 0 8px 0; color: #f8fafc; line-height: 1.2;">{{ movie.title }}</h3>
+
+                        <!-- Métadonnées -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
+                            {% if movie.year %}
+                            <span style="background: rgba(255,255,255,0.1); color: #e2e8f0; padding: 3px 8px; border-radius: 6px; font-size: 0.7em; font-weight: 600;">{{ movie.year }}</span>
+                            {% endif %}
+                            {% if movie.rating %}
+                            {% set rating_float = movie.rating|float %}
+                            {% if rating_float >= 8.0 %}{% set rating_color = "#10b981" %}
+                            {% elif rating_float >= 7.0 %}{% set rating_color = "#3b82f6" %}
+                            {% elif rating_float >= 6.0 %}{% set rating_color = "#f59e0b" %}
+                            {% else %}{% set rating_color = "#6b7280" %}{% endif %}
+                            <span style="background: {{ rating_color }}; color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.7em; font-weight: 700;">{{ "%.1f"|format(rating_float) }} ⭐</span>
+                            {% endif %}
+                            {% if movie.duration and movie.duration > 0 %}
+                            <span style="background: rgba(96,165,250,0.2); color: #93c5fd; padding: 3px 8px; border-radius: 6px; font-size: 0.7em; font-weight: 600;">{{ (movie.duration // 3600) }}h{{ ((movie.duration % 3600) // 60) }}m</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Réalisateur & Acteurs -->
+                        {% if movie.director or movie.cast %}
+                        <div style="margin-bottom: 10px;">
+                            {% if movie.director %}
+                            <div style="font-size: 0.75em; color: #94a3b8; margin-bottom: 2px;">
+                                <span style="color: #60a5fa; font-weight: 600;">Réalisateur:</span> {{ movie.director }}
+                            </div>
+                            {% endif %}
+                            {% if movie.cast and movie.cast|length > 0 %}
+                            <div style="font-size: 0.75em; color: #94a3b8;">
+                                <span style="color: #60a5fa; font-weight: 600;">Avec:</span> {{ movie.cast[:3]|join(', ') }}{% if movie.cast|length > 3 %}...{% endif %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Genres -->
+                        {% if movie.genres %}
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px;">
+                            {% for genre in movie.genres[:3] %}
+                            <span style="background: linear-gradient(135deg, rgba(96,165,250,0.2), rgba(59,130,246,0.2)); color: #93c5fd; padding: 2px 8px; border-radius: 10px; font-size: 0.65em; font-weight: 600;">{{ genre }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Synopsis -->
+                        {% if movie.summary %}
+                        <p style="color: #94a3b8; font-size: 0.8em; line-height: 1.5; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">{{ movie.summary[:250] }}{% if movie.summary|length > 250 %}...{% endif %}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if movies|length > 8 %}
+        <div style="text-align: center; margin-top: 16px;">
+            <div style="background: rgba(96,165,250,0.2); color: #60a5fa; padding: 8px 16px; border-radius: 20px; font-size: 0.8em; font-weight: 600; display: inline-block;">+{{ movies|length - 8 }} autres films</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- ==================== SECTION SÉRIES ==================== -->
+    {% if shows_grouped %}
+    <div style="padding: 30px 20px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <h2 style="font-size: clamp(1.6em, 5vw, 2.2em); font-weight: 900; margin: 0; background: linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px;">📺 Nouvelles Séries</h2>
+            <div style="background: linear-gradient(135deg, #a78bfa, #8b5cf6); color: white; padding: 5px 14px; border-radius: 20px; font-size: 0.75em; font-weight: 700; display: inline-block; margin-top: 10px;">{{ shows_grouped|length }} série{{ 's' if shows_grouped|length > 1 else '' }}</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            {% if loop.index <= 6 %}
+            <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;">
+                {% if episodes[0].backdrop_url %}
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{ episodes[0].backdrop_url }}'); background-size: cover; background-position: center; opacity: 0.08;"></div>
+                {% endif %}
+
+                <div style="display: flex; gap: 14px; position: relative; z-index: 2;">
+                    <!-- Affiche -->
+                    <div style="flex-shrink: 0;">
+                        {% if episodes[0].poster_url %}
+                        <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 80px; height: 120px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                        {% else %}
+                        <div style="width: 80px; height: 120px; background: linear-gradient(135deg, #a78bfa, #8b5cf6); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 2em;">📺</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Infos -->
+                    <div style="flex: 1; min-width: 0;">
+                        <h3 style="font-size: clamp(1em, 3.5vw, 1.2em); font-weight: 800; margin: 0 0 8px 0; color: #f8fafc; line-height: 1.2;">{{ series_title }}</h3>
+
+                        <!-- Métadonnées -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px;">
+                            {% if episodes[0].year %}
+                            <span style="background: rgba(255,255,255,0.1); color: #e2e8f0; padding: 3px 8px; border-radius: 6px; font-size: 0.7em; font-weight: 600;">{{ episodes[0].year }}</span>
+                            {% endif %}
+                            <span style="background: rgba(139,92,246,0.3); color: #c4b5fd; padding: 3px 8px; border-radius: 6px; font-size: 0.7em; font-weight: 600;">{{ episodes|length }} épisode{{ 's' if episodes|length > 1 else '' }}</span>
+                            {% if episodes[0].rating %}
+                            {% set rating_float = episodes[0].rating|float %}
+                            {% if rating_float >= 8.0 %}{% set rating_color = "#10b981" %}
+                            {% elif rating_float >= 7.0 %}{% set rating_color = "#3b82f6" %}
+                            {% elif rating_float >= 6.0 %}{% set rating_color = "#f59e0b" %}
+                            {% else %}{% set rating_color = "#6b7280" %}{% endif %}
+                            <span style="background: {{ rating_color }}; color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.7em; font-weight: 700;">{{ "%.1f"|format(rating_float) }} ⭐</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Genres -->
+                        {% if episodes[0].genres %}
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px;">
+                            {% for genre in episodes[0].genres[:3] %}
+                            <span style="background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(124,58,237,0.2)); color: #c4b5fd; padding: 2px 8px; border-radius: 10px; font-size: 0.65em; font-weight: 600;">{{ genre }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Épisodes ajoutés -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                            {% for episode in episodes[:6] %}
+                            <span style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 4px 8px; border-radius: 6px; font-size: 0.7em; font-weight: 700;">S{{ '%02d'|format(episode.season_number or 0) }}E{{ '%02d'|format(episode.episode_number or 0) }}</span>
+                            {% endfor %}
+                            {% if episodes|length > 6 %}
+                            <span style="background: rgba(139,92,246,0.3); color: #c4b5fd; padding: 4px 8px; border-radius: 6px; font-size: 0.7em; font-weight: 700;">+{{ episodes|length - 6 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        {% if shows_grouped|length > 6 %}
+        <div style="text-align: center; margin-top: 16px;">
+            <div style="background: rgba(139,92,246,0.2); color: #a78bfa; padding: 8px 16px; border-radius: 20px; font-size: 0.8em; font-weight: 600; display: inline-block;">+{{ shows_grouped|length - 6 }} autres séries</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- ==================== SECTION JEUX VIDÉO ==================== -->
+    {% if games %}
+    <div style="padding: 30px 20px; background: linear-gradient(135deg, #14532d 0%, #166534 100%);">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <h2 style="font-size: clamp(1.6em, 5vw, 2.2em); font-weight: 900; margin: 0; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px;">🎮 Nouveaux Jeux</h2>
+            <div style="background: linear-gradient(135deg, #4ade80, #22c55e); color: #052e16; padding: 5px 14px; border-radius: 20px; font-size: 0.75em; font-weight: 700; display: inline-block; margin-top: 10px;">{{ games|length }} jeu{{ 'x' if games|length > 1 else '' }}</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+            {% for game in games[:8] %}
+            <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="display: flex; gap: 14px;">
+                    <!-- Jaquette -->
+                    <div style="flex-shrink: 0;">
+                        {% if game.cover_url %}
+                        <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 70px; height: 90px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                        {% else %}
+                        <div style="width: 70px; height: 90px; background: linear-gradient(135deg, #4ade80, #22c55e); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.8em;">🎮</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Infos -->
+                    <div style="flex: 1; min-width: 0;">
+                        <h3 style="font-size: clamp(0.9em, 3vw, 1.1em); font-weight: 800; margin: 0 0 6px 0; color: #f8fafc; line-height: 1.2;">{{ game.name }}</h3>
+
+                        <!-- Plateforme -->
+                        {% if game.platform %}
+                        <div style="margin-bottom: 8px;">
+                            <span style="background: linear-gradient(135deg, rgba(74,222,128,0.2), rgba(34,197,94,0.2)); color: #86efac; padding: 3px 10px; border-radius: 8px; font-size: 0.7em; font-weight: 700; text-transform: uppercase;">{{ game.platform }}</span>
+                        </div>
+                        {% endif %}
+
+                        <!-- Description -->
+                        {% if game.summary %}
+                        {% set clean_summary = game.summary|strip_html %}
+                        <p style="color: #94a3b8; font-size: 0.75em; line-height: 1.4; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">{{ clean_summary[:180] }}{% if clean_summary|length > 180 %}...{% endif %}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if games|length > 8 %}
+        <div style="text-align: center; margin-top: 16px;">
+            <div style="background: rgba(74,222,128,0.2); color: #4ade80; padding: 8px 16px; border-radius: 20px; font-size: 0.8em; font-weight: 600; display: inline-block;">+{{ games|length - 8 }} autres jeux</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- ==================== SECTION BD/COMICS/LIVRES ==================== -->
+    {% if books %}
+    <div style="padding: 30px 20px; background: linear-gradient(135deg, #7c2d12 0%, #9a3412 100%);">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <h2 style="font-size: clamp(1.6em, 5vw, 2.2em); font-weight: 900; margin: 0; background: linear-gradient(135deg, #fb923c 0%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px;">📚 BD & Comics</h2>
+            <div style="background: linear-gradient(135deg, #fb923c, #f97316); color: #431407; padding: 5px 14px; border-radius: 20px; font-size: 0.75em; font-weight: 700; display: inline-block; margin-top: 10px;">{{ books|length }} titre{{ 's' if books|length > 1 else '' }}</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px;">
+            {% for book in books[:8] %}
+            <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="display: flex; gap: 14px;">
+                    <!-- Couverture -->
+                    <div style="flex-shrink: 0;">
+                        {% if book.thumbnail_url %}
+                        <img src="{{ book.thumbnail_url }}" alt="{{ book.name }}" style="width: 65px; height: 100px; object-fit: cover; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                        {% else %}
+                        <div style="width: 65px; height: 100px; background: linear-gradient(135deg, #fb923c, #f97316); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.8em;">📚</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Infos -->
+                    <div style="flex: 1; min-width: 0;">
+                        <h3 style="font-size: clamp(0.9em, 3vw, 1.05em); font-weight: 800; margin: 0 0 6px 0; color: #f8fafc; line-height: 1.2;">{{ book.name }}</h3>
+
+                        <!-- Série -->
+                        {% if book.series_name %}
+                        <div style="font-size: 0.75em; color: #fdba74; margin-bottom: 6px; font-weight: 600;">
+                            {{ book.series_name }}{% if book.number %} #{{ book.number|int }}{% endif %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Métadonnées -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            {% if book.page_count and book.page_count > 0 %}
+                            <span style="background: rgba(251,146,60,0.2); color: #fed7aa; padding: 2px 8px; border-radius: 6px; font-size: 0.65em; font-weight: 600;">{{ book.page_count }} pages</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if books|length > 8 %}
+        <div style="text-align: center; margin-top: 16px;">
+            <div style="background: rgba(251,146,60,0.2); color: #fb923c; padding: 8px 16px; border-radius: 20px; font-size: 0.8em; font-weight: 600; display: inline-block;">+{{ books|length - 8 }} autres titres</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- ==================== SECTION LIVRES AUDIO ==================== -->
+    {% if audiobooks %}
+    <div style="padding: 30px 20px; background: linear-gradient(135deg, #581c87 0%, #7c3aed 100%);">
+        <div style="text-align: center; margin-bottom: 25px;">
+            <h2 style="font-size: clamp(1.6em, 5vw, 2.2em); font-weight: 900; margin: 0; background: linear-gradient(135deg, #d8b4fe 0%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px;">🎧 Livres Audio</h2>
+            <div style="background: linear-gradient(135deg, #d8b4fe, #c084fc); color: #3b0764; padding: 5px 14px; border-radius: 20px; font-size: 0.75em; font-weight: 700; display: inline-block; margin-top: 10px;">{{ audiobooks|length }} audiobook{{ 's' if audiobooks|length > 1 else '' }}</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            {% for audiobook in audiobooks[:8] %}
+            <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.1);">
+                <div style="display: flex; gap: 14px;">
+                    <!-- Couverture -->
+                    <div style="flex-shrink: 0;">
+                        {% if audiobook.cover_url %}
+                        <img src="{{ audiobook.cover_url }}" alt="{{ audiobook.title }}" style="width: 75px; height: 75px; object-fit: cover; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
+                        {% else %}
+                        <div style="width: 75px; height: 75px; background: linear-gradient(135deg, #d8b4fe, #c084fc); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.8em;">🎧</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Infos -->
+                    <div style="flex: 1; min-width: 0;">
+                        <h3 style="font-size: clamp(0.95em, 3.2vw, 1.1em); font-weight: 800; margin: 0 0 6px 0; color: #f8fafc; line-height: 1.2;">{{ audiobook.title }}</h3>
+
+                        <!-- Auteur & Narrateur -->
+                        {% if audiobook.author %}
+                        <div style="font-size: 0.75em; color: #e9d5ff; margin-bottom: 3px;">
+                            <span style="font-weight: 600;">Auteur:</span> {{ audiobook.author }}
+                        </div>
+                        {% endif %}
+                        {% if audiobook.narrator %}
+                        <div style="font-size: 0.75em; color: #d8b4fe; margin-bottom: 6px;">
+                            <span style="font-weight: 600;">Narrateur:</span> {{ audiobook.narrator }}
+                        </div>
+                        {% endif %}
+
+                        <!-- Métadonnées -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+                            {% if audiobook.series %}
+                            <span style="background: rgba(216,180,254,0.2); color: #e9d5ff; padding: 3px 8px; border-radius: 6px; font-size: 0.65em; font-weight: 600;">{{ audiobook.series }}{% if audiobook.series_sequence %} #{{ audiobook.series_sequence }}{% endif %}</span>
+                            {% endif %}
+                            {% if audiobook.duration and audiobook.duration > 0 %}
+                            <span style="background: rgba(192,132,252,0.2); color: #d8b4fe; padding: 3px 8px; border-radius: 6px; font-size: 0.65em; font-weight: 600;">{{ (audiobook.duration // 3600)|int }}h {{ ((audiobook.duration % 3600) // 60)|int }}m</span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Genres -->
+                        {% if audiobook.genres %}
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px;">
+                            {% for genre in audiobook.genres[:3] %}
+                            <span style="background: linear-gradient(135deg, rgba(192,132,252,0.15), rgba(139,92,246,0.15)); color: #d8b4fe; padding: 2px 8px; border-radius: 10px; font-size: 0.6em; font-weight: 600;">{{ genre }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Description -->
+                        {% if audiobook.description %}
+                        {% set clean_desc = audiobook.description|strip_html %}
+                        <p style="color: #a78bfa; font-size: 0.75em; line-height: 1.4; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ clean_desc[:200] }}{% if clean_desc|length > 200 %}...{% endif %}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if audiobooks|length > 8 %}
+        <div style="text-align: center; margin-top: 16px;">
+            <div style="background: rgba(216,180,254,0.2); color: #d8b4fe; padding: 8px 16px; border-radius: 20px; font-size: 0.8em; font-weight: 600; display: inline-block;">+{{ audiobooks|length - 8 }} autres audiobooks</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- ==================== SECTION STATISTIQUES ==================== -->
+    {% if real_stats %}
+    <div style="padding: 30px 20px; background: linear-gradient(135deg, #0f172a, #1e293b);">
+        <h2 style="font-size: clamp(1.6em, 5vw, 2em); font-weight: 900; margin: 0 0 20px 0; color: #ffffff; text-align: center;">📊 Statistiques</h2>
+
+        <!-- KPIs -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; margin-bottom: 24px;">
+            <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 1.8em; font-weight: 900; color: #60a5fa;">{{ real_stats.total_plays or 0 }}</div>
+                <div style="font-size: 0.75em; color: #94a3b8; margin-top: 4px;">Lectures</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; text-align: center;">
+                {% if real_stats.total_watch_time %}
+                <div style="font-size: 1.8em; font-weight: 900; color: #8b5cf6;">{{ (real_stats.total_watch_time // 60)|int }}h</div>
+                {% else %}
+                <div style="font-size: 1.8em; font-weight: 900; color: #8b5cf6;">0h</div>
+                {% endif %}
+                <div style="font-size: 0.75em; color: #94a3b8; margin-top: 4px;">Temps total</div>
+            </div>
+            <div style="background: rgba(255,255,255,0.05); padding: 16px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 1.8em; font-weight: 900; color: #f59e0b;">{{ real_stats.unique_users or 0 }}</div>
+                <div style="font-size: 0.75em; color: #94a3b8; margin-top: 4px;">Utilisateurs</div>
+            </div>
+        </div>
+
+        <!-- Top Films -->
+        {% if real_stats.top_movies_played %}
+        <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+            <h3 style="margin: 0 0 12px 0; font-size: 1em; color: #60a5fa; font-weight: 700;">🎬 Top Films</h3>
+            {% for movie in real_stats.top_movies_played[:5] %}
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; {% if not loop.last %}border-bottom: 1px solid rgba(255,255,255,0.1);{% endif %}">
+                <div style="background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; font-weight: 800; min-width: 28px; text-align: center;">{{ loop.index }}</div>
+                <div style="flex: 1; color: #f8fafc; font-size: 0.85em; font-weight: 600;">{{ movie.title }}</div>
+                <div style="color: #60a5fa; font-size: 0.8em; font-weight: 700;">{{ movie.plays }} vues</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Top Séries -->
+        {% if real_stats.top_shows_played %}
+        <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 16px;">
+            <h3 style="margin: 0 0 12px 0; font-size: 1em; color: #8b5cf6; font-weight: 700;">📺 Top Séries</h3>
+            {% for show in real_stats.top_shows_played[:5] %}
+            <div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; {% if not loop.last %}border-bottom: 1px solid rgba(255,255,255,0.1);{% endif %}">
+                <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; font-weight: 800; min-width: 28px; text-align: center;">{{ loop.index }}</div>
+                <div style="flex: 1; color: #f8fafc; font-size: 0.85em; font-weight: 600;">{{ show.title }}</div>
+                <div style="color: #8b5cf6; font-size: 0.8em; font-weight: 700;">{{ show.plays }} vues</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); color: white; padding: 20px 16px; text-align: center;">
+        <div style="font-size: 1em; font-weight: 700; margin-bottom: 6px; letter-spacing: 1px;">📬 NEWSLETTER MULTIMÉDIA</div>
+        <div style="font-size: 0.8em; opacity: 0.8; margin-bottom: 8px;">{{ now().strftime('%d %B %Y') }}</div>
+        <div style="font-size: 0.7em; opacity: 0.6; font-style: italic;">Généré automatiquement par Ghostarr • {{ now().strftime('%H:%M') }}</div>
+    </div>
+
+</div>
+
+</body>
+</html>

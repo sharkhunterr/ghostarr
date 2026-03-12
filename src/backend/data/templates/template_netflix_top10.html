@@ -1,0 +1,110 @@
+<!-- Template Netflix Top 10 - Focus classement avec gros numéros -->
+<div style="max-width: 100%; margin: 0 auto; background: #141414; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #fff;">
+
+    <!-- Header -->
+    <div style="background: #0a0a0a; padding: 25px 4%; border-bottom: 3px solid #e50914;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <div style="font-size: clamp(2em, 6vw, 3em); font-weight: 900; color: #e50914; letter-spacing: -2px;">TOP 10</div>
+                <div style="font-size: 1em; color: #999; margin-top: 5px;">Cette semaine sur votre serveur</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 0.9em; color: #666;">Semaine du</div>
+                <div style="font-size: 1.2em; font-weight: 700;">{{ now().strftime('%d %B %Y') }}</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Films avec gros numéros -->
+    {% if movies %}
+    <div style="padding: 40px 4%;">
+        <h2 style="margin: 0 0 30px 0; font-size: 1.5em; font-weight: 700; display: flex; align-items: center; gap: 15px;">
+            <span style="background: #e50914; padding: 8px 15px; border-radius: 4px;">🎬</span>
+            Top Films
+        </h2>
+
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            {% for movie in movies[:10] %}
+            <div style="display: flex; align-items: center; gap: 20px; background: linear-gradient(90deg, rgba(229,9,20,0.1) 0%, transparent 50%); padding: 15px; border-radius: 8px; border-left: 4px solid #e50914;">
+                <!-- Gros numéro -->
+                <div style="font-size: clamp(4em, 12vw, 6em); font-weight: 900; color: transparent; -webkit-text-stroke: 3px #e50914; line-height: 1; min-width: 80px; text-align: center;">
+                    {{ loop.index }}
+                </div>
+
+                <!-- Affiche -->
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 90px; height: 135px; object-fit: cover; border-radius: 6px; flex-shrink: 0;">
+                {% endif %}
+
+                <!-- Infos -->
+                <div style="flex: 1; min-width: 0;">
+                    <h3 style="margin: 0 0 8px 0; font-size: clamp(1.1em, 3vw, 1.4em); font-weight: 800;">{{ movie.title }}</h3>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 10px;">
+                        {% if movie.rating %}
+                        <span style="color: #46d369; font-weight: 700; font-size: 0.95em;">{{ (movie.rating * 10)|int }}% Match</span>
+                        {% endif %}
+                        <span style="color: #999; font-size: 0.9em;">{{ movie.year }}</span>
+                        {% if movie.duration %}
+                        <span style="color: #999; font-size: 0.9em;">{{ format_duration(movie.duration) }}</span>
+                        {% endif %}
+                    </div>
+                    {% if movie.genres %}
+                    <div style="font-size: 0.85em; color: #888;">{{ movie.genres[:3]|join(' • ') }}</div>
+                    {% endif %}
+                </div>
+
+                <!-- Tendance -->
+                <div style="text-align: center; flex-shrink: 0;">
+                    {% if loop.index <= 3 %}
+                    <div style="font-size: 2em;">🔥</div>
+                    <div style="font-size: 0.7em; color: #e50914; font-weight: 700;">HOT</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Top Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 40px 4%; background: #0a0a0a;">
+        <h2 style="margin: 0 0 30px 0; font-size: 1.5em; font-weight: 700; display: flex; align-items: center; gap: 15px;">
+            <span style="background: #e50914; padding: 8px 15px; border-radius: 4px;">📺</span>
+            Top Séries
+        </h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            {% if loop.index <= 10 %}
+            <div style="background: #1a1a1a; border-radius: 8px; overflow: hidden; position: relative;">
+                <!-- Numéro en overlay -->
+                <div style="position: absolute; top: 10px; left: 10px; font-size: 3em; font-weight: 900; color: transparent; -webkit-text-stroke: 2px #e50914; z-index: 2;">{{ loop.index }}</div>
+
+                <div style="display: flex; height: 150px;">
+                    {% if episodes[0].poster_url %}
+                    <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 100px; height: 100%; object-fit: cover;">
+                    {% endif %}
+                    <div style="flex: 1; padding: 15px; display: flex; flex-direction: column; justify-content: center;">
+                        <h3 style="margin: 0 0 10px 0; font-size: 1.1em; font-weight: 700; line-height: 1.2;">{{ series_title }}</h3>
+                        <div style="background: #e50914; color: #fff; padding: 4px 10px; font-size: 0.75em; font-weight: 700; display: inline-block; border-radius: 3px; width: fit-content;">
+                            +{{ episodes|length }} nouveaux
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="padding: 30px 4%; text-align: center; background: #141414; border-top: 1px solid #333;">
+        <div style="font-size: 1.5em; font-weight: 900; color: #e50914; margin-bottom: 10px;">TOP 10</div>
+        <p style="margin: 0; font-size: 0.85em; color: #666;">
+            Mis à jour le {{ now().strftime('%d/%m/%Y à %H:%M') }}
+        </p>
+    </div>
+
+</div>

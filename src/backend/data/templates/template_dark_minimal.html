@@ -1,0 +1,84 @@
+<!-- Template Dark Minimal - Sombre et épuré -->
+<div style="max-width: 700px; margin: 0 auto; background: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; color: #fafafa; padding: 50px 40px;">
+
+    <!-- Header ultra minimal -->
+    <header style="margin-bottom: 60px;">
+        <h1 style="margin: 0; font-size: 1.8em; font-weight: 500; letter-spacing: -0.01em;">Nouveautés</h1>
+        <p style="margin: 12px 0 0 0; font-size: 0.9em; color: #525252;">{{ now().strftime('%d %B %Y') }}</p>
+    </header>
+
+    <!-- Films -->
+    {% if movies %}
+    <section style="margin-bottom: 50px;">
+        <h2 style="margin: 0 0 30px 0; font-size: 0.75em; font-weight: 500; color: #525252; text-transform: uppercase; letter-spacing: 1.5px;">Films</h2>
+
+        {% for movie in movies %}
+        <article style="display: flex; gap: 25px; padding: 25px 0; border-top: 1px solid #1a1a1a; {% if loop.last %}border-bottom: 1px solid #1a1a1a;{% endif %}">
+            {% if movie.poster_url %}
+            <img src="{{ movie.poster_url }}" style="width: 80px; height: 120px; object-fit: cover; border-radius: 4px; flex-shrink: 0;">
+            {% endif %}
+
+            <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                <h3 style="margin: 0 0 8px 0; font-size: 1.1em; font-weight: 500;">{{ movie.title }}</h3>
+                <div style="display: flex; gap: 15px; font-size: 0.85em; color: #737373;">
+                    <span>{{ movie.year }}</span>
+                    {% if movie.rating %}<span>{{ movie.rating }}/10</span>{% endif %}
+                    {% if movie.duration %}<span>{{ format_duration(movie.duration) }}</span>{% endif %}
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- Series -->
+    {% if shows_grouped %}
+    <section style="margin-bottom: 50px;">
+        <h2 style="margin: 0 0 30px 0; font-size: 0.75em; font-weight: 500; color: #525252; text-transform: uppercase; letter-spacing: 1.5px;">Séries</h2>
+
+        {% for series_title, episodes in shows_grouped.items() %}
+        <article style="padding: 20px 0; border-top: 1px solid #1a1a1a; {% if loop.last %}border-bottom: 1px solid #1a1a1a;{% endif %}">
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <h3 style="margin: 0; font-size: 1em; font-weight: 500;">{{ series_title }}</h3>
+                <span style="font-size: 0.85em; color: #737373;">{{ episodes|length }} épisode{% if episodes|length > 1 %}s{% endif %}</span>
+            </div>
+            <p style="margin: 10px 0 0 0; font-size: 0.85em; color: #525252;">
+                {% for episode in episodes[:4] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %}, {% endif %}{% endfor %}{% if episodes|length > 4 %}...{% endif %}
+            </p>
+        </article>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- Games -->
+    {% if games %}
+    <section style="margin-bottom: 50px;">
+        <h2 style="margin: 0 0 25px 0; font-size: 0.75em; font-weight: 500; color: #525252; text-transform: uppercase; letter-spacing: 1.5px;">Jeux</h2>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            {% for game in games %}
+            <span style="background: #141414; padding: 10px 16px; border-radius: 6px; font-size: 0.9em; color: #a3a3a3;">{{ game.name }}</span>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Books -->
+    {% if books %}
+    <section style="margin-bottom: 50px;">
+        <h2 style="margin: 0 0 25px 0; font-size: 0.75em; font-weight: 500; color: #525252; text-transform: uppercase; letter-spacing: 1.5px;">Livres</h2>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+            {% for book in books %}
+            <span style="background: #141414; padding: 10px 16px; border-radius: 6px; font-size: 0.9em; color: #a3a3a3;">{{ book.name }}</span>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer style="padding-top: 30px; border-top: 1px solid #1a1a1a;">
+        <p style="margin: 0; font-size: 0.8em; color: #404040;">{{ now().strftime('%d/%m/%Y %H:%M') }}</p>
+    </footer>
+
+</div>

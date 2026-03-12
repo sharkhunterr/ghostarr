@@ -1,0 +1,133 @@
+<!-- Template Disco - Style années 70/80 boule à facettes -->
+<div style="max-width: 100%; margin: 0 auto; background: linear-gradient(135deg, #1a0033 0%, #330066 50%, #660099 100%); font-family: 'Arial Black', Impact, sans-serif; color: #fff; overflow: hidden;">
+
+    <!-- Boule disco header -->
+    <div style="text-align: center; padding: 50px 20px; position: relative; overflow: hidden;">
+        <!-- Rayons lumineux -->
+        <div style="position: absolute; top: 50%; left: 50%; width: 600px; height: 600px; transform: translate(-50%, -50%); background: conic-gradient(from 0deg, transparent, rgba(255,0,255,0.3), transparent, rgba(0,255,255,0.3), transparent, rgba(255,255,0,0.3), transparent, rgba(255,0,255,0.3)); opacity: 0.5;"></div>
+
+        <!-- Boule disco -->
+        <div style="width: 120px; height: 120px; margin: 0 auto 20px; background: radial-gradient(circle at 30% 30%, #fff, #ccc, #999, #666); border-radius: 50%; position: relative; box-shadow: 0 0 50px rgba(255,255,255,0.5);">
+            <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 3em;">🪩</div>
+        </div>
+
+        <h1 style="margin: 0; font-size: clamp(2.5em, 8vw, 4em); background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: none; letter-spacing: 3px;">
+            DISCO NIGHT
+        </h1>
+        <p style="margin: 15px 0 0 0; font-size: 1.2em; color: #ff69b4; text-transform: uppercase; letter-spacing: 5px;">
+            Newsletter du {{ now().strftime('%d/%m/%Y') }}
+        </p>
+    </div>
+
+    <!-- Films - Vinyles -->
+    {% if movies %}
+    <div style="padding: 40px 4%; background: rgba(0,0,0,0.3);">
+        <h2 style="margin: 0 0 30px 0; text-align: center; font-size: 2em; color: #ff00ff; text-shadow: 0 0 20px #ff00ff; letter-spacing: 5px;">
+            🎬 HITS FILMS 🎬
+        </h2>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center;">
+            {% for movie in movies[:8] %}
+            <!-- Vinyle -->
+            <div style="position: relative; width: 200px;">
+                <!-- Pochette -->
+                <div style="position: relative; width: 200px; height: 200px; background: linear-gradient(135deg, #333, #111); border-radius: 5px; overflow: hidden; box-shadow: 5px 5px 20px rgba(0,0,0,0.5);">
+                    {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% endif %}
+
+                    <!-- Disque qui dépasse -->
+                    <div style="position: absolute; top: 20px; right: -30px; width: 160px; height: 160px; background: radial-gradient(circle, #1a1a1a 0%, #1a1a1a 30%, #333 31%, #1a1a1a 32%, #1a1a1a 50%, #444 51%, #1a1a1a 52%, #1a1a1a 70%, #333 71%, #1a1a1a 72%); border-radius: 50%; box-shadow: 0 5px 20px rgba(0,0,0,0.5);">
+                        <!-- Label central -->
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 50px; height: 50px; background: linear-gradient(135deg, #ff00ff, #00ffff); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <div style="width: 8px; height: 8px; background: #333; border-radius: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Infos -->
+                <div style="margin-top: 15px; text-align: center;">
+                    <div style="font-size: 1em; font-weight: bold; color: #fff; text-shadow: 0 0 10px #ff00ff;">{{ movie.title[:25] }}{% if movie.title|length > 25 %}...{% endif %}</div>
+                    <div style="font-size: 0.85em; color: #00ffff;">{{ movie.year }}{% if movie.rating %} ★ {{ movie.rating }}{% endif %}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Bande lumineuse -->
+    <div style="height: 10px; background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00, #ff00ff, #00ffff); background-size: 200% 100%; animation: disco-lights 2s linear infinite;"></div>
+
+    <!-- Séries - Cassettes audio style -->
+    {% if shows_grouped %}
+    <div style="padding: 40px 4%;">
+        <h2 style="margin: 0 0 30px 0; text-align: center; font-size: 2em; color: #00ffff; text-shadow: 0 0 20px #00ffff; letter-spacing: 5px;">
+            📺 SÉRIES TOP 📺
+        </h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <!-- Cassette audio -->
+            <div style="background: linear-gradient(180deg, #444 0%, #222 50%, #333 100%); border-radius: 10px; padding: 15px; position: relative;">
+                <!-- Fenêtre cassette -->
+                <div style="background: #111; border-radius: 5px; padding: 12px; display: flex; gap: 15px; align-items: center;">
+                    <!-- Bobines -->
+                    <div style="display: flex; gap: 10px;">
+                        <div style="width: 35px; height: 35px; background: radial-gradient(circle, #666 0%, #333 50%, #666 51%, #444 100%); border-radius: 50%;"></div>
+                        <div style="width: 35px; height: 35px; background: radial-gradient(circle, #666 0%, #333 50%, #666 51%, #444 100%); border-radius: 50%;"></div>
+                    </div>
+
+                    <div style="flex: 1;">
+                        <div style="font-size: 0.95em; font-weight: bold; color: #fff;">{{ series_title[:20] }}{% if series_title|length > 20 %}...{% endif %}</div>
+                        <div style="font-size: 0.8em; color: #ff69b4;">{{ episodes|length }} épisodes</div>
+                    </div>
+                </div>
+
+                <!-- Label -->
+                <div style="background: linear-gradient(135deg, #ff00ff, #ff69b4); margin-top: 12px; padding: 8px 15px; border-radius: 3px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.8em; font-weight: bold; color: #1a0033;">SIDE A</span>
+                    <span style="font-size: 0.75em; color: #1a0033;">
+                        {% for episode in episodes[:3] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %} {% endif %}{% endfor %}
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Jeux - Style arcade -->
+    {% if games %}
+    <div style="padding: 40px 4%; background: rgba(0,0,0,0.3);">
+        <h2 style="margin: 0 0 30px 0; text-align: center; font-size: 2em; color: #ffff00; text-shadow: 0 0 20px #ffff00; letter-spacing: 5px;">
+            🎮 ARCADE ZONE 🎮
+        </h2>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+            {% for game in games[:6] %}
+            <div style="background: linear-gradient(180deg, #000 0%, #1a1a1a 100%); border: 3px solid #ffff00; border-radius: 10px; padding: 15px; width: 140px; text-align: center; box-shadow: 0 0 20px rgba(255,255,0,0.3);">
+                {% if game.cover_url %}
+                <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; height: 160px; object-fit: cover; border-radius: 5px; margin-bottom: 10px;">
+                {% else %}
+                <div style="width: 100%; height: 160px; background: linear-gradient(135deg, #330066, #660099); border-radius: 5px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-size: 3em;">🕹️</div>
+                {% endif %}
+                <div style="font-size: 0.85em; font-weight: bold; color: #ffff00;">{{ game.name[:18] }}{% if game.name|length > 18 %}...{% endif %}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer disco -->
+    <div style="padding: 40px 20px; text-align: center; background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.5) 100%);">
+        <div style="font-size: 3em; margin-bottom: 15px;">🪩 🕺 💃 🪩</div>
+        <p style="margin: 0; font-size: 1.1em; color: #ff69b4; letter-spacing: 3px;">
+            STAY GROOVY!
+        </p>
+        <p style="margin: 15px 0 0 0; font-size: 0.85em; color: #666;">
+            {{ now().strftime('%d/%m/%Y à %H:%M') }}
+        </p>
+    </div>
+
+</div>

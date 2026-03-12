@@ -1,0 +1,160 @@
+<!-- Template Art Déco - Style années 1920 glamour -->
+<div style="max-width: 800px; margin: 0 auto; background: linear-gradient(180deg, #1a1a2e 0%, #0f0f1a 100%); font-family: 'Playfair Display', 'Georgia', serif; color: #d4af37; overflow: hidden; border: 3px solid #d4af37;">
+
+    <!-- Header Art Déco -->
+    <div style="padding: 50px 30px; text-align: center; position: relative; background: linear-gradient(180deg, rgba(212,175,55,0.1) 0%, transparent 100%);">
+        <!-- Motif géométrique haut -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 30px; background: repeating-linear-gradient(90deg, transparent 0px, transparent 20px, #d4af37 20px, #d4af37 22px, transparent 22px, transparent 40px); opacity: 0.5;"></div>
+
+        <!-- Lignes décoratives -->
+        <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 20px;">
+            <div style="width: 80px; height: 2px; background: linear-gradient(90deg, transparent, #d4af37);"></div>
+            <div style="font-size: 2em;">◆</div>
+            <div style="width: 80px; height: 2px; background: linear-gradient(90deg, #d4af37, transparent);"></div>
+        </div>
+
+        <h1 style="margin: 0; font-size: 3em; font-weight: 400; letter-spacing: 8px; text-transform: uppercase;">
+            Cinéma
+        </h1>
+        <div style="font-size: 1.2em; letter-spacing: 5px; margin-top: 10px; color: #fff;">
+            ─── GAZETTE ───
+        </div>
+        <div style="font-size: 0.9em; margin-top: 20px; color: #888; letter-spacing: 2px;">
+            {{ now().strftime('%d %B %Y') }}
+        </div>
+
+        <!-- Motif géométrique bas -->
+        <div style="display: flex; justify-content: center; gap: 10px; margin-top: 30px;">
+            <div style="width: 30px; height: 30px; border: 2px solid #d4af37; transform: rotate(45deg);"></div>
+            <div style="width: 30px; height: 30px; background: #d4af37; transform: rotate(45deg);"></div>
+            <div style="width: 30px; height: 30px; border: 2px solid #d4af37; transform: rotate(45deg);"></div>
+        </div>
+    </div>
+
+    <!-- Films - Style affiche Art Déco -->
+    {% if movies %}
+    <div style="padding: 40px 30px;">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <div style="display: inline-block; border: 2px solid #d4af37; padding: 15px 50px; position: relative;">
+                <h2 style="margin: 0; font-size: 1.5em; font-weight: 400; letter-spacing: 5px;">À L'AFFICHE</h2>
+                <!-- Coins décoratifs -->
+                <div style="position: absolute; top: -5px; left: -5px; width: 15px; height: 15px; border-top: 2px solid #d4af37; border-left: 2px solid #d4af37;"></div>
+                <div style="position: absolute; top: -5px; right: -5px; width: 15px; height: 15px; border-top: 2px solid #d4af37; border-right: 2px solid #d4af37;"></div>
+                <div style="position: absolute; bottom: -5px; left: -5px; width: 15px; height: 15px; border-bottom: 2px solid #d4af37; border-left: 2px solid #d4af37;"></div>
+                <div style="position: absolute; bottom: -5px; right: -5px; width: 15px; height: 15px; border-bottom: 2px solid #d4af37; border-right: 2px solid #d4af37;"></div>
+            </div>
+        </div>
+
+        <!-- Film principal en grand -->
+        {% if movies|length > 0 %}
+        {% set featured = movies[0] %}
+        <div style="display: flex; gap: 30px; margin-bottom: 50px; padding: 30px; border: 1px solid rgba(212,175,55,0.3); background: linear-gradient(135deg, rgba(212,175,55,0.05) 0%, transparent 100%);">
+            {% if featured.poster_url %}
+            <div style="flex-shrink: 0; border: 3px solid #d4af37; padding: 5px; background: #0f0f1a;">
+                <img src="{{ featured.poster_url }}" alt="{{ featured.title }}" style="width: 200px; height: 300px; object-fit: cover; display: block;">
+            </div>
+            {% endif %}
+            <div style="flex: 1;">
+                <h3 style="margin: 0 0 20px 0; font-size: 2em; font-weight: 400; color: #fff; letter-spacing: 2px;">{{ featured.title }}</h3>
+
+                {% if featured.tagline %}
+                <p style="margin: 0 0 20px 0; font-size: 1.2em; font-style: italic; color: #d4af37;">
+                    « {{ featured.tagline }} »
+                </p>
+                {% endif %}
+
+                <div style="display: flex; gap: 20px; margin-bottom: 20px; font-size: 0.9em; color: #888;">
+                    <span>{{ featured.year }}</span>
+                    {% if featured.duration %}<span>{{ format_duration(featured.duration) }}</span>{% endif %}
+                    {% if featured.rating %}<span style="color: #d4af37;">★ {{ featured.rating }}</span>{% endif %}
+                </div>
+
+                {% if featured.summary %}
+                <p style="margin: 0; font-size: 1em; color: #ccc; line-height: 1.8; font-family: Georgia, serif;">
+                    {{ truncate_text(featured.summary, 300) }}
+                </p>
+                {% endif %}
+
+                {% if featured.director %}
+                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(212,175,55,0.3);">
+                    <span style="color: #888;">Réalisation :</span> <span style="color: #d4af37;">{{ featured.director }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Autres films -->
+        {% if movies|length > 1 %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 25px;">
+            {% for movie in movies[1:] %}
+            <div style="text-align: center;">
+                <div style="border: 2px solid #d4af37; padding: 3px; margin-bottom: 15px;">
+                    {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 200px; object-fit: cover; display: block; filter: sepia(20%);">
+                    {% endif %}
+                </div>
+                <h4 style="margin: 0 0 5px 0; font-size: 0.95em; font-weight: 400; color: #fff;">{{ movie.title[:20] }}{% if movie.title|length > 20 %}...{% endif %}</h4>
+                <div style="font-size: 0.8em; color: #888;">{{ movie.year }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 40px 30px; background: rgba(212,175,55,0.05);">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="font-size: 1.3em; letter-spacing: 5px; color: #d4af37;">◇ FEUILLETONS ◇</div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 20px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="display: flex; gap: 20px; padding: 20px; border: 1px solid rgba(212,175,55,0.3);">
+                {% if episodes[0].poster_url %}
+                <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 80px; height: 120px; object-fit: cover; border: 2px solid #d4af37;">
+                {% endif %}
+                <div style="flex: 1;">
+                    <h4 style="margin: 0 0 10px 0; font-size: 1.2em; font-weight: 400; color: #fff;">{{ series_title }}</h4>
+                    <div style="font-size: 0.9em; color: #d4af37; margin-bottom: 10px;">{{ episodes|length }} nouveaux épisodes</div>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        {% for episode in episodes[:4] %}
+                        <span style="border: 1px solid #d4af37; padding: 3px 10px; font-size: 0.8em;">
+                            S{{ "%02d"|format(episode.season_number or 0) }} E{{ "%02d"|format(episode.episode_number or 0) }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer Art Déco -->
+    <div style="padding: 40px 30px; text-align: center; border-top: 2px solid #d4af37;">
+        <!-- Motif sunburst -->
+        <div style="margin-bottom: 20px;">
+            <div style="display: inline-block; position: relative; padding: 20px;">
+                <div style="position: absolute; top: 50%; left: 50%; width: 60px; height: 60px; border: 2px solid #d4af37; transform: translate(-50%, -50%) rotate(45deg);"></div>
+                <div style="position: absolute; top: 50%; left: 50%; width: 40px; height: 40px; background: #d4af37; transform: translate(-50%, -50%) rotate(45deg);"></div>
+                <span style="position: relative; z-index: 2; font-size: 1.5em; color: #0f0f1a;">★</span>
+            </div>
+        </div>
+
+        <div style="font-size: 0.9em; color: #888; letter-spacing: 2px;">
+            {{ now().strftime('%d/%m/%Y') }}
+        </div>
+        <div style="margin-top: 20px; display: flex; justify-content: center; gap: 5px;">
+            {% for i in range(7) %}
+            <div style="width: 8px; height: 20px; background: #d4af37; opacity: {{ 0.3 + (i * 0.1) }};"></div>
+            {% endfor %}
+            {% for i in range(6) %}
+            <div style="width: 8px; height: 20px; background: #d4af37; opacity: {{ 0.9 - (i * 0.1) }};"></div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>

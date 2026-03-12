@@ -1,0 +1,182 @@
+<div style="max-width: 800px; margin: 0 auto; background: #1a1a1a; color: #ffffff; font-family: Arial, sans-serif; border-radius: 10px; overflow: hidden;">
+    
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #e5a00d, #f4b942); color: #1a1a1a; padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 2.5em;">🎬 Newsletter Plex</h1>
+        <p style="margin: 10px 0 0 0; font-size: 1.2em;">Semaine du {{ now().strftime('%d/%m/%Y') }}</p>
+    </div>
+    
+    <!-- Stats Rapides -->
+    {% if real_stats %}
+    <div style="padding: 20px 30px; background: #2a2a2a; border-bottom: 1px solid #444;">
+        <div style="display: flex; justify-content: space-around; text-align: center;">
+            <div>
+                <div style="font-size: 2em; color: #e5a00d; font-weight: bold;">{{ real_stats.total_plays or 0 }}</div>
+                <div style="font-size: 0.9em; color: #ccc;">Lectures</div>
+            </div>
+            <div>
+                <div style="font-size: 2em; color: #e5a00d; font-weight: bold;">
+                    {% if real_stats.total_watch_time %}{{ (real_stats.total_watch_time|int // 60) }}h{% else %}0h{% endif %}
+                </div>
+                <div style="font-size: 0.9em; color: #ccc;">Visionnage</div>
+            </div>
+            <div>
+                <div style="font-size: 2em; color: #e5a00d; font-weight: bold;">{{ real_stats.total_viewers or 0 }}</div>
+                <div style="font-size: 0.9em; color: #ccc;">Spectateurs</div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Film Vedette -->
+    {% if show_featured_movie and featured_movie %}
+    <div style="padding: 30px; background: #333; border-bottom: 2px solid #e5a00d;">
+        <h2 style="color: #e5a00d; font-size: 1.8em; text-align: center; margin-bottom: 20px;">
+            ⭐ Film en Vedette
+        </h2>
+        
+        <div style="background: #2a2a2a; border-radius: 10px; display: flex; overflow: hidden; border: 1px solid #555;">
+            <img src="{{ featured_movie.poster_url }}" alt="{{ featured_movie.title }}" style="width: 160px; height: 240px; object-fit: cover;">
+            <div style="padding: 25px; flex: 1;">
+                <h3 style="color: #ffffff; font-size: 1.6em; margin: 0 0 8px 0;">{{ featured_movie.title }}</h3>
+                {% if featured_movie.tagline %}
+                <p style="color: #e5a00d; font-style: italic; margin: 0 0 15px 0;">{{ featured_movie.tagline }}</p>
+                {% endif %}
+                
+                <div style="color: #cccccc; font-size: 0.9em; margin-bottom: 15px;">
+                    <span>📅 {{ featured_movie.year }}</span> • 
+                    <span>⏱️ {{ format_duration(featured_movie.duration) }}</span>
+                    {% if featured_movie.rating %} • <span>⭐ {{ featured_movie.rating }}</span>{% endif %}
+                    {% if featured_movie.content_rating %} • <span>🎬 {{ featured_movie.content_rating }}</span>{% endif %}
+                </div>
+                
+                {% if featured_movie.director %}
+                <div style="color: #ccc; font-size: 0.9em; margin-bottom: 10px;">
+                    <strong style="color: #e5a00d;">Réalisé par :</strong> {{ featured_movie.director }}
+                </div>
+                {% endif %}
+                
+                {% if featured_movie.cast %}
+                <div style="color: #ccc; font-size: 0.9em; margin-bottom: 15px;">
+                    <strong style="color: #e5a00d;">Avec :</strong> {{ format_cast_list(featured_movie.cast, 3) }}
+                </div>
+                {% endif %}
+                
+                {% if featured_movie.genres %}
+                <div style="color: #e5a00d; font-size: 0.9em; margin-bottom: 15px;">
+                    🎭 {{ featured_movie.genres|join(' / ') }}
+                </div>
+                {% endif %}
+                
+                {% if featured_movie.summary %}
+                <p style="color: #dddddd; line-height: 1.5; margin: 0;">{{ featured_movie.summary }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Section Films -->
+    {% if movies %}
+    <div style="padding: 30px; background: #2a2a2a;">
+        <h2 style="color: #e5a00d; font-size: 2em; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #e5a00d; padding-bottom: 10px;">
+            🎬 Films Récemment Ajoutés
+            <span style="background: #e5a00d; color: #1a1a1a; padding: 5px 10px; border-radius: 15px; font-size: 0.6em; margin-left: 10px;">{{ movies|length }} FILM{{ 'S' if movies|length > 1 else '' }}</span>
+        </h2>
+        
+        {% for movie in movies %}
+        <div style="background: #333; border-radius: 10px; margin-bottom: 20px; display: flex; overflow: hidden; border: 1px solid #555;">
+            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 140px; height: 200px; object-fit: cover;">
+            <div style="padding: 20px; flex: 1;">
+                <h3 style="color: #ffffff; font-size: 1.4em; margin: 0 0 8px 0;">{{ movie.title }}</h3>
+                {% if movie.tagline %}
+                <p style="color: #e5a00d; font-style: italic; margin: 0 0 12px 0;">{{ movie.tagline }}</p>
+                {% endif %}
+                
+                <div style="color: #cccccc; font-size: 0.9em; margin-bottom: 15px;">
+                    <span>📅 {{ movie.year }}</span> • 
+                    <span>⏱️ {{ format_duration(movie.duration) }}</span>
+                    {% if movie.rating %} • <span>⭐ {{ movie.rating }}</span>{% endif %}
+                    {% if movie.content_rating %} • <span>🎬 {{ movie.content_rating }}</span>{% endif %}
+                </div>
+                
+                {% if movie.director %}
+                <div style="color: #ccc; font-size: 0.9em; margin-bottom: 8px;">
+                    <strong style="color: #e5a00d;">Réalisé par :</strong> {{ movie.director }}
+                </div>
+                {% endif %}
+                
+                {% if movie.cast %}
+                <div style="color: #ccc; font-size: 0.9em; margin-bottom: 12px;">
+                    <strong style="color: #e5a00d;">Avec :</strong> {{ format_cast_list(movie.cast, 2) }}
+                </div>
+                {% endif %}
+                
+                {% if movie.genres %}
+                <div style="color: #e5a00d; font-size: 0.9em; margin-bottom: 12px;">
+                    🎭 {{ movie.genres[:3]|join(' / ') }}
+                </div>
+                {% endif %}
+                
+                {% if movie.summary %}
+                <p style="color: #dddddd; line-height: 1.5; margin: 0;">{{ truncate_text(movie.summary, 200) }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Section Séries -->
+    {% if shows %}
+    <div style="padding: 30px; background: #2a2a2a;">
+        <h2 style="color: #e5a00d; font-size: 2em; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #e5a00d; padding-bottom: 10px;">
+            📺 Séries Récemment Ajoutées
+            <span style="background: #e5a00d; color: #1a1a1a; padding: 5px 10px; border-radius: 15px; font-size: 0.6em; margin-left: 10px;">{{ shows_grouped|length }} SÉRIE{{ 'S' if shows_grouped|length > 1 else '' }}</span>
+        </h2>
+        
+        {% for series_title, episodes in shows_grouped.items() %}
+        <div style="background: #333; border-radius: 10px; margin-bottom: 20px; display: flex; overflow: hidden; border: 1px solid #555;">
+            <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 140px; height: 200px; object-fit: cover;">
+            <div style="padding: 20px; flex: 1;">
+                <h3 style="color: #ffffff; font-size: 1.4em; margin: 0 0 8px 0;">{{ series_title }}</h3>
+                
+                <div style="background: #e5a00d; color: #1a1a1a; padding: 4px 8px; border-radius: 6px; font-size: 0.8em; margin-bottom: 8px; display: inline-block; font-weight: bold;">
+                    {{ episodes|length }} épisode{{ 's' if episodes|length > 1 else '' }}
+                </div>
+                
+                <p style="color: #e5a00d; font-style: italic; margin: 0 0 12px 0;">
+                    {% for episode in episodes[:3] %}
+                        S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %} • {% endif %}
+                    {% endfor %}
+                    {% if episodes|length > 3 %} • ...{% endif %}
+                </p>
+                
+                <div style="color: #cccccc; font-size: 0.9em; margin-bottom: 15px;">
+                    {% if episodes[0].year %}<span>📅 {{ episodes[0].year }}</span>{% endif %}
+                    {% if episodes[0].rating %} • <span>⭐ {{ episodes[0].rating }}</span>{% endif %}
+                    {% if episodes[0].content_rating %} • <span>🎬 {{ episodes[0].content_rating }}</span>{% endif %}
+                </div>
+                
+                {% if episodes[0].genres %}
+                <div style="color: #e5a00d; font-size: 0.9em; margin-bottom: 12px;">
+                    🎭 {{ episodes[0].genres[:3]|join(' / ') }}
+                </div>
+                {% endif %}
+                
+                {% if episodes[0].summary %}
+                <p style="color: #dddddd; line-height: 1.5; margin: 0;">{{ truncate_text(episodes[0].summary, 200) }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    
+    <!-- Footer -->
+    <div style="background: #0d0d0d; color: #888; padding: 20px; text-align: center; border-top: 1px solid #333;">
+        <p style="margin: 0 0 5px 0;">📡 Newsletter générée automatiquement depuis votre serveur Plex</p>
+        <p style="margin: 0;">⏰ Générée le {{ now().strftime('%d/%m/%Y à %H:%M') }}</p>
+    </div>
+    
+</div>

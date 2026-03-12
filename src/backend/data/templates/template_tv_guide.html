@@ -1,0 +1,212 @@
+<!-- Template TV Guide - Style programme télé vintage -->
+<div style="max-width: 800px; margin: 0 auto; background: #fff; font-family: Arial, sans-serif; overflow: hidden; border: 2px solid #003366;">
+
+    <!-- Header TV Guide -->
+    <div style="background: linear-gradient(180deg, #003366 0%, #001a33 100%); padding: 20px; display: flex; align-items: center; gap: 20px;">
+        <div style="background: #fff; padding: 10px 20px; border-radius: 5px;">
+            <div style="font-size: 2em; font-weight: bold; color: #003366;">TV</div>
+            <div style="font-size: 0.7em; color: #cc0000; font-weight: bold; letter-spacing: 1px;">GUIDE</div>
+        </div>
+        <div style="flex: 1; color: #fff;">
+            <h1 style="margin: 0; font-size: 1.8em; font-weight: normal;">Programme de la Semaine</h1>
+            <p style="margin: 5px 0 0 0; font-size: 0.9em; opacity: 0.8;">
+                Du {{ now().strftime('%d/%m') }} au {{ (now() + timedelta(days=7)).strftime('%d/%m/%Y') if timedelta else now().strftime('%d/%m/%Y') }}
+            </p>
+        </div>
+        <div style="text-align: right; color: #fff;">
+            <div style="font-size: 2em; font-weight: bold;">N°{{ now().strftime('%W') }}</div>
+            <div style="font-size: 0.8em; opacity: 0.8;">{{ now().strftime('%Y') }}</div>
+        </div>
+    </div>
+
+    <!-- Bandeau d'actu -->
+    <div style="background: #cc0000; padding: 8px 20px; color: #fff; font-size: 0.85em; text-align: center;">
+        📺 {{ movies|length if movies else 0 }} films + {{ shows_grouped|length if shows_grouped else 0 }} séries à ne pas manquer cette semaine !
+    </div>
+
+    <!-- À la une - Film principal -->
+    {% if movies and movies|length > 0 %}
+    {% set featured = movies[0] %}
+    <div style="padding: 25px; background: #f5f5f5; border-bottom: 3px solid #003366;">
+        <div style="display: flex; gap: 20px;">
+            {% if featured.poster_url %}
+            <div style="flex-shrink: 0; position: relative;">
+                <img src="{{ featured.poster_url }}" alt="{{ featured.title }}" style="width: 150px; height: 225px; object-fit: cover; box-shadow: 3px 3px 10px rgba(0,0,0,0.2);">
+                <div style="position: absolute; top: -10px; left: -10px; background: #cc0000; color: #fff; padding: 5px 10px; font-size: 0.75em; font-weight: bold; transform: rotate(-5deg);">
+                    ÉVÉNEMENT
+                </div>
+            </div>
+            {% endif %}
+            <div style="flex: 1;">
+                <div style="font-size: 0.75em; color: #003366; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">★ Notre sélection de la semaine ★</div>
+                <h2 style="margin: 0 0 10px 0; font-size: 1.8em; color: #003366;">{{ featured.title }}</h2>
+
+                {% if featured.tagline %}
+                <p style="margin: 0 0 15px 0; font-size: 1em; font-style: italic; color: #666;">{{ featured.tagline }}</p>
+                {% endif %}
+
+                <div style="display: flex; flex-wrap: wrap; gap: 15px; margin-bottom: 15px; font-size: 0.9em;">
+                    <span style="background: #003366; color: #fff; padding: 3px 10px;">{{ featured.year }}</span>
+                    {% if featured.duration %}<span style="color: #666;">⏱️ {{ format_duration(featured.duration) }}</span>{% endif %}
+                    {% if featured.rating %}<span style="color: #cc0000; font-weight: bold;">★ {{ featured.rating }}/10</span>{% endif %}
+                </div>
+
+                {% if featured.director %}
+                <p style="margin: 0 0 10px 0; font-size: 0.9em; color: #444;">
+                    <strong>Réalisation :</strong> {{ featured.director }}
+                </p>
+                {% endif %}
+
+                {% if featured.cast %}
+                <p style="margin: 0 0 10px 0; font-size: 0.9em; color: #444;">
+                    <strong>Avec :</strong> {{ format_cast_list(featured.cast, 4) }}
+                </p>
+                {% endif %}
+
+                {% if featured.summary %}
+                <p style="margin: 0; font-size: 0.9em; color: #555; line-height: 1.6;">{{ truncate_text(featured.summary, 250) }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Grille des programmes - Films -->
+    {% if movies and movies|length > 1 %}
+    <div style="padding: 20px;">
+        <h3 style="margin: 0 0 15px 0; font-size: 1.1em; color: #003366; border-bottom: 2px solid #003366; padding-bottom: 8px;">
+            🎬 FILMS DE LA SEMAINE
+        </h3>
+
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+            <thead>
+                <tr style="background: #003366; color: #fff;">
+                    <th style="padding: 10px; text-align: left; width: 70px;">Horaire</th>
+                    <th style="padding: 10px; text-align: left;">Programme</th>
+                    <th style="padding: 10px; text-align: center; width: 80px;">Durée</th>
+                    <th style="padding: 10px; text-align: center; width: 60px;">Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for movie in movies[1:8] %}
+                <tr style="background: {{ '#f9f9f9' if loop.index % 2 == 0 else '#fff' }}; border-bottom: 1px solid #ddd;">
+                    <td style="padding: 12px 10px; vertical-align: top;">
+                        <div style="font-weight: bold; color: #003366;">{{ "%02d"|format((loop.index * 2 + 18) % 24) }}:{{ "00" if loop.index % 2 == 0 else "30" }}</div>
+                    </td>
+                    <td style="padding: 12px 10px;">
+                        <div style="display: flex; gap: 12px; align-items: start;">
+                            {% if movie.poster_url %}
+                            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 45px; height: 67px; object-fit: cover; flex-shrink: 0;">
+                            {% endif %}
+                            <div>
+                                <div style="font-weight: bold; color: #1a1a1a; margin-bottom: 3px;">{{ movie.title }}</div>
+                                <div style="font-size: 0.85em; color: #666;">
+                                    {{ movie.year }}{% if movie.director %} • {{ movie.director }}{% endif %}
+                                </div>
+                                {% if movie.genres %}
+                                <div style="font-size: 0.8em; color: #888; margin-top: 3px;">
+                                    {{ movie.genres[:2]|join(', ') }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td style="padding: 12px 10px; text-align: center; color: #666;">
+                        {% if movie.duration %}{{ format_duration(movie.duration) }}{% else %}-{% endif %}
+                    </td>
+                    <td style="padding: 12px 10px; text-align: center;">
+                        {% if movie.rating %}
+                        <span style="background: {{ '#cc0000' if movie.rating >= 7 else '#666' }}; color: #fff; padding: 2px 8px; font-size: 0.85em; font-weight: bold;">
+                            {{ movie.rating }}
+                        </span>
+                        {% else %}-{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    <!-- Grille Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 20px; background: #f5f5f5;">
+        <h3 style="margin: 0 0 15px 0; font-size: 1.1em; color: #003366; border-bottom: 2px solid #003366; padding-bottom: 8px;">
+            📺 SÉRIES EN COURS
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="background: #fff; border: 1px solid #ddd; border-left: 4px solid #003366; padding: 15px; display: flex; gap: 12px;">
+                {% if episodes[0].poster_url %}
+                <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 50px; height: 75px; object-fit: cover; flex-shrink: 0;">
+                {% endif %}
+                <div>
+                    <h4 style="margin: 0 0 5px 0; font-size: 0.95em; color: #003366;">{{ series_title }}</h4>
+                    <div style="font-size: 0.8em; color: #cc0000; margin-bottom: 5px;">
+                        {{ episodes|length }} nouvel{{ 's' if episodes|length > 1 else '' }} épisode{{ 's' if episodes|length > 1 else '' }}
+                    </div>
+                    <div style="font-size: 0.75em; color: #888;">
+                        {% for episode in episodes[:3] %}
+                        S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Jeux et Livres (petites sections) -->
+    {% if games or books %}
+    <div style="display: flex; flex-wrap: wrap;">
+        {% if games %}
+        <div style="flex: 1; min-width: 250px; padding: 20px; border-right: 1px solid #ddd;">
+            <h3 style="margin: 0 0 15px 0; font-size: 1em; color: #003366;">🎮 Jeux Vidéo</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                {% for game in games[:4] %}
+                <div style="display: flex; gap: 8px; align-items: center; background: #f5f5f5; padding: 8px; flex: 1; min-width: 120px;">
+                    {% if game.cover_url %}
+                    <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 35px; height: 50px; object-fit: cover;">
+                    {% endif %}
+                    <div style="font-size: 0.8em; color: #333;">{{ game.name[:20] }}{% if game.name|length > 20 %}...{% endif %}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if books %}
+        <div style="flex: 1; min-width: 250px; padding: 20px;">
+            <h3 style="margin: 0 0 15px 0; font-size: 1em; color: #003366;">📚 BD & Comics</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                {% for book in books[:4] %}
+                <div style="display: flex; gap: 8px; align-items: center; background: #f5f5f5; padding: 8px; flex: 1; min-width: 120px;">
+                    {% if book.thumbnail_url %}
+                    <img src="{{ book.thumbnail_url }}" alt="{{ book.name }}" style="width: 35px; height: 50px; object-fit: cover;">
+                    {% endif %}
+                    <div style="font-size: 0.8em; color: #333;">{{ book.name[:20] }}{% if book.name|length > 20 %}...{% endif %}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Footer TV Guide -->
+    <div style="background: #003366; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="background: #fff; padding: 5px 10px; border-radius: 3px;">
+                <span style="font-weight: bold; color: #003366;">TV</span>
+                <span style="font-size: 0.7em; color: #cc0000; font-weight: bold;">GUIDE</span>
+            </div>
+            <span style="color: #fff; font-size: 0.85em;">Votre programme personnalisé</span>
+        </div>
+        <div style="color: rgba(255,255,255,0.7); font-size: 0.8em;">
+            Généré le {{ now().strftime('%d/%m/%Y à %H:%M') }}
+        </div>
+    </div>
+
+</div>

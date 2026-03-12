@@ -1,0 +1,156 @@
+<!-- Template Cyberpunk - Style futuriste néon avec glitch -->
+<div style="max-width: 100%; margin: 0 auto; background: #0a0a0f; font-family: 'Orbitron', 'Rajdhani', monospace; color: #fff; overflow: hidden; position: relative;">
+
+    <!-- Scan lines overlay -->
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,255,0.03) 2px, rgba(0,255,255,0.03) 4px); pointer-events: none; z-index: 1000;"></div>
+
+    <!-- Header Cyberpunk -->
+    <div style="position: relative; padding: 40px 20px; background: linear-gradient(180deg, rgba(255,0,128,0.2) 0%, transparent 100%); border-bottom: 2px solid #ff0080;">
+        <!-- Glitch text -->
+        <h1 style="margin: 0; font-size: clamp(2.5em, 8vw, 4em); text-align: center; color: #0ff; text-shadow: -2px 0 #ff0080, 2px 0 #0ff; letter-spacing: 5px; position: relative;">
+            <span style="position: absolute; top: 0; left: 2px; color: #ff0080; clip-path: inset(10% 0 60% 0);">CYBER//MEDIA</span>
+            CYBER//MEDIA
+        </h1>
+        <div style="text-align: center; margin-top: 15px; font-size: 1em; color: #ff0080; letter-spacing: 3px;">
+            [ SYSTEM.DATE: {{ now().strftime('%Y.%m.%d') }} // STATUS: ONLINE ]
+        </div>
+
+        <!-- Lignes décoratives -->
+        <div style="position: absolute; top: 50%; left: 0; width: 100px; height: 2px; background: linear-gradient(90deg, transparent, #0ff);"></div>
+        <div style="position: absolute; top: 50%; right: 0; width: 100px; height: 2px; background: linear-gradient(90deg, #ff0080, transparent);"></div>
+    </div>
+
+    <!-- Stats HUD -->
+    <div style="display: flex; justify-content: center; gap: 40px; padding: 30px 20px; background: rgba(0,255,255,0.05); border-bottom: 1px solid rgba(0,255,255,0.3); flex-wrap: wrap;">
+        {% if movies %}
+        <div style="text-align: center; padding: 15px 30px; border: 1px solid #0ff; position: relative; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);">
+            <div style="font-size: 2.5em; color: #0ff; text-shadow: 0 0 20px #0ff;">{{ movies|length }}</div>
+            <div style="font-size: 0.8em; color: #ff0080; letter-spacing: 2px;">FILMS.EXE</div>
+        </div>
+        {% endif %}
+        {% if shows_grouped %}
+        <div style="text-align: center; padding: 15px 30px; border: 1px solid #ff0080; position: relative; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);">
+            <div style="font-size: 2.5em; color: #ff0080; text-shadow: 0 0 20px #ff0080;">{{ shows_grouped|length }}</div>
+            <div style="font-size: 0.8em; color: #0ff; letter-spacing: 2px;">SERIES.DAT</div>
+        </div>
+        {% endif %}
+        {% if games %}
+        <div style="text-align: center; padding: 15px 30px; border: 1px solid #bf00ff; position: relative; clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);">
+            <div style="font-size: 2.5em; color: #bf00ff; text-shadow: 0 0 20px #bf00ff;">{{ games|length }}</div>
+            <div style="font-size: 0.8em; color: #0ff; letter-spacing: 2px;">GAMES.SYS</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Films Grid Cyberpunk -->
+    {% if movies %}
+    <div style="padding: 40px 20px;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+            <div style="font-size: 1.3em; color: #0ff; text-shadow: 0 0 10px #0ff;">▸ MOVIES.DATABASE</div>
+            <div style="flex: 1; height: 1px; background: linear-gradient(90deg, #0ff, transparent);"></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;">
+            {% for movie in movies %}
+            <div style="position: relative; background: linear-gradient(135deg, rgba(0,255,255,0.1) 0%, rgba(255,0,128,0.1) 100%); border: 1px solid rgba(0,255,255,0.5); clip-path: polygon(0 0, calc(100% - 15px) 0, 100% 15px, 100% 100%, 15px 100%, 0 calc(100% - 15px)); overflow: hidden;">
+                <!-- Corner accents -->
+                <div style="position: absolute; top: 0; right: 0; width: 15px; height: 15px; background: #0ff;"></div>
+                <div style="position: absolute; bottom: 0; left: 0; width: 15px; height: 15px; background: #ff0080;"></div>
+
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 300px; object-fit: cover; filter: saturate(1.3) contrast(1.1);">
+                {% else %}
+                <div style="width: 100%; height: 300px; background: linear-gradient(135deg, #0ff, #ff0080); display: flex; align-items: center; justify-content: center; font-size: 4em;">🎬</div>
+                {% endif %}
+
+                <!-- Glitch overlay on hover simulation -->
+                <div style="position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, transparent, #0ff, transparent); opacity: 0.5;"></div>
+
+                <!-- Info panel -->
+                <div style="padding: 15px; background: rgba(0,0,0,0.8); border-top: 1px solid #0ff;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 1em; color: #0ff; text-shadow: 0 0 5px #0ff;">
+                        {{ movie.title[:25] }}{% if movie.title|length > 25 %}...{% endif %}
+                    </h3>
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8em;">
+                        <span style="color: #ff0080;">{{ movie.year }}</span>
+                        {% if movie.rating %}
+                        <span style="color: #0ff;">[RATING: {{ movie.rating }}]</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- ID Badge -->
+                <div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); border: 1px solid #ff0080; padding: 3px 8px; font-size: 0.7em; color: #ff0080;">
+                    ID_{{ "%04d"|format(loop.index) }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Séries Section -->
+    {% if shows_grouped %}
+    <div style="padding: 40px 20px; background: linear-gradient(180deg, transparent 0%, rgba(255,0,128,0.1) 100%);">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+            <div style="font-size: 1.3em; color: #ff0080; text-shadow: 0 0 10px #ff0080;">▸ SERIES.NETWORK</div>
+            <div style="flex: 1; height: 1px; background: linear-gradient(90deg, #ff0080, transparent);"></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="display: flex; background: rgba(255,0,128,0.1); border: 1px solid #ff0080; overflow: hidden;">
+                {% if episodes[0].poster_url %}
+                <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 100px; height: 150px; object-fit: cover;">
+                {% endif %}
+                <div style="flex: 1; padding: 15px; display: flex; flex-direction: column; justify-content: center;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 1em; color: #ff0080;">{{ series_title[:22] }}{% if series_title|length > 22 %}...{% endif %}</h3>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <span style="background: #ff0080; color: #000; padding: 3px 10px; font-size: 0.75em;">+{{ episodes|length }} EP</span>
+                        {% for episode in episodes[:2] %}
+                        <span style="border: 1px solid #0ff; color: #0ff; padding: 3px 8px; font-size: 0.7em;">
+                            S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}
+                        </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Games Section -->
+    {% if games %}
+    <div style="padding: 40px 20px;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+            <div style="font-size: 1.3em; color: #bf00ff; text-shadow: 0 0 10px #bf00ff;">▸ GAMES.MATRIX</div>
+            <div style="flex: 1; height: 1px; background: linear-gradient(90deg, #bf00ff, transparent);"></div>
+        </div>
+
+        <div style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 15px;">
+            {% for game in games %}
+            <div style="flex: 0 0 auto; width: 150px; border: 1px solid #bf00ff; background: rgba(191,0,255,0.1);">
+                {% if game.cover_url %}
+                <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; height: 200px; object-fit: cover; filter: hue-rotate(20deg);">
+                {% endif %}
+                <div style="padding: 10px; text-align: center;">
+                    <div style="font-size: 0.85em; color: #bf00ff;">{{ game.name[:18] }}{% if game.name|length > 18 %}...{% endif %}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer Cyberpunk -->
+    <div style="padding: 30px 20px; border-top: 2px solid #0ff; text-align: center; background: linear-gradient(180deg, transparent 0%, rgba(0,255,255,0.1) 100%);">
+        <div style="font-size: 1.2em; color: #0ff; text-shadow: 0 0 10px #0ff; letter-spacing: 3px; margin-bottom: 10px;">
+            [ END.TRANSMISSION ]
+        </div>
+        <div style="font-size: 0.8em; color: #ff0080;">
+            TIMESTAMP: {{ now().strftime('%Y-%m-%d // %H:%M:%S') }} UTC
+        </div>
+    </div>
+
+</div>

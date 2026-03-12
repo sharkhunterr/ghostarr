@@ -1,0 +1,172 @@
+<!-- Template Journal Papier - Style quotidien imprimé classique -->
+<div style="max-width: 900px; margin: 0 auto; background: #f5f1e8; font-family: 'Times New Roman', Georgia, serif; color: #1a1a1a; padding: 0;">
+
+    <!-- Bandeau date -->
+    <div style="background: #1a1a1a; color: #f5f1e8; padding: 8px 20px; display: flex; justify-content: space-between; font-size: 0.8em;">
+        <span>Édition du {{ now().strftime('%A %d %B %Y') }}</span>
+        <span>N°{{ now().strftime('%j') }} • Année {{ now().strftime('%Y') }}</span>
+        <span>Prix: 2,50€</span>
+    </div>
+
+    <!-- En-tête masthead -->
+    <div style="padding: 25px 20px; text-align: center; border-bottom: 4px double #1a1a1a;">
+        <h1 style="margin: 0; font-size: 4em; font-family: 'Old English Text MT', 'Times New Roman', serif; font-weight: normal; letter-spacing: 3px;">
+            LE QUOTIDIEN DU CINÉMA
+        </h1>
+        <p style="margin: 10px 0 0 0; font-size: 1em; font-style: italic; color: #666;">
+            "Toute l'actualité culturelle depuis 1923"
+        </p>
+    </div>
+
+    <!-- Manchette - Gros titre -->
+    {% if movies and movies|length > 0 %}
+    {% set headline = movies[0] %}
+    <div style="padding: 25px 20px; border-bottom: 2px solid #1a1a1a;">
+        <div style="display: flex; gap: 25px;">
+            <!-- Photo principale -->
+            <div style="flex: 1;">
+                {% if headline.backdrop_url %}
+                <img src="{{ headline.backdrop_url }}" alt="{{ headline.title }}" style="width: 100%; border: 1px solid #ccc;">
+                {% elif headline.poster_url %}
+                <img src="{{ headline.poster_url }}" alt="{{ headline.title }}" style="width: 100%; max-height: 350px; object-fit: cover; border: 1px solid #ccc;">
+                {% endif %}
+                <p style="margin: 5px 0 0 0; font-size: 0.75em; font-style: italic; color: #666; text-align: center;">
+                    {{ headline.title }} ({{ headline.year }}){% if headline.director %} - Réalisation : {{ headline.director }}{% endif %}
+                </p>
+            </div>
+
+            <!-- Titre et chapeau -->
+            <div style="flex: 1;">
+                <h2 style="margin: 0 0 15px 0; font-size: 2.2em; line-height: 1.2; font-weight: bold;">
+                    {{ headline.title|upper }}
+                </h2>
+
+                {% if headline.tagline %}
+                <p style="margin: 0 0 15px 0; font-size: 1.3em; font-weight: bold; font-style: italic; border-left: 3px solid #1a1a1a; padding-left: 15px;">
+                    « {{ headline.tagline }} »
+                </p>
+                {% endif %}
+
+                <div style="font-size: 0.9em; color: #444; margin-bottom: 15px;">
+                    <strong>{{ headline.year }}</strong>
+                    {% if headline.duration %} • Durée : {{ format_duration(headline.duration) }}{% endif %}
+                    {% if headline.rating %} • Note : {{ headline.rating }}/10{% endif %}
+                </div>
+
+                {% if headline.summary %}
+                <p style="margin: 0; font-size: 1em; line-height: 1.7; text-align: justify; text-indent: 2em;">
+                    {{ headline.summary }}
+                </p>
+                {% endif %}
+
+                {% if headline.genres %}
+                <p style="margin: 15px 0 0 0; font-size: 0.85em; color: #666;">
+                    <strong>Genre :</strong> {{ headline.genres|join(', ') }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Corps du journal - 3 colonnes -->
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0;">
+
+        <!-- Colonne principale - Articles films -->
+        <div style="padding: 20px; border-right: 1px solid #ccc;">
+            {% if movies and movies|length > 1 %}
+            <h3 style="margin: 0 0 20px 0; font-size: 1.3em; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #1a1a1a; padding-bottom: 10px;">
+                À l'affiche cette semaine
+            </h3>
+
+            {% for movie in movies[1:5] %}
+            <article style="margin-bottom: 25px; padding-bottom: 25px; {% if not loop.last %}border-bottom: 1px dashed #ccc;{% endif %}">
+                <div style="display: flex; gap: 15px;">
+                    {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 80px; height: 120px; object-fit: cover; border: 1px solid #ccc; flex-shrink: 0;">
+                    {% endif %}
+                    <div>
+                        <h4 style="margin: 0 0 8px 0; font-size: 1.2em; font-weight: bold;">{{ movie.title }}</h4>
+                        <div style="font-size: 0.8em; color: #666; margin-bottom: 8px;">
+                            {{ movie.year }}{% if movie.director %} • {{ movie.director }}{% endif %}{% if movie.rating %} • ★ {{ movie.rating }}{% endif %}
+                        </div>
+                        {% if movie.summary %}
+                        <p style="margin: 0; font-size: 0.9em; line-height: 1.6; text-align: justify;">
+                            {{ truncate_text(movie.summary, 180) }}
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Séries en encadré -->
+            {% if shows_grouped %}
+            <div style="background: #eae6dc; padding: 20px; margin-top: 20px; border: 1px solid #ccc;">
+                <h3 style="margin: 0 0 15px 0; font-size: 1.1em; text-transform: uppercase; letter-spacing: 1px;">
+                    📺 Feuilletons & Séries
+                </h3>
+                {% for series_title, episodes in shows_grouped.items() %}
+                <div style="margin-bottom: 12px; padding-bottom: 12px; {% if not loop.last %}border-bottom: 1px dotted #aaa;{% endif %}">
+                    <strong style="font-size: 0.95em;">{{ series_title }}</strong>
+                    <span style="font-size: 0.8em; color: #666;"> — {{ episodes|length }} épisode{{ 's' if episodes|length > 1 else '' }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Colonne latérale -->
+        <div style="padding: 20px; background: #f0ece2;">
+            <!-- Météo culturelle -->
+            <div style="background: #1a1a1a; color: #f5f1e8; padding: 15px; margin-bottom: 20px; text-align: center;">
+                <div style="font-size: 0.8em; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">Météo Culturelle</div>
+                <div style="font-size: 2.5em;">🎬</div>
+                <div style="font-size: 1.3em; font-weight: bold; margin: 10px 0;">EXCELLENT</div>
+                <div style="font-size: 0.85em;">Semaine riche en nouveautés</div>
+            </div>
+
+            <!-- Brèves -->
+            <div style="margin-bottom: 20px;">
+                <h4 style="margin: 0 0 15px 0; font-size: 1em; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #1a1a1a; padding-bottom: 8px;">
+                    En bref
+                </h4>
+
+                {% if movies %}
+                <div style="font-size: 0.85em; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dotted #aaa;">
+                    <strong>{{ movies|length }}</strong> nouveaux films ajoutés à la médiathèque cette semaine.
+                </div>
+                {% endif %}
+
+                {% if shows_grouped %}
+                <div style="font-size: 0.85em; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px dotted #aaa;">
+                    <strong>{{ shows_grouped|length }}</strong> séries enrichies de nouveaux épisodes.
+                </div>
+                {% endif %}
+
+                {% if games %}
+                <div style="font-size: 0.85em; margin-bottom: 12px;">
+                    <strong>{{ games|length }}</strong> jeux vidéo disponibles au rayon ludothèque.
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Publicité fictive -->
+            <div style="border: 2px solid #1a1a1a; padding: 15px; text-align: center; background: #fff;">
+                <div style="font-size: 0.7em; text-transform: uppercase; letter-spacing: 1px; color: #666; margin-bottom: 10px;">Annonce</div>
+                <div style="font-size: 1.5em; font-weight: bold; margin-bottom: 5px;">CINÉPHILE ?</div>
+                <div style="font-size: 0.9em;">Abonnez-vous à notre newsletter hebdomadaire !</div>
+                <div style="font-size: 0.75em; color: #666; margin-top: 10px;">Gratuit • Sans engagement</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <div style="background: #1a1a1a; color: #f5f1e8; padding: 15px 20px; display: flex; justify-content: space-between; font-size: 0.8em;">
+        <span>© {{ now().strftime('%Y') }} Le Quotidien du Cinéma</span>
+        <span>Imprimé le {{ now().strftime('%d/%m/%Y à %H:%M') }}</span>
+        <span>Directeur de publication : La Rédaction</span>
+    </div>
+
+</div>

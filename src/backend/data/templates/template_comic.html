@@ -1,0 +1,129 @@
+<!-- Template Comic Book - Style bande dessinée avec cases et bulles -->
+<div style="max-width: 900px; margin: 0 auto; background: #fff; font-family: 'Comic Sans MS', 'Bangers', cursive; color: #000; padding: 20px;">
+
+    <!-- Titre style comic -->
+    <div style="text-align: center; margin-bottom: 30px; position: relative;">
+        <div style="display: inline-block; background: #ffeb3b; padding: 15px 40px; transform: rotate(-2deg); border: 4px solid #000; box-shadow: 5px 5px 0 #000;">
+            <h1 style="margin: 0; font-size: 3em; color: #e91e63; text-shadow: 3px 3px 0 #000; letter-spacing: 2px;">
+                MEDIA COMICS!
+            </h1>
+        </div>
+        <div style="position: absolute; top: -15px; right: 10%; background: #ff5722; color: #fff; padding: 8px 15px; transform: rotate(15deg); border: 3px solid #000; font-size: 0.9em;">
+            {{ now().strftime('%d/%m/%Y') }}
+        </div>
+    </div>
+
+    <!-- Cases de BD - Films -->
+    {% if movies %}
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px;">
+        {% for movie in movies[:6] %}
+        {% set rotations = [-1, 1, -0.5, 0.5, -1.5, 1.5] %}
+        <div style="position: relative; transform: rotate({{ rotations[loop.index0 % 6] }}deg); {% if loop.index0 == 0 %}grid-column: span 2; grid-row: span 2;{% endif %}">
+            <!-- Case avec bordure épaisse -->
+            <div style="border: 4px solid #000; background: #fff; overflow: hidden; box-shadow: 5px 5px 0 #000;">
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: {{ '350px' if loop.index0 == 0 else '200px' }}; object-fit: cover; filter: contrast(1.1) saturate(1.2);">
+                {% endif %}
+
+                <!-- Effet halftone dots overlay -->
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle, transparent 20%, rgba(255,255,255,0.1) 20%); background-size: 4px 4px; pointer-events: none;"></div>
+            </div>
+
+            <!-- Bulle de texte -->
+            <div style="position: absolute; bottom: -10px; left: 50%; transform: translateX(-50%); background: #fff; border: 3px solid #000; padding: 8px 15px; border-radius: 20px; max-width: 90%; text-align: center; z-index: 2;">
+                <div style="font-weight: bold; font-size: {{ '1.1em' if loop.index0 == 0 else '0.9em' }};">{{ movie.title[:25] }}{% if movie.title|length > 25 %}...{% endif %}</div>
+                <!-- Queue de bulle -->
+                <div style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 10px solid transparent; border-right: 10px solid transparent; border-bottom: 10px solid #000;"></div>
+                <div style="position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 7px solid #fff;"></div>
+            </div>
+
+            <!-- Onomatopée pour les bons films -->
+            {% if movie.rating and movie.rating >= 8 %}
+            <div style="position: absolute; top: 10px; right: 10px; font-size: 1.5em; color: #e91e63; text-shadow: 2px 2px 0 #ffeb3b, 4px 4px 0 #000; transform: rotate(15deg);">
+                WOW!
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Séparation style action -->
+    <div style="text-align: center; margin: 40px 0; position: relative;">
+        <div style="display: inline-block; background: #e91e63; color: #fff; padding: 15px 30px; transform: skewX(-10deg); border: 4px solid #000; box-shadow: 5px 5px 0 #000;">
+            <span style="display: block; transform: skewX(10deg); font-size: 1.5em; text-shadow: 2px 2px 0 #000;">💥 SÉRIES TV 💥</span>
+        </div>
+    </div>
+
+    <!-- Séries - Style strip horizontal -->
+    {% if shows_grouped %}
+    <div style="display: flex; gap: 10px; overflow-x: auto; padding: 10px 0 30px;">
+        {% for series_title, episodes in shows_grouped.items() %}
+        <div style="flex: 0 0 auto; width: 200px; position: relative;">
+            <div style="border: 4px solid #000; background: #fff; box-shadow: 4px 4px 0 #000;">
+                {% if episodes[0].poster_url %}
+                <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 100%; height: 280px; object-fit: cover;">
+                {% endif %}
+
+                <!-- Badge épisodes style explosion -->
+                <div style="position: absolute; top: -15px; right: -15px; width: 60px; height: 60px; background: #ffeb3b; border: 3px solid #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; transform: rotate(10deg);">
+                    <div style="text-align: center;">
+                        <div style="font-size: 1.3em; font-weight: bold; color: #e91e63;">+{{ episodes|length }}</div>
+                        <div style="font-size: 0.6em;">ÉP.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Titre en dessous -->
+            <div style="background: #000; color: #fff; padding: 10px; text-align: center; border: 2px solid #000; margin-top: -2px;">
+                {{ series_title[:18] }}{% if series_title|length > 18 %}...{% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Jeux - Cases avec onomatopées -->
+    {% if games %}
+    <div style="margin: 40px 0;">
+        <div style="display: inline-block; background: #4caf50; color: #fff; padding: 10px 25px; transform: rotate(-1deg); border: 3px solid #000; margin-bottom: 20px;">
+            <span style="font-size: 1.3em; text-shadow: 2px 2px 0 #000;">🎮 GAMES!</span>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+            {% for game in games[:8] %}
+            {% set onomatopeias = ['POW!', 'ZAP!', 'BOOM!', 'WHAM!', 'CRACK!', 'BANG!', 'KAPOW!', 'SPLASH!'] %}
+            <div style="position: relative; width: 140px;">
+                <div style="border: 3px solid #000; box-shadow: 3px 3px 0 #000; overflow: hidden;">
+                    {% if game.cover_url %}
+                    <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; height: 180px; object-fit: cover;">
+                    {% else %}
+                    <div style="width: 100%; height: 180px; background: linear-gradient(135deg, #4caf50, #8bc34a); display: flex; align-items: center; justify-content: center; font-size: 3em;">🎮</div>
+                    {% endif %}
+                </div>
+
+                <!-- Onomatopée -->
+                <div style="position: absolute; top: 5px; left: 5px; font-size: 1em; color: #ffeb3b; text-shadow: 1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; transform: rotate(-10deg);">
+                    {{ onomatopeias[loop.index0 % 8] }}
+                </div>
+
+                <div style="background: #fff; border: 2px solid #000; padding: 5px; text-align: center; font-size: 0.8em; margin-top: -2px;">
+                    {{ game.name[:15] }}{% if game.name|length > 15 %}...{% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer comic -->
+    <div style="text-align: center; margin-top: 40px; padding: 20px; border-top: 4px solid #000;">
+        <div style="display: inline-block; background: #2196f3; color: #fff; padding: 10px 30px; border: 3px solid #000; transform: rotate(1deg); box-shadow: 4px 4px 0 #000;">
+            <span style="font-size: 1.2em;">À SUIVRE... 📖</span>
+        </div>
+        <p style="margin: 15px 0 0 0; font-size: 0.85em; color: #666;">
+            {{ now().strftime('%d/%m/%Y') }} • Media Comics Weekly
+        </p>
+    </div>
+
+</div>

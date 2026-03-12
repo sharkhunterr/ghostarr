@@ -1,0 +1,127 @@
+<div style="max-width: 900px; margin: 0 auto; background: #0f172a; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; border-radius: 12px; overflow: hidden;">
+
+    <!-- Header -->
+    <div style="background: linear-gradient(135deg, #1e40af, #7c3aed); padding: 30px; text-align: center;">
+        <h1 style="margin: 0; font-size: 2em; color: #ffffff;">📺 Programme TV</h1>
+        <p style="margin: 10px 0 0 0; color: #c7d2fe;">{{ config.tunarr_days if config else 7 }} prochains jours</p>
+    </div>
+
+    {% if tv_programs %}
+    <div style="padding: 20px;">
+
+        <!-- Regroupement par jour -->
+        {% set programs_by_day = {} %}
+        {% for program in tv_programs %}
+            {% set day_key = program.start_time.strftime('%Y-%m-%d') if program.start_time is not string else program.start_time[:10] %}
+            {% if day_key not in programs_by_day %}
+                {% set _ = programs_by_day.update({day_key: []}) %}
+            {% endif %}
+            {% set _ = programs_by_day[day_key].append(program) %}
+        {% endfor %}
+
+        {% for day, day_programs in programs_by_day.items() %}
+        <div style="margin-bottom: 30px;">
+            <!-- Jour Header -->
+            <div style="background: linear-gradient(90deg, #3b82f6, #8b5cf6); padding: 12px 20px; border-radius: 8px 8px 0 0; margin-bottom: 2px;">
+                <h2 style="margin: 0; font-size: 1.2em; color: #ffffff;">
+                    📅 {{ format_date(day, '%A %d %B %Y') if format_date else day }}
+                </h2>
+                <span style="color: #c7d2fe; font-size: 0.9em;">{{ day_programs|length }} programme{{ 's' if day_programs|length > 1 else '' }}</span>
+            </div>
+
+            <!-- Liste des programmes -->
+            <div style="background: #1e293b; border-radius: 0 0 8px 8px; overflow: hidden;">
+                {% for program in day_programs %}
+                <div style="display: flex; padding: 15px; border-bottom: 1px solid #334155; {% if loop.last %}border-bottom: none;{% endif %}">
+
+                    <!-- Heure -->
+                    <div style="min-width: 80px; text-align: center; padding-right: 15px; border-right: 2px solid #3b82f6;">
+                        <div style="font-size: 1.1em; font-weight: bold; color: #60a5fa;">
+                            {{ program.start_time.strftime('%H:%M') if program.start_time is not string else program.start_time[11:16] }}
+                        </div>
+                        <div style="font-size: 0.75em; color: #94a3b8;">
+                            {{ program.duration }} min
+                        </div>
+                    </div>
+
+                    <!-- Thumbnail -->
+                    {% if program.thumbnail_url %}
+                    <div style="margin: 0 15px; flex-shrink: 0;">
+                        <img src="{{ program.thumbnail_url }}" alt="" style="width: 60px; height: 80px; object-fit: cover; border-radius: 6px;">
+                    </div>
+                    {% endif %}
+
+                    <!-- Info -->
+                    <div style="flex: 1;">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 5px;">
+                            <span style="font-weight: bold; color: #ffffff; font-size: 1.05em;">{{ program.title }}</span>
+                            {% if program.type == 'movie' %}
+                            <span style="background: #dc2626; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: bold;">FILM</span>
+                            {% elif program.type == 'episode' %}
+                            <span style="background: #059669; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: bold;">SÉRIE</span>
+                            {% endif %}
+                        </div>
+
+                        <div style="color: #a78bfa; font-size: 0.85em; margin-bottom: 5px;">
+                            📺 {{ program.channel_name }}
+                        </div>
+
+                        {% if program.description %}
+                        <p style="color: #94a3b8; font-size: 0.85em; margin: 5px 0 0 0; line-height: 1.4;">
+                            {{ truncate_text(program.description, 150) if truncate_text else program.description[:150] }}{% if program.description|length > 150 %}...{% endif %}
+                        </p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Heure de fin -->
+                    <div style="text-align: right; min-width: 60px; color: #64748b; font-size: 0.8em;">
+                        jusqu'à<br>
+                        <span style="color: #94a3b8;">{{ program.end_time.strftime('%H:%M') if program.end_time is not string else program.end_time[11:16] }}</span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- Stats -->
+    <div style="background: #1e293b; padding: 20px; border-top: 1px solid #334155;">
+        <div style="display: flex; justify-content: space-around; text-align: center;">
+            <div>
+                <div style="font-size: 1.8em; color: #60a5fa; font-weight: bold;">{{ tv_programs|length }}</div>
+                <div style="color: #94a3b8; font-size: 0.9em;">Programmes</div>
+            </div>
+            <div>
+                <div style="font-size: 1.8em; color: #a78bfa; font-weight: bold;">
+                    {{ (tv_programs|sum(attribute='duration') / 60)|round|int }}h
+                </div>
+                <div style="color: #94a3b8; font-size: 0.9em;">Durée totale</div>
+            </div>
+            <div>
+                <div style="font-size: 1.8em; color: #34d399; font-weight: bold;">
+                    {{ tv_programs|map(attribute='channel_name')|unique|list|length }}
+                </div>
+                <div style="color: #94a3b8; font-size: 0.9em;">Chaînes</div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- Pas de programmes -->
+    <div style="padding: 60px 20px; text-align: center;">
+        <div style="font-size: 3em; margin-bottom: 20px;">📺</div>
+        <h2 style="color: #94a3b8; margin: 0 0 10px 0;">Aucun programme TV</h2>
+        <p style="color: #64748b; margin: 0;">Configurez Tunarr et sélectionnez des chaînes pour voir le programme.</p>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="background: #0f172a; padding: 15px; text-align: center; border-top: 1px solid #1e293b;">
+        <p style="margin: 0; color: #64748b; font-size: 0.85em;">
+            📺 Programme TV généré le {{ now().strftime('%d/%m/%Y à %H:%M') if now else '' }}
+        </p>
+    </div>
+
+</div>

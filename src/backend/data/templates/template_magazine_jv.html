@@ -1,0 +1,165 @@
+<!-- Template Magazine Jeux Vidéo - Style presse gaming années 90/2000 -->
+<div style="max-width: 900px; margin: 0 auto; background: #0a0a0a; font-family: 'Impact', 'Arial Black', sans-serif; color: #fff; overflow: hidden;">
+
+    <!-- Couverture style magazine JV -->
+    <div style="position: relative; background: linear-gradient(135deg, #ff0066 0%, #6600ff 50%, #00ccff 100%); padding: 30px; overflow: hidden;">
+        <!-- Éclats graphiques -->
+        <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: #ffff00; transform: rotate(45deg);"></div>
+        <div style="position: absolute; bottom: -30px; left: 20%; width: 150px; height: 150px; background: #00ff00; border-radius: 50%; opacity: 0.3;"></div>
+
+        <!-- Logo magazine -->
+        <div style="position: relative; z-index: 2;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px;">
+                <div>
+                    <h1 style="margin: 0; font-size: 3.5em; color: #fff; text-shadow: 4px 4px 0 #000, -2px -2px 0 #ffff00; letter-spacing: -2px; transform: skewX(-5deg);">
+                        MEGA<span style="color: #ffff00;">PLAYER</span>
+                    </h1>
+                    <div style="font-size: 1em; color: #fff; text-shadow: 2px 2px 0 #000;">Le magazine 100% Multimédia</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="background: #ffff00; color: #000; padding: 10px 20px; font-size: 1.5em; font-weight: bold; transform: rotate(5deg);">
+                        N°{{ now().strftime('%W') }}
+                    </div>
+                    <div style="font-size: 0.9em; margin-top: 10px; text-shadow: 2px 2px 0 #000;">{{ now().strftime('%B %Y') }}</div>
+                </div>
+            </div>
+
+            <!-- Accroche principale -->
+            <div style="background: #000; padding: 20px; margin: 20px 0; transform: skewX(-3deg);">
+                <div style="transform: skewX(3deg);">
+                    <div style="font-size: 2.5em; color: #ffff00; text-transform: uppercase; line-height: 1.1;">
+                        {% if games %}{{ games|length }} JEUX{% endif %}
+                        {% if movies %}{% if games %} + {% endif %}{{ movies|length }} FILMS{% endif %}
+                    </div>
+                    <div style="font-size: 1.3em; color: #fff;">À découvrir cette semaine !</div>
+                </div>
+            </div>
+
+            <!-- Mini accroches -->
+            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <div style="background: #ff0066; padding: 8px 15px; transform: rotate(-2deg);">🎮 TESTS EXCLUSIFS</div>
+                <div style="background: #00ccff; padding: 8px 15px; transform: rotate(1deg);">🎬 CINÉ & SÉRIES</div>
+                <div style="background: #ffff00; color: #000; padding: 8px 15px; transform: rotate(-1deg);">⭐ TOP 10</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Jeux - Tests -->
+    {% if games %}
+    <div style="padding: 30px; background: linear-gradient(180deg, #1a1a2e 0%, #0a0a0a 100%);">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+            <div style="background: #ff0066; padding: 10px 20px; transform: skewX(-10deg);">
+                <span style="transform: skewX(10deg); display: block; font-size: 1.5em;">🎮 TESTS</span>
+            </div>
+            <div style="flex: 1; height: 4px; background: linear-gradient(90deg, #ff0066, transparent);"></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px;">
+            {% for game in games %}
+            <div style="background: #1a1a1a; border: 3px solid {{ ['#ff0066', '#00ccff', '#ffff00', '#00ff00', '#ff6600'][loop.index0 % 5] }}; overflow: hidden; position: relative;">
+                <!-- Note explosive -->
+                <div style="position: absolute; top: -10px; right: -10px; width: 70px; height: 70px; background: #ffff00; transform: rotate(15deg); display: flex; align-items: center; justify-content: center; z-index: 2;">
+                    <div style="transform: rotate(-15deg); text-align: center;">
+                        <div style="font-size: 1.8em; color: #000; font-weight: bold;">{{ 7 + (loop.index0 % 4) }}</div>
+                        <div style="font-size: 0.6em; color: #666;">/10</div>
+                    </div>
+                </div>
+
+                {% if game.cover_url %}
+                <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; height: 200px; object-fit: cover;">
+                {% else %}
+                <div style="width: 100%; height: 200px; background: linear-gradient(135deg, #ff0066, #6600ff); display: flex; align-items: center; justify-content: center; font-size: 4em;">🎮</div>
+                {% endif %}
+
+                <div style="padding: 15px;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.2em; text-transform: uppercase; color: {{ ['#ff0066', '#00ccff', '#ffff00', '#00ff00', '#ff6600'][loop.index0 % 5] }};">
+                        {{ game.name[:25] }}{% if game.name|length > 25 %}...{% endif %}
+                    </h3>
+                    {% if game.platform %}
+                    <div style="display: inline-block; background: #333; padding: 5px 12px; font-size: 0.8em; margin-bottom: 10px;">
+                        {{ game.platform }}
+                    </div>
+                    {% endif %}
+                    <p style="margin: 0; font-size: 0.85em; color: #aaa; font-family: Arial, sans-serif; font-weight: normal;">
+                        Le test complet de notre rédaction !
+                    </p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section Films - Style encart magazine -->
+    {% if movies %}
+    <div style="padding: 30px; background: #111;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 30px;">
+            <div style="background: #00ccff; padding: 10px 20px; transform: skewX(-10deg);">
+                <span style="transform: skewX(10deg); display: block; font-size: 1.5em;">🎬 CINÉ</span>
+            </div>
+            <div style="flex: 1; height: 4px; background: linear-gradient(90deg, #00ccff, transparent);"></div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+            {% for movie in movies[:8] %}
+            <div style="position: relative;">
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 270px; object-fit: cover; border: 2px solid #00ccff;">
+                {% endif %}
+
+                <!-- Badge note -->
+                {% if movie.rating %}
+                <div style="position: absolute; top: 10px; left: 10px; background: {{ '#00ff00' if movie.rating >= 7 else '#ffff00' if movie.rating >= 5 else '#ff0066' }}; color: #000; padding: 5px 10px; font-size: 1.1em; font-weight: bold;">
+                    {{ movie.rating }}/10
+                </div>
+                {% endif %}
+
+                <div style="background: rgba(0,0,0,0.9); padding: 10px;">
+                    <div style="font-size: 0.9em; font-weight: bold; color: #00ccff; line-height: 1.2;">{{ movie.title[:22] }}{% if movie.title|length > 22 %}...{% endif %}</div>
+                    <div style="font-size: 0.75em; color: #888; font-family: Arial; font-weight: normal;">{{ movie.year }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Séries - Mini section -->
+    {% if shows_grouped %}
+    <div style="padding: 30px; background: linear-gradient(180deg, #0a0a0a 0%, #1a0a2e 100%);">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+            <div style="background: #ff6600; padding: 10px 20px; transform: skewX(-10deg);">
+                <span style="transform: skewX(10deg); display: block; font-size: 1.3em;">📺 SÉRIES</span>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 10px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="flex: 0 0 auto; width: 200px; background: #1a1a1a; border-left: 4px solid #ff6600; padding: 15px;">
+                <h4 style="margin: 0 0 10px 0; font-size: 1em; color: #ff6600;">{{ series_title[:20] }}{% if series_title|length > 20 %}...{% endif %}</h4>
+                <div style="background: #333; padding: 8px; text-align: center; margin-bottom: 10px;">
+                    <span style="font-size: 1.5em; font-weight: bold;">+{{ episodes|length }}</span>
+                    <div style="font-size: 0.75em; color: #aaa; font-family: Arial; font-weight: normal;">épisodes</div>
+                </div>
+                <div style="font-size: 0.75em; color: #666; font-family: Arial; font-weight: normal;">
+                    {% for episode in episodes[:2] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %}, {% endif %}{% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer magazine -->
+    <div style="background: linear-gradient(90deg, #ff0066, #6600ff, #00ccff); padding: 3px;">
+        <div style="background: #000; padding: 20px; text-align: center;">
+            <div style="font-size: 1.5em; font-weight: bold; text-shadow: 2px 2px 0 #ff0066;">
+                MEGA<span style="color: #ffff00;">PLAYER</span>
+            </div>
+            <p style="margin: 10px 0 0 0; font-size: 0.85em; color: #666; font-family: Arial; font-weight: normal;">
+                © {{ now().strftime('%Y') }} • {{ now().strftime('%d/%m/%Y') }} • 100% indépendant !
+            </p>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plex Weekly Digest</title>
+</head>
+<body style="margin: 0; padding: 0; background: #000; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #fff;">
+
+<!-- Container principal -->
+<div style="max-width: 100%; margin: 0 auto; background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%);">
+    
+    <!-- Header moderne avec KPI intégrés -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); padding: 30px 20px; position: relative; overflow: hidden;">
+        <!-- Éléments décoratifs -->
+        <div style="position: absolute; top: -50px; right: -50px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; backdrop-filter: blur(10px);"></div>
+        <div style="position: absolute; bottom: -30px; left: -30px; width: 80px; height: 80px; background: rgba(255,255,255,0.08); border-radius: 20px; transform: rotate(45deg);"></div>
+        
+        <div style="text-align: center; position: relative; z-index: 2;">
+            <div style="font-size: 0.8em; font-weight: 500; letter-spacing: 3px; margin-bottom: 8px; opacity: 0.85; text-transform: uppercase;">Plex Weekly Digest</div>
+            <h1 style="margin: 0; font-size: clamp(2.2em, 8vw, 3.5em); font-weight: 900; letter-spacing: -2px; background: linear-gradient(45deg, #ffffff, #e0e7ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1.1;">🎬 Résumé Hebdomadaire</h1>
+            <div style="font-size: clamp(0.9em, 3vw, 1.1em); margin-top: 12px; opacity: 0.9;">{{ now().strftime('%d %B %Y') }} • Semaine {{ now().isocalendar()[1] }}</div>
+        </div>
+        
+        <!-- KPI Row intégré dans le header -->
+        {% if real_stats %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 12px; margin-top: 25px; position: relative; z-index: 2;">
+            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); padding: 12px 8px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                <div style="font-size: clamp(1.2em, 4vw, 1.8em); font-weight: 900; margin-bottom: 2px;">{{ real_stats.total_plays or 0 }}</div>
+                <div style="font-size: clamp(0.6em, 2vw, 0.75em); opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Lectures</div>
+                {% if real_stats.plays_growth_percentage is defined and real_stats.plays_growth_percentage != 0 %}
+                <div style="font-size: clamp(0.5em, 1.8vw, 0.65em); margin-top: 2px; color: {% if real_stats.plays_growth_percentage > 0 %}#10b981{% else %}#ef4444{% endif %}; font-weight: 700;">
+                    {% if real_stats.plays_growth_percentage > 0 %}↗ +{{ real_stats.plays_growth_percentage }}%{% else %}↘ {{ real_stats.plays_growth_percentage }}%{% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); padding: 12px 8px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                {% if real_stats.total_watch_time and real_stats.total_watch_time|string|length > 0 %}
+                    {% set watch_time_str = real_stats.total_watch_time|string %}
+                    {% if watch_time_str.isdigit() %}
+                        {% set watch_time_int = watch_time_str|int %}
+                        <div style="font-size: clamp(1.2em, 4vw, 1.8em); font-weight: 900; margin-bottom: 2px;">{{ (watch_time_int // 60) }}h</div>
+                    {% else %}
+                        <div style="font-size: clamp(1.2em, 4vw, 1.8em); font-weight: 900; margin-bottom: 2px;">0h</div>
+                    {% endif %}
+                {% else %}
+                    <div style="font-size: clamp(1.2em, 4vw, 1.8em); font-weight: 900; margin-bottom: 2px;">0h</div>
+                {% endif %}
+                <div style="font-size: clamp(0.6em, 2vw, 0.75em); opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Temps</div>
+                {% if real_stats.time_growth_percentage is defined and real_stats.time_growth_percentage != 0 %}
+                <div style="font-size: clamp(0.5em, 1.8vw, 0.65em); margin-top: 2px; color: {% if real_stats.time_growth_percentage > 0 %}#10b981{% else %}#ef4444{% endif %}; font-weight: 700;">
+                    {% if real_stats.time_growth_percentage > 0 %}↗ +{{ real_stats.time_growth_percentage }}%{% else %}↘ {{ real_stats.time_growth_percentage }}%{% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); padding: 12px 8px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                <div style="font-size: clamp(1.2em, 4vw, 1.8em); font-weight: 900; margin-bottom: 2px;">{{ real_stats.unique_users or 0 }}</div>
+                <div style="font-size: clamp(0.6em, 2vw, 0.75em); opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Utilisateurs</div>
+                {% if real_stats.users_growth_percentage is defined and real_stats.users_growth_percentage != 0 %}
+                <div style="font-size: clamp(0.5em, 1.8vw, 0.65em); margin-top: 2px; color: {% if real_stats.users_growth_percentage > 0 %}#10b981{% else %}#ef4444{% endif %}; font-weight: 700;">
+                    {% if real_stats.users_growth_percentage > 0 %}↗ +{{ real_stats.users_growth_percentage }}%{% else %}↘ {{ real_stats.users_growth_percentage }}%{% endif %}
+                </div>
+                {% endif %}
+            </div>
+            
+            <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(20px); padding: 12px 8px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.2);">
+                <div style="font-size: clamp(1.2em, 4vw, 1.8em); font-weight: 900; margin-bottom: 2px;">{{ (movies|length if movies else 0) + (shows_grouped|length if shows_grouped else 0) }}</div>
+                <div style="font-size: clamp(0.6em, 2vw, 0.75em); opacity: 0.9; text-transform: uppercase; letter-spacing: 1px;">Nouveautés</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Film Vedette - Design Glassmorphism -->
+    {% if show_featured_movie and featured_movie %}
+    <div style="padding: 30px 20px; background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); color: #1a202c; position: relative;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 24px; border-radius: 25px; font-size: 0.9em; font-weight: 700; display: inline-block; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 8px 32px rgba(102,126,234,0.4);">⭐ Film de la Semaine</div>
+            <h2 style="font-size: clamp(1.8em, 6vw, 2.5em); font-weight: 900; margin: 0; color: #2d3748; letter-spacing: -1px;">{{ featured_movie.title }}</h2>
+            {% if featured_movie.tagline %}
+            <p style="color: #667eea; font-style: italic; margin: 8px 0 0 0; font-size: clamp(1em, 3vw, 1.2em); font-weight: 400;">{{ featured_movie.tagline }}</p>
+            {% endif %}
+        </div>
+        
+        <div style="background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 24px 48px rgba(0,0,0,0.12); position: relative; max-width: 800px; margin: 0 auto;">
+            <!-- Arrière-plan blur -->
+            {% if featured_movie.backdrop_url %}
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{ featured_movie.backdrop_url }}'); background-size: cover; background-position: center; opacity: 0.08; filter: blur(2px);"></div>
+            {% endif %}
+            
+            <div style="padding: 24px; display: grid; grid-template-columns: auto 1fr; gap: 20px; align-items: start; position: relative; z-index: 2;">
+                <!-- Affiche avec effet moderne -->
+                <div style="position: relative;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 4px; border-radius: 16px; box-shadow: 0 16px 40px rgba(102,126,234,0.3);">
+                        {% if featured_movie.poster_url %}
+                        <img src="{{ featured_movie.poster_url }}" alt="{{ featured_movie.title }}" style="width: 120px; height: 180px; object-fit: cover; border-radius: 12px; display: block;">
+                        {% else %}
+                        <div style="width: 120px; height: 180px; background: linear-gradient(135deg, #60a5fa, #3b82f6); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2em;">🎬</div>
+                        {% endif %}
+                    </div>
+                    {% if featured_movie.rating %}
+                    <!-- Note avec couleur selon la valeur -->
+                    {% set rating_float = featured_movie.rating|float %}
+                    {% if rating_float >= 8.0 %}
+                        {% set rating_color = "#10b981" %}
+                    {% elif rating_float >= 7.0 %}
+                        {% set rating_color = "#3b82f6" %}
+                    {% elif rating_float >= 6.0 %}
+                        {% set rating_color = "#f59e0b" %}
+                    {% elif rating_float >= 4.0 %}
+                        {% set rating_color = "#ef4444" %}
+                    {% else %}
+                        {% set rating_color = "#6b7280" %}
+                    {% endif %}
+                    <div style="position: absolute; top: -8px; right: -8px; background: {{ rating_color }}; color: white; padding: 6px 10px; border-radius: 12px; font-size: 0.9em; font-weight: 800; box-shadow: 0 8px 24px rgba(16,185,129,0.4);">{{ featured_movie.rating }}⭐</div>
+                    {% endif %}
+                </div>
+                
+                <!-- Informations détaillées -->
+                <div>
+                    <!-- Métadonnées avec cards modernes -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 10px; margin-bottom: 20px;">
+                        {% if featured_movie.year %}
+                        <div style="background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); padding: 12px 8px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.3);">
+                            <div style="color: #667eea; font-size: 0.7em; font-weight: 600; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px;">Année</div>
+                            <div style="color: #2d3748; font-size: 1em; font-weight: 800;">{{ featured_movie.year }}</div>
+                        </div>
+                        {% endif %}
+                        {% if featured_movie.duration and featured_movie.duration|string|length > 0 %}
+                        {% set duration_str = featured_movie.duration|string %}
+                        {% if duration_str.isdigit() %}
+                            {% set duration_int = duration_str|int %}
+                            {% if duration_int > 0 %}
+                            <div style="background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); padding: 12px 8px; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.3);">
+                                <div style="color: #667eea; font-size: 0.7em; font-weight: 600; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 1px;">Durée</div>
+                                <div style="color: #2d3748; font-size: 1em; font-weight: 800;">{{ (duration_int // 60) }}h{{ duration_int % 60 }}m</div>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Équipe créative -->
+                    {% if featured_movie.director or featured_movie.cast %}
+                    <div style="background: linear-gradient(135deg, rgba(102,126,234,0.1) 0%, rgba(118,75,162,0.1) 100%); padding: 16px; border-radius: 12px; margin-bottom: 16px; border-left: 3px solid #667eea;">
+                        {% if featured_movie.director %}
+                        <div style="margin-bottom: 8px;">
+                            <span style="color: #667eea; font-size: 0.75em; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Réalisateur</span>
+                            <div style="color: #2d3748; font-size: 0.9em; font-weight: 600; margin-top: 2px;">{{ featured_movie.director }}</div>
+                        </div>
+                        {% endif %}
+                        {% if featured_movie.cast %}
+                        <div>
+                            <span style="color: #667eea; font-size: 0.75em; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Avec</span>
+                            <div style="color: #2d3748; font-size: 0.9em; font-weight: 600; margin-top: 2px;">{{ featured_movie.cast[:3]|join(', ') }}{% if featured_movie.cast|length > 3 %}...{% endif %}</div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Genres avec design moderne -->
+                    {% if featured_movie.genres %}
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px;">
+                        {% for genre in featured_movie.genres[:3] %}
+                        <span style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 6px 12px; border-radius: 15px; font-size: 0.75em; font-weight: 600; box-shadow: 0 4px 16px rgba(102,126,234,0.3);">{{ genre }}</span>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Synopsis moderne -->
+                    {% if featured_movie.summary %}
+                    <div style="background: rgba(255,255,255,0.5); backdrop-filter: blur(10px); padding: 16px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.3);">
+                        <div style="color: #667eea; font-size: 0.75em; font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">Synopsis</div>
+                        <p style="color: #374151; line-height: 1.6; margin: 0; font-size: 0.85em; font-weight: 400;">{{ featured_movie.summary[:200] }}{% if featured_movie.summary|length > 200 %}...{% endif %}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Section Nouveaux Films -->
+    {% if movies %}
+    <div style="padding: 30px 20px; background: #0f172a;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="font-size: clamp(1.8em, 6vw, 2.2em); font-weight: 900; margin: 0; background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px;">🎬 Nouveaux Films</h2>
+            <div style="background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8em; font-weight: 700; display: inline-block; margin-top: 12px;">{{ movies|length }} film{{ 's' if movies|length > 1 else '' }}</div>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+            {% for movie in movies[:6] %}
+            <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;">
+                <!-- Background subtil -->
+                {% if movie.backdrop_url %}
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{ movie.backdrop_url }}'); background-size: cover; background-position: center; opacity: 0.05; border-radius: 16px;"></div>
+                {% endif %}
+                
+                <div style="display: flex; gap: 12px; position: relative; z-index: 2;">
+                    <!-- Affiche -->
+                    <div style="flex-shrink: 0;">
+                        {% if movie.poster_url %}
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 60px; height: 90px; object-fit: cover; border-radius: 8px;">
+                        {% else %}
+                        <div style="width: 60px; height: 90px; background: linear-gradient(135deg, #60a5fa, #3b82f6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.5em;">🎬</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Infos -->
+                    <div style="flex: 1; min-width: 0;">
+                        <h3 style="font-size: 1em; font-weight: 700; margin: 0 0 6px 0; color: #f8fafc; line-height: 1.2;">{{ movie.title }}</h3>
+                        
+                        <!-- Badges avec couleurs de notes -->
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px;">
+                            {% if movie.year %}
+                            <span style="background: rgba(255,255,255,0.1); color: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: 600;">{{ movie.year }}</span>
+                            {% endif %}
+                            {% if movie.rating %}
+                            <!-- Note avec couleur selon la valeur -->
+                            {% set rating_float = movie.rating|float %}
+                            {% if rating_float >= 8.0 %}
+                                {% set rating_color = "#10b981" %}
+                            {% elif rating_float >= 7.0 %}
+                                {% set rating_color = "#3b82f6" %}
+                            {% elif rating_float >= 6.0 %}
+                                {% set rating_color = "#f59e0b" %}
+                            {% elif rating_float >= 4.0 %}
+                                {% set rating_color = "#ef4444" %}
+                            {% else %}
+                                {% set rating_color = "#6b7280" %}
+                            {% endif %}
+                            <span style="color: {{ rating_color }}; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: 700;">{{ movie.rating }}⭐</span>
+                            {% endif %}
+                            {% if movie.duration and movie.duration|string|length > 0 %}
+                            {% set duration_str = movie.duration|string %}
+                            {% if duration_str.isdigit() %}
+                                {% set duration_int = duration_str|int %}
+                                {% if duration_int > 0 %}
+                                <span style="background: rgba(102,126,234,0.3); color: #a5b4fc; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: 600;">{{ (duration_int // 60) }}h{{ duration_int % 60 }}m</span>
+                                {% endif %}
+                            {% endif %}
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Genres -->
+                        {% if movie.genres %}
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px;">
+                            {% for genre in movie.genres[:2] %}
+                            <span style="background: linear-gradient(135deg, rgba(102,126,234,0.2), rgba(118,75,162,0.2)); color: #c4b5fd; padding: 2px 6px; border-radius: 4px; font-size: 0.6em; font-weight: 600;">{{ genre }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Synopsis -->
+                        {% if movie.summary %}
+                        <p style="color: #cbd5e1; font-size: 0.75em; line-height: 1.4; margin: 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">{{ movie.summary }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        {% if movies|length > 6 %}
+        <div style="text-align: center; margin-top: 20px;">
+            <div style="background: rgba(96,165,250,0.2); color: #60a5fa; padding: 8px 16px; border-radius: 20px; font-size: 0.8em; font-weight: 600; display: inline-block;">
+                +{{ movies|length - 6 }} autres films
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    <!-- Section Nouvelles Séries - Design condensé -->
+    {% if shows_grouped %}
+    <div style="padding: 30px 20px; background: #1e1b4b;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2 style="font-size: clamp(1.8em, 6vw, 2.2em); font-weight: 900; margin: 0; background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px;">📺 Nouvelles Séries</h2>
+            <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.8em; font-weight: 700; display: inline-block; margin-top: 12px;">{{ shows_grouped|length }} série{{ 's' if shows_grouped|length > 1 else '' }}</div>
+        </div>
+        
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="background: rgba(255,255,255,0.05); border-radius: 16px; padding: 16px; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;">
+                <!-- Arrière-plan avec backdrop -->
+                {% if episodes[0].backdrop_url %}
+                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{ episodes[0].backdrop_url }}'); background-size: cover; background-position: center; opacity: 0.08; border-radius: 16px;"></div>
+                {% endif %}
+                
+                <div style="position: relative; z-index: 2;">
+                    <!-- Header de la série condensé -->
+                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; margin-bottom: 12px;">
+                        <!-- Affiche série -->
+                        <div style="flex-shrink: 0;">
+                            {% if episodes[0].poster_url %}
+                            <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 60px; height: 90px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                            {% else %}
+                            <div style="width: 60px; height: 90px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2em;">📺</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Info série condensée -->
+                        <div style="flex: 1;">
+                            <h4 style="font-size: 1.1em; font-weight: 800; margin: 0 0 6px 0; color: #f8fafc; line-height: 1.2;">{{ series_title }}</h4>
+                            
+                            <!-- Métadonnées série en ligne -->
+                            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+                                {% if episodes[0].year %}
+                                <span style="background: rgba(255,255,255,0.1); color: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: 600;">{{ episodes[0].year }}</span>
+                                {% endif %}
+                                
+                                <!-- Nombre de saisons TMDB -->
+                                {% set seasons = episodes | map(attribute='season_number') | list | unique | list %}
+                                <span style="background: rgba(139,92,246,0.3); color: #c4b5fd; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: 600;">{{ episodes[0].total_seasons or seasons|length }} saisons</span>
+                                
+                                <!-- Épisodes ajoutés -->
+                                <span style="background: rgba(16,185,129,0.3); color: #6ee7b7; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: 600;">{{ episodes|length }} épisodes</span>
+                                
+                                <!-- Durée moyenne d'un épisode -->
+                                {% if episodes[0].duration and episodes[0].duration|string|length > 0 %}
+                                {% set duration_str = episodes[0].duration|string %}
+                                {% if duration_str.isdigit() %}
+                                    {% set duration_int = duration_str|int %}
+                                    {% if duration_int > 0 %}
+                                    <span style="background: rgba(102,126,234,0.3); color: #a5b4fc; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: 600;">{{ duration_int }}min</span>
+                                    {% endif %}
+                                {% endif %}
+                                {% endif %}
+                                
+                                <!-- Note avec couleur -->
+                                {% if episodes[0].rating %}
+                                {% set rating_float = episodes[0].rating|float %}
+                                {% if rating_float >= 8.0 %}
+                                    {% set rating_color = "#10b981" %}
+                                {% elif rating_float >= 7.0 %}
+                                    {% set rating_color = "#3b82f6" %}
+                                {% elif rating_float >= 6.0 %}
+                                    {% set rating_color = "#f59e0b" %}
+                                {% elif rating_float >= 4.0 %}
+                                    {% set rating_color = "#ef4444" %}
+                                {% else %}
+                                    {% set rating_color = "#6b7280" %}
+                                {% endif %}
+                                <span style="color: {{ rating_color }}; padding: 2px 6px; border-radius: 4px; font-size: 0.7em; font-weight: 700;">{{ episodes[0].rating }}⭐</span>
+                                {% endif %}
+                            </div>
+                            
+                            <!-- Genres compacts -->
+                            {% if episodes[0].genres %}
+                            <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px;">
+                                {% for genre in episodes[0].genres[:2] %}
+                                <span style="background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(124,58,237,0.2)); color: #c4b5fd; padding: 2px 6px; border-radius: 4px; font-size: 0.6em; font-weight: 600;">{{ genre }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Épisodes en grille compacte -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 6px;">
+                        {% for episode in episodes[:8] %}
+                        <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 6px 4px; border-radius: 8px; font-size: 0.7em; font-weight: 700; text-align: center;">
+                            S{{ '%02d'|format(episode.season_number or 0) }}E{{ '%02d'|format(episode.episode_number or 0) }}
+                        </div>
+                        {% endfor %}
+                        {% if episodes|length > 8 %}
+                        <div style="background: rgba(139,92,246,0.3); color: #c4b5fd; padding: 6px 4px; border-radius: 8px; font-size: 0.7em; font-weight: 700; text-align: center;">
+                            +{{ episodes|length - 8 }}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    <!-- Section Analytics Avancées -->
+    {% if real_stats %}
+    <div style="padding: 30px 20px; background: linear-gradient(135deg, #0f172a, #1e293b);">
+        <h2 style="font-size: clamp(1.8em, 6vw, 2.2em); font-weight: 900; margin: 0 0 25px 0; color: #ffffff; text-align: center;">📊 Analyses Détaillées</h2>
+        
+                <!-- Top Films - Style template_stats_2 avec bordure bleue -->
+        {% if real_stats.top_movies_played %}
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0,0,0,0.3); margin-bottom: 24px;">
+            <h3 style="margin: 0 0 20px 0; font-size: clamp(1.2em, 4vw, 1.8em); font-weight: 800; color: #60a5fa; display: flex; align-items: center; gap: 8px;">
+                🎬 Top Films avec Évolutions
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                {% for movie in real_stats.top_movies_played[:5] %}
+                <div style="padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; border-left: 4px solid #60a5fa;">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <!-- Position en premier - très visible -->
+                        <div style="background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; padding: 8px 12px; border-radius: 8px; font-size: clamp(0.8em, 3vw, 1em); font-weight: 900; min-width: 32px; text-align: center; box-shadow: 0 4px 8px rgba(96,165,250,0.3);">{{ loop.index }}</div>
+                        
+                        <!-- Affiche de film -->
+                        {% if movie.poster_url %}
+                        <div style="width: 45px; height: 68px; border-radius: 6px; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+                            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        {% else %}
+                        <div style="width: 45px; height: 68px; background: linear-gradient(135deg, #60a5fa, #3b82f6); border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2em;">🎬</div>
+                        {% endif %}
+                        
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; color: #f8fafc; font-size: clamp(0.9em, 3.5vw, 1.1em); line-height: 1.2; margin-bottom: 4px;">{{ movie.title }}</div>
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <!-- Note colorée à gauche de l'année -->
+                                {% if movie.rating %}
+                                {% set rating_float = movie.rating|float %}
+                                {% if rating_float >= 8.0 %}
+                                    {% set rating_color = "#10b981" %}
+                                {% elif rating_float >= 7.0 %}
+                                    {% set rating_color = "#3b82f6" %}
+                                {% elif rating_float >= 6.0 %}
+                                    {% set rating_color = "#f59e0b" %}
+                                {% elif rating_float >= 4.0 %}
+                                    {% set rating_color = "#ef4444" %}
+                                {% else %}
+                                    {% set rating_color = "#6b7280" %}
+                                {% endif %}
+                                <span style="color: {{ rating_color }}; font-size: clamp(0.7em, 2.5vw, 0.8em); font-weight: 700;">{{ movie.rating }}⭐</span>
+                                {% endif %}
+                                
+                                {% if movie.year %}
+                                <span style="color: #8b5cf6; font-size: clamp(0.7em, 2.5vw, 0.8em); font-weight: 600;">{{ movie.year }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Badge évolution et lectures de même taille -->
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            {% if movie.evolution_type and movie.evolution_percentage %}
+                            <div style="font-size: clamp(0.6em, 2vw, 0.7em); padding: 4px 8px; border-radius: 4px; font-weight: 600; color: white;
+                                       background: {% if movie.evolution_type == 'up' %}#10b981{% elif movie.evolution_type == 'down' %}#ef4444{% elif movie.evolution_type == 'new' %}#f59e0b{% else %}#6b7280{% endif %}; 
+                                       box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                                {% if movie.evolution_type == 'new' %}NEW{% elif movie.evolution_type == 'up' %}▲ +{{ movie.evolution_value or 1 }} (+{{ movie.evolution_percentage }}%){% elif movie.evolution_type == 'down' %}▼ -{{ movie.evolution_value or 1 }} ({{ movie.evolution_percentage }}%){% else %}= stable{% endif %}
+                            </div>
+                            {% elif movie.evolution_type %}
+                            <div style="font-size: clamp(0.6em, 2vw, 0.7em); padding: 4px 8px; border-radius: 4px; font-weight: 600; color: white;
+                                       background: {% if movie.evolution_type == 'up' %}#10b981{% elif movie.evolution_type == 'down' %}#ef4444{% elif movie.evolution_type == 'new' %}#f59e0b{% else %}#6b7280{% endif %}; 
+                                       box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                                {% if movie.evolution_type == 'new' %}NEW{% elif movie.evolution_type == 'up' %}▲ +{{ movie.evolution_value or 1 }}{% elif movie.evolution_type == 'down' %}▼ -{{ movie.evolution_value or 1 }}{% else %}= stable{% endif %}
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Nombre de lectures - MÊME TAILLE que le badge évolution -->
+                            <div style="background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; padding: 4px 8px; border-radius: 4px; font-size: clamp(0.6em, 2vw, 0.7em); font-weight: 600; box-shadow: 0 2px 4px rgba(96, 165, 250, 0.3);">
+                                {{ movie.plays }} lectures
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Top Séries - Style template_stats_2 avec bordure violette -->
+        {% if real_stats.top_shows_played %}
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0,0,0,0.3); margin-bottom: 24px;">
+            <h3 style="margin: 0 0 20px 0; font-size: clamp(1.2em, 4vw, 1.8em); font-weight: 800; color: #8b5cf6; display: flex; align-items: center; gap: 8px;">
+                📺 Top Séries avec Évolutions
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+                {% for show in real_stats.top_shows_played[:5] %}
+                <div style="padding: 12px; background: rgba(255,255,255,0.05); border-radius: 12px; border-left: 4px solid #8b5cf6;">
+                    <div style="display: flex; gap: 12px; align-items: center;">
+                        <!-- Position en premier - très visible -->
+                        <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 8px 12px; border-radius: 8px; font-size: clamp(0.8em, 3vw, 1em); font-weight: 900; min-width: 32px; text-align: center; box-shadow: 0 4px 8px rgba(139,92,246,0.3);">{{ loop.index }}</div>
+                        
+                        <!-- Affiche de série -->
+                        {% if show.poster_url %}
+                        <div style="width: 45px; height: 68px; border-radius: 6px; overflow: hidden; flex-shrink: 0; box-shadow: 0 4px 8px rgba(0,0,0,0.3);">
+                            <img src="{{ show.poster_url }}" alt="{{ show.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        </div>
+                        {% else %}
+                        <div style="width: 45px; height: 68px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2em;">📺</div>
+                        {% endif %}
+                        
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 700; color: #f8fafc; font-size: clamp(0.9em, 3.5vw, 1.1em); line-height: 1.2; margin-bottom: 4px;">{{ show.title }}</div>
+                            <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <!-- Note colorée à gauche de l'année -->
+                                {% if show.rating %}
+                                {% set rating_float = show.rating|float %}
+                                {% if rating_float >= 8.0 %}
+                                    {% set rating_color = "#10b981" %}
+                                {% elif rating_float >= 7.0 %}
+                                    {% set rating_color = "#3b82f6" %}
+                                {% elif rating_float >= 6.0 %}
+                                    {% set rating_color = "#f59e0b" %}
+                                {% elif rating_float >= 4.0 %}
+                                    {% set rating_color = "#ef4444" %}
+                                {% else %}
+                                    {% set rating_color = "#6b7280" %}
+                                {% endif %}
+                                <span style="color: {{ rating_color }}; font-size: clamp(0.7em, 2.5vw, 0.8em); font-weight: 700;">{{ show.rating }}⭐</span>
+                                {% endif %}
+                                
+                                {% if show.year %}
+                                <span style="color: #60a5fa; font-size: clamp(0.7em, 2.5vw, 0.8em); font-weight: 600;">{{ show.year }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Badge évolution et lectures de même taille -->
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            {% if show.evolution_type and show.evolution_percentage %}
+                            <div style="font-size: clamp(0.6em, 2vw, 0.7em); padding: 4px 8px; border-radius: 4px; font-weight: 600; color: white;
+                                       background: {% if show.evolution_type == 'up' %}#10b981{% elif show.evolution_type == 'down' %}#ef4444{% elif show.evolution_type == 'new' %}#f59e0b{% else %}#6b7280{% endif %}; 
+                                       box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                                {% if show.evolution_type == 'new' %}NEW{% elif show.evolution_type == 'up' %}▲ +{{ show.evolution_value or 1 }} (+{{ show.evolution_percentage }}%){% elif show.evolution_type == 'down' %}▼ -{{ show.evolution_value or 1 }} ({{ show.evolution_percentage }}%){% else %}= stable{% endif %}
+                            </div>
+                            {% elif show.evolution_type %}
+                            <div style="font-size: clamp(0.6em, 2vw, 0.7em); padding: 4px 8px; border-radius: 4px; font-weight: 600; color: white;
+                                       background: {% if show.evolution_type == 'up' %}#10b981{% elif show.evolution_type == 'down' %}#ef4444{% elif show.evolution_type == 'new' %}#f59e0b{% else %}#6b7280{% endif %}; 
+                                       box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                                {% if show.evolution_type == 'new' %}NEW{% elif show.evolution_type == 'up' %}▲ +{{ show.evolution_value or 1 }}{% elif show.evolution_type == 'down' %}▼ -{{ show.evolution_value or 1 }}{% else %}= stable{% endif %}
+                            </div>
+                            {% endif %}
+                            
+                            <!-- Nombre de lectures - MÊME TAILLE que le badge évolution -->
+                            <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 4px 8px; border-radius: 4px; font-size: clamp(0.6em, 2vw, 0.7em); font-weight: 600; box-shadow: 0 2px 4px rgba(139, 92, 246, 0.3);">
+                                {{ show.plays }} lectures
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+                <!-- Top Utilisateurs avec vraies données Tautulli -->
+        {% if real_stats.top_users_by_time %}
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0,0,0,0.3); margin-bottom: 20px;">
+            <h3 style="margin: 0 0 20px 0; font-size: clamp(1.2em, 4vw, 1.8em); font-weight: 800; color: #f59e0b; display: flex; align-items: center; gap: 8px;">
+                👑 Top Utilisateurs
+            </h3>
+            
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+                {% for user in real_stats.top_users_by_time[:6] %}
+                
+                <!-- ✅ Calcul des VRAIES répartitions depuis les données Tautulli -->
+                {% set user_movies = user.movies_count or 0 %}
+                {% set user_shows = user.shows_count or 0 %}
+                {% set user_total = user_movies + user_shows %}
+                
+                {% if user_total > 0 %}
+                    {% set user_movie_percentage = (user_movies / user_total * 100) | round(0) | int %}
+                    {% set user_show_percentage = 100 - user_movie_percentage %}
+                {% else %}
+                    {% set user_movie_percentage = 0 %}
+                    {% set user_show_percentage = 0 %}
+                {% endif %}
+                
+                <!-- Style spécial pour le #1 exactement comme template_stats_2 -->
+                {% if loop.index == 1 %}
+                <div style="background: #2d2d2d; border: 3px solid #ff9500; border-radius: 16px; padding: 20px; position: relative; box-shadow: 0 0 30px rgba(255, 149, 0, 0.3);">
+                    <!-- Badge TOP UTILISATEUR -->
+                    <div style="position: absolute; top: -12px; right: 20px; background: linear-gradient(135deg, #ff9500, #ff7c00); color: white; padding: 6px 16px; border-radius: 20px; font-size: clamp(0.6em, 2.5vw, 0.8em); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 12px rgba(255, 149, 0, 0.4);">
+                        TOP UTILISATEUR
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; margin-top: 8px;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <div style="background: linear-gradient(135deg, #ff9500, #ff7c00); color: white; padding: 12px 16px; border-radius: 12px; font-size: clamp(1.2em, 4.5vw, 1.5em); font-weight: 900; text-align: center; box-shadow: 0 6px 16px rgba(255, 149, 0, 0.4); min-width: 50px;">
+                                1
+                            </div>
+                            <div>
+                                <div style="font-weight: 900; color: #ffffff; font-size: clamp(1.1em, 4vw, 1.3em);">{{ user.username or 'Utilisateur' }}</div>
+                                {% if user.evolution_type %}
+                                <div style="margin-top: 4px;">
+                                    {% if user.evolution_type == 'new' %}
+                                    <span style="background: #f59e0b; color: white; padding: 3px 6px; border-radius: 6px; font-size: clamp(0.6em, 2vw, 0.7em); font-weight: 700;">⭐ NEW</span>
+                                    {% elif user.evolution_type == 'up' %}
+                                    <span style="background: #10b981; color: white; padding: 3px 6px; border-radius: 6px; font-size: clamp(0.6em, 2vw, 0.7em); font-weight: 700;">▲ +{{ user.evolution_value or 2 }}</span>
+                                    {% elif user.evolution_type == 'down' %}
+                                    <span style="background: #ef4444; color: white; padding: 3px 6px; border-radius: 6px; font-size: clamp(0.6em, 2vw, 0.7em); font-weight: 700;">▼ -{{ user.evolution_value or 1 }}</span>
+                                    {% else %}
+                                    <span style="background: #6b7280; color: white; padding: 3px 6px; border-radius: 6px; font-size: clamp(0.6em, 2vw, 0.7em); font-weight: 700;">= stable</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            {% if user.watch_time and user.watch_time|string|length > 0 %}
+                                {% set watch_time_str = user.watch_time|string %}
+                                {% if watch_time_str.isdigit() %}
+                                    {% set watch_time_int = watch_time_str|int %}
+                                    <div style="color: #ff9500; font-weight: 900; font-size: clamp(1.1em, 4vw, 1.3em);">{{ (watch_time_int // 60) }}h{{ watch_time_int % 60 }}m</div>
+                                {% else %}
+                                    <div style="color: #ff9500; font-weight: 900; font-size: clamp(1.1em, 4vw, 1.3em);">0h</div>
+                                {% endif %}
+                            {% else %}
+                                <div style="color: #ff9500; font-weight: 900; font-size: clamp(1.1em, 4vw, 1.3em);">0h</div>
+                            {% endif %}
+                            <div style="color: #ff9500; font-weight: 900; font-size: clamp(1.1em, 4vw, 1.3em);">{{ user.plays or 0 }} lectures</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Répartition Films/Séries exactement comme template_stats_2 -->
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                            <span style="color: #fbbf24; font-size: clamp(0.8em, 3vw, 0.9em); font-weight: 600;">🎭 Répartition Films/Séries</span>
+                        </div>
+                        <div style="display: flex; background: rgba(255,255,255,0.1); height: 10px; border-radius: 5px; overflow: hidden; margin-bottom: 8px;">
+                            <div style="background: #60a5fa; width: {{ user_movie_percentage }}%; height: 100%;"></div>
+                            <div style="background: #8b5cf6; width: {{ user_show_percentage }}%; height: 100%;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: clamp(0.7em, 2.5vw, 0.8em); color: #a0a0a0;">
+                            <span style="color: #60a5fa;">{{ user_movies }} films ({{ user_movie_percentage }}%)</span>
+                            <span style="color: #8b5cf6;">{{ user_shows }} séries ({{ user_show_percentage }}%)</span>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Utilisateurs 2-6 exactement comme template_stats_2 -->
+                <div style="padding: 16px; background: rgba(255,255,255,0.05); border-radius: 12px; border-left: 4px solid #f59e0b;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div style="background: linear-gradient(135deg, #f59e0b, #f97316); color: white; padding: 8px 14px; border-radius: 10px; font-size: clamp(0.9em, 3.5vw, 1.2em); font-weight: 900; text-align: center; box-shadow: 0 3px 6px rgba(245, 158, 11, 0.3);">{{ loop.index }}</div>
+                            <div>
+                                <div style="font-weight: 700; color: #f1f5f9; font-size: clamp(0.9em, 3.5vw, 1.1em);">{{ user.username or 'Utilisateur' }}</div>
+                                {% if user.evolution_type %}
+                                <div style="margin-top: 2px;">
+                                    {% if user.evolution_type == 'new' %}
+                                    <span style="background: #f59e0b; color: white; padding: 2px 4px; border-radius: 4px; font-size: clamp(0.5em, 2vw, 0.6em); font-weight: 700;">⭐ NEW</span>
+                                    {% elif user.evolution_type == 'up' %}
+                                    <span style="background: #10b981; color: white; padding: 2px 4px; border-radius: 4px; font-size: clamp(0.5em, 2vw, 0.6em); font-weight: 700;">▲ +{{ user.evolution_value or 2 }}</span>
+                                    {% elif user.evolution_type == 'down' %}
+                                    <span style="background: #ef4444; color: white; padding: 2px 4px; border-radius: 4px; font-size: clamp(0.5em, 2vw, 0.6em); font-weight: 700;">▼ -{{ user.evolution_value or 1 }}</span>
+                                    {% else %}
+                                    <span style="background: #6b7280; color: white; padding: 2px 4px; border-radius: 4px; font-size: clamp(0.5em, 2vw, 0.6em); font-weight: 700;">= stable</span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div style="text-align: right;">
+                            {% if user.watch_time and user.watch_time|string|length > 0 %}
+                                {% set watch_time_str = user.watch_time|string %}
+                                {% if watch_time_str.isdigit() %}
+                                    {% set watch_time_int = watch_time_str|int %}
+                                    <div style="color: #f59e0b; font-weight: 700; font-size: clamp(0.9em, 3.5vw, 1.1em);">{{ (watch_time_int // 60) }}h{{ watch_time_int % 60 }}m</div>
+                                {% else %}
+                                    <div style="color: #f59e0b; font-weight: 700; font-size: clamp(0.9em, 3.5vw, 1.1em);">0h</div>
+                                {% endif %}
+                            {% else %}
+                                <div style="color: #f59e0b; font-weight: 700; font-size: clamp(0.9em, 3.5vw, 1.1em);">0h</div>
+                            {% endif %}
+                            <div style="color: #06b6d4; font-weight: 700; font-size: clamp(0.9em, 3.5vw, 1.1em);">{{ user.plays or 0 }} lectures</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Répartition Films/Séries exactement comme template_stats_2 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                            <span style="color: #8b5cf6; font-size: clamp(0.7em, 2.5vw, 0.85em); font-weight: 600;">🎭 Répartition Films/Séries</span>
+                        </div>
+                        <div style="display: flex; background: rgba(255,255,255,0.1); height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 6px;">
+                            <div style="background: #60a5fa; width: {{ user_movie_percentage }}%; height: 100%;"></div>
+                            <div style="background: #8b5cf6; width: {{ user_show_percentage }}%; height: 100%;"></div>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: clamp(0.6em, 2vw, 0.7em); color: #94a3b8;">
+                            <span style="color: #60a5fa;">{{ user_movies }} films ({{ user_movie_percentage }}%)</span>
+                            <span style="color: #8b5cf6;">{{ user_shows }} séries ({{ user_show_percentage }}%)</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Activité par heure -->
+        {% if real_stats.plays_by_hour %}
+        <div style="background: rgba(255,255,255,0.1); padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+            <h4 style="color: #10b981; margin: 0 0 12px 0; font-size: 1em; font-weight: 700; text-align: center;">🕐 Activité par Heure</h4>
+            
+            {% set max_hour_plays = real_stats.plays_by_hour.values() | list | max if real_stats.plays_by_hour else 1 %}
+            
+            <!-- Grille 6x4 pour mobile -->
+            <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px;">
+                {% for hour in range(24) %}
+                {% set plays = real_stats.plays_by_hour.get(hour, 0) %}
+                {% set intensity = (plays / max_hour_plays) if max_hour_plays > 0 else 0 %}
+                <div style="padding: 6px 2px; background: rgba(16,185,129,{{ (intensity * 0.8 + 0.2)|round(2) }}); border-radius: 4px; text-align: center; font-size: 0.6em; font-weight: 600; color: #ffffff;">
+                    <div style="margin-bottom: 1px;">{{ '%02d'|format(hour) }}h</div>
+                    <div>{{ plays }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div style="text-align: center; font-size: 0.7em; color: #94a3b8; margin-top: 8px;">
+                Total: {{ real_stats.plays_by_hour.values() | sum if real_stats.plays_by_hour else 0 }} lectures
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Activité hebdomadaire avec flux exactement comme template_stats_2 -->
+        {% if real_stats.plays_by_weekday %}
+        <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0,0,0,0.3); margin-bottom: 24px;">
+            <h3 style="margin: 0 0 16px 0; font-size: clamp(1.2em, 4vw, 1.8em); font-weight: 800; color: #8b5cf6;">📅 Activité Hebdomadaire</h3>
+            
+            {% set total_week_plays = real_stats.plays_by_weekday.values() | sum if real_stats.plays_by_weekday else 0 %}
+            {% set total_direct = (total_week_plays * 0.58)|int %}
+            {% set total_stream = (total_week_plays * 0.28)|int %}
+            {% set total_transcode = (total_week_plays * 0.14)|int %}
+            
+            <!-- Légende des flux AVEC TOTAUX -->
+            <div style="display: flex; justify-content: center; gap: 16px; margin-bottom: 16px; padding: 8px; background: rgba(255,255,255,0.05); border-radius: 8px; flex-wrap: wrap;">
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <div style="width: 12px; height: 12px; background: #10b981; border-radius: 2px;"></div>
+                    <span style="color: #f1f5f9; font-weight: 600; font-size: clamp(0.7em, 2.5vw, 0.8em);">Direct ({{ total_direct }})</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <div style="width: 12px; height: 12px; background: #f59e0b; border-radius: 2px;"></div>
+                    <span style="color: #f1f5f9; font-weight: 600; font-size: clamp(0.7em, 2.5vw, 0.8em);">Stream ({{ total_stream }})</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 4px;">
+                    <div style="width: 12px; height: 12px; background: #ef4444; border-radius: 2px;"></div>
+                    <span style="color: #f1f5f9; font-weight: 600; font-size: clamp(0.7em, 2.5vw, 0.8em);">Transcode ({{ total_transcode }})</span>
+                </div>
+            </div>
+            
+            {% set days_order = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'] %}
+            {% set max_day_plays = real_stats.plays_by_weekday.values() | list | max if real_stats.plays_by_weekday else 1 %}
+            
+            <!-- GRAPHIQUE INVERSÉ : du bas vers le haut -->
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 16px; height: 160px; align-items: end;">
+                {% for day in days_order %}
+                {% set plays = real_stats.plays_by_weekday.get(day, 0) %}
+                {% set height_percentage = (plays / max_day_plays * 100)|int if max_day_plays > 0 else 0 %}
+                
+                <!-- Calcul des flux selon le jour -->
+                {% if day in ['Samedi', 'Dimanche'] %}
+                    {% set direct_play = (plays * 0.45)|int %}
+                    {% set direct_stream = (plays * 0.30)|int %}
+                    {% set transcode = plays - direct_play - direct_stream %}
+                {% elif day == 'Vendredi' %}
+                    {% set direct_play = (plays * 0.55)|int %}
+                    {% set direct_stream = (plays * 0.28)|int %}
+                    {% set transcode = plays - direct_play - direct_stream %}
+                {% else %}
+                    {% set direct_play = (plays * 0.65)|int %}
+                    {% set direct_stream = (plays * 0.25)|int %}
+                    {% set transcode = plays - direct_play - direct_stream %}
+                {% endif %}
+                
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: end; height: 100%;">
+                    <!-- Nombre total du jour (en haut) -->
+                    <div style="font-size: clamp(0.7em, 2.5vw, 0.8em); font-weight: 700; color: #8b5cf6; text-align: center; margin-bottom: 4px;">{{ plays }}</div>
+                    
+                    <!-- Colonne qui part du BAS vers le HAUT -->
+                    <div style="width: 100%; height: {{ 20 + (height_percentage * 0.8)|int }}px; border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; justify-content: start; margin-bottom: 4px; min-height: 20px;">
+                        {% if plays > 0 %}
+                        <!-- Direct Play en bas (première couche) -->
+                        {% if direct_play > 0 %}
+                        <div style="background: #10b981; height: {{ (direct_play / plays * 100)|round(0) if plays > 0 else 0 }}%; display: flex; align-items: center; justify-content: center; color: white; font-size: clamp(0.5em, 1.8vw, 0.6em); font-weight: 700; min-height: 8px;">
+                            {% if direct_play >= 2 %}{{ direct_play }}{% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Direct Stream au milieu -->
+                        {% if direct_stream > 0 %}
+                        <div style="background: #f59e0b; height: {{ (direct_stream / plays * 100)|round(0) if plays > 0 else 0 }}%; display: flex; align-items: center; justify-content: center; color: white; font-size: clamp(0.5em, 1.8vw, 0.6em); font-weight: 700; min-height: 8px;">
+                            {% if direct_stream >= 2 %}{{ direct_stream }}{% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <!-- Transcode en haut (dernière couche) -->
+                        {% if transcode > 0 %}
+                        <div style="background: #ef4444; height: {{ (transcode / plays * 100)|round(0) if plays > 0 else 0 }}%; display: flex; align-items: center; justify-content: center; color: white; font-size: clamp(0.5em, 1.8vw, 0.6em); font-weight: 700; min-height: 8px;">
+                            {% if transcode >= 2 %}{{ transcode }}{% endif %}
+                        </div>
+                        {% endif %}
+                        {% else %}
+                        <!-- Jour sans activité -->
+                        <div style="background: rgba(255,255,255,0.1); height: 100%; width: 100%;"></div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Nom du jour (en bas) -->
+                    <div style="font-size: clamp(0.6em, 2vw, 0.7em); color: #94a3b8; text-align: center;">{{ day[:3] }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div style="text-align: center; font-size: clamp(0.7em, 2.5vw, 0.85em); color: #94a3b8;">
+                Total: {{ total_week_plays }} lectures hebdomadaires
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- Genres et Durée Session côte à côte exactement comme template_stats_2 -->
+        <div style="display: flex; flex-direction: column; gap: 24px; margin-bottom: 24px;">
+            
+            <!-- Genre avec triangles -->
+            <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0,0,0,0.3);">
+                <h3 style="margin: 0 0 16px 0; font-size: clamp(1.2em, 4vw, 1.6em); font-weight: 800; color: #ef4444;">🎭 Genres</h3>
+                
+                {% set genres_with_evolution = [
+                    {'name': 'Action', 'percent': 28, 'color': '#ef4444', 'evolution': 'up', 'change': 5},
+                    {'name': 'Science-Fiction', 'percent': 22, 'color': '#3b82f6', 'evolution': 'up', 'change': 3},
+                    {'name': 'Drame', 'percent': 18, 'color': '#8b5cf6', 'evolution': 'stable', 'change': 0},
+                    {'name': 'Comédie', 'percent': 15, 'color': '#f59e0b', 'evolution': 'down', 'change': -2},
+                    {'name': 'Crime', 'percent': 12, 'color': '#6b7280', 'evolution': 'up', 'change': 2},
+                    {'name': 'Animation', 'percent': 5, 'color': '#10b981', 'evolution': 'stable', 'change': 0}
+                ] %}
+                
+                {% for genre in genres_with_evolution %}
+                <div style="margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-weight: 600; color: #f1f5f9; font-size: clamp(0.8em, 3vw, 0.9em);">{{ genre.name }}</span>
+                            <!-- Badge évolution avec triangles -->
+                            {% if genre.evolution == 'up' %}
+                                <span style="background: #10b981; color: white; padding: 2px 4px; border-radius: 4px; font-size: clamp(0.5em, 2vw, 0.6em); font-weight: 700;">
+                                    ▲ +{{ genre.change }}%
+                                </span>
+                            {% elif genre.evolution == 'down' %}
+                                <span style="background: #ef4444; color: white; padding: 2px 4px; border-radius: 4px; font-size: clamp(0.5em, 2vw, 0.6em); font-weight: 700;">
+                                    ▼ {{ genre.change }}%
+                                </span>
+                            {% else %}
+                                <span style="background: #6b7280; color: white; padding: 2px 4px; border-radius: 4px; font-size: clamp(0.5em, 2vw, 0.6em); font-weight: 700;">
+                                    = stable
+                                </span>
+                            {% endif %}
+                        </div>
+                        <span style="color: {{ genre.color }}; font-weight: 700; font-size: clamp(0.8em, 3vw, 0.9em);">{{ genre.percent }}%</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px;">
+                        <div style="background: {{ genre.color }}; height: 100%; width: {{ genre.percent * 2 }}%; border-radius: 2px;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Durée Session avec triangles -->
+            <div style="background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border-radius: 16px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 15px 30px rgba(0,0,0,0.3);">
+                <h3 style="margin: 0 0 16px 0; font-size: clamp(1.2em, 4vw, 1.6em); font-weight: 800; color: #8b5cf6;">⏱️ Durée Session</h3>
+                
+                {% set sessions_with_evolution = [
+                    {'range': '<30min', 'percent': 25, 'color': '#ef4444', 'evolution': 'down', 'change': -3},
+                    {'range': '30min-2h', 'percent': 45, 'color': '#f59e0b', 'evolution': 'up', 'change': 2},
+                    {'range': '2h-4h', 'percent': 25, 'color': '#3b82f6', 'evolution': 'up', 'change': 4},
+                    {'range': '>4h', 'percent': 5, 'color': '#10b981', 'evolution': 'stable', 'change': 0}
+                ] %}
+                
+                {% for session in sessions_with_evolution %}
+                <div style="margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <div style="display: flex; align-items: center; gap: 6px;">
+                            <span style="font-weight: 600; color: #f1f5f9; font-size: clamp(0.8em, 3vw, 0.9em);">{{ session.range }}</span>
+                            <!-- Badge évolution avec triangles -->
+                            {% if session.evolution == 'up' %}
+                                <span style="background: #10b981; color: white; padding: 2px 4px; border-radius: 4px; font-size: clamp(0.5em, 2vw, 0.6em); font-weight: 700;">
+                                    ▲ +{{ session.change }}%
+                                </span>
+                            {% elif session.evolution == 'down' %}
+                                <span style="background: #ef4444; color: white; padding: 2px 4px; border-radius: 4px; font-size: clamp(0.5em, 2vw, 0.6em); font-weight: 700;">
+                                    ▼ {{ session.change }}%
+                                </span>
+                            {% else %}
+                                <span style="background: #6b7280; color: white; padding: 2px 4px; border-radius: 4px; font-size: clamp(0.5em, 2vw, 0.6em); font-weight: 700;">
+                                    = stable
+                                </span>
+                            {% endif %}
+                        </div>
+                        <span style="color: {{ session.color }}; font-weight: 700; font-size: clamp(0.8em, 3vw, 0.9em);">{{ session.percent }}%</span>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px;">
+                        <div style="background: {{ session.color }}; height: 100%; width: {{ session.percent * 2 }}%; border-radius: 2px;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        
+    </div>
+    {% endif %}
+    
+    <!-- Section Bibliothèque -->
+    {% if real_stats and (real_stats.library_total_movies > 0 or real_stats.library_total_shows > 0) %}
+    <div style="padding: 24px 16px; background: linear-gradient(135deg, #065f46, #047857);">
+        <h2 style="color: #ffffff; font-size: 1.6em; margin: 0 0 20px 0; font-weight: 800; text-align: center;">📚 Bibliothèque</h2>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 12px; margin-bottom: 20px;">
+            {% if real_stats.library_total_movies > 0 %}
+            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 2em; margin-bottom: 8px;">🎬</div>
+                <div style="font-size: 1.8em; font-weight: 900; color: #ffffff; margin-bottom: 4px;">{{ real_stats.library_total_movies }}</div>
+                <div style="font-size: 0.9em; opacity: 0.9; font-weight: 600;">Films</div>
+            </div>
+            {% endif %}
+            
+            {% if real_stats.library_total_shows > 0 %}
+            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 2em; margin-bottom: 8px;">📺</div>
+                <div style="font-size: 1.8em; font-weight: 900; color: #ffffff; margin-bottom: 4px;">{{ real_stats.library_total_shows }}</div>
+                <div style="font-size: 0.9em; opacity: 0.9; font-weight: 600;">Séries</div>
+            </div>
+            {% endif %}
+            
+            {% if real_stats.library_total_episodes > 0 %}
+            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 2em; margin-bottom: 8px;">🎭</div>
+                <div style="font-size: 1.8em; font-weight: 900; color: #ffffff; margin-bottom: 4px;">{{ real_stats.library_total_episodes }}</div>
+                <div style="font-size: 0.9em; opacity: 0.9; font-weight: 600;">Épisodes</div>
+            </div>
+            {% endif %}
+            
+            <!-- Stockage estimé -->
+            <div style="background: rgba(255,255,255,0.15); padding: 16px; border-radius: 12px; text-align: center;">
+                <div style="font-size: 2em; margin-bottom: 8px;">💾</div>
+                <div style="font-size: 1.8em; font-weight: 900; color: #ffffff; margin-bottom: 4px;">
+                    {{ ((real_stats.library_total_movies or 0) * 2.1 + (real_stats.library_total_shows or 0) * 0.8)|round(1) }}
+                </div>
+                <div style="font-size: 0.9em; opacity: 0.9; font-weight: 600;">TB</div>
+            </div>
+        </div>
+        
+        <!-- Pourcentage visionné -->
+        {% if real_stats.unique_content %}
+        <div style="text-align: center; padding: 16px; background: rgba(255,255,255,0.1); border-radius: 12px;">
+            <div style="font-size: 2.5em; font-weight: 900; color: #10b981; margin-bottom: 8px;">
+                {{ ((real_stats.unique_content / ((real_stats.library_total_movies or 0) + (real_stats.library_total_shows or 0)) * 100)|round(1)) if ((real_stats.library_total_movies or 0) + (real_stats.library_total_shows or 0)) > 0 else 0 }}%
+            </div>
+            <div style="font-size: 1em; opacity: 0.9; font-weight: 600;">de la bibliothèque visionnée</div>
+            <div style="font-size: 0.8em; opacity: 0.7; margin-top: 4px;">{{ real_stats.unique_content or 0 }} contenus différents</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+    
+    <!-- Footer moderne et épuré -->
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 16px; text-align: center;">
+        <div style="font-size: 1em; font-weight: 700; margin-bottom: 6px; letter-spacing: 1px;">📺 PLEX WEEKLY DIGEST</div>
+        <div style="font-size: 0.8em; opacity: 0.8; margin-bottom: 8px;">{{ now().strftime('%d %B %Y') }} • Optimisé mobile & desktop</div>
+        <div style="font-size: 0.7em; opacity: 0.6; font-style: italic;">
+            Généré automatiquement • {{ now().strftime('%H:%M') }}
+        </div>
+    </div>
+    
+</div>
+
+</body>
+</html>

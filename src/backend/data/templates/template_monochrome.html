@@ -1,0 +1,128 @@
+<!-- Template Monochrome - Nuances d'une seule couleur -->
+<div style="max-width: 800px; margin: 0 auto; background: #0a1929; font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; color: #b4d0e7; padding: 50px 40px;">
+
+    <!-- Header -->
+    <header style="margin-bottom: 60px; padding-bottom: 40px; border-bottom: 1px solid #1e3a5f;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h1 style="margin: 0; font-size: 2.5em; font-weight: 600; color: #e3f2fd; letter-spacing: -0.01em;">Media</h1>
+                <p style="margin: 10px 0 0 0; font-size: 0.9em; color: #5c8ab5;">Newsletter hebdomadaire</p>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 2em; font-weight: 300; color: #e3f2fd;">{{ now().strftime('%d') }}</div>
+                <div style="font-size: 0.85em; color: #5c8ab5;">{{ now().strftime('%B %Y') }}</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Stats -->
+    <div style="display: flex; gap: 30px; margin-bottom: 50px; flex-wrap: wrap;">
+        {% if movies %}
+        <div style="flex: 1; min-width: 120px; background: #0d2137; padding: 25px; border-radius: 12px; border: 1px solid #1e3a5f;">
+            <div style="font-size: 2.5em; font-weight: 600; color: #e3f2fd;">{{ movies|length }}</div>
+            <div style="font-size: 0.85em; color: #5c8ab5; margin-top: 5px;">Films</div>
+        </div>
+        {% endif %}
+        {% if shows_grouped %}
+        <div style="flex: 1; min-width: 120px; background: #0d2137; padding: 25px; border-radius: 12px; border: 1px solid #1e3a5f;">
+            <div style="font-size: 2.5em; font-weight: 600; color: #e3f2fd;">{{ shows_grouped|length }}</div>
+            <div style="font-size: 0.85em; color: #5c8ab5; margin-top: 5px;">Séries</div>
+        </div>
+        {% endif %}
+        {% if games %}
+        <div style="flex: 1; min-width: 120px; background: #0d2137; padding: 25px; border-radius: 12px; border: 1px solid #1e3a5f;">
+            <div style="font-size: 2.5em; font-weight: 600; color: #e3f2fd;">{{ games|length }}</div>
+            <div style="font-size: 0.85em; color: #5c8ab5; margin-top: 5px;">Jeux</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Films -->
+    {% if movies %}
+    <section style="margin-bottom: 50px;">
+        <h2 style="margin: 0 0 25px 0; font-size: 0.8em; font-weight: 500; color: #5c8ab5; text-transform: uppercase; letter-spacing: 2px;">Films</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 20px;">
+            {% for movie in movies %}
+            <div style="background: #0d2137; border-radius: 10px; overflow: hidden; border: 1px solid #1e3a5f;">
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" style="width: 100%; height: 200px; object-fit: cover; filter: saturate(0.3) brightness(0.9);">
+                {% else %}
+                <div style="width: 100%; height: 200px; background: #132f4c; display: flex; align-items: center; justify-content: center; font-size: 2.5em; color: #1e3a5f;">🎬</div>
+                {% endif %}
+
+                <div style="padding: 15px;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 0.9em; font-weight: 500; color: #e3f2fd; line-height: 1.3;">
+                        {{ movie.title[:20] }}{% if movie.title|length > 20 %}...{% endif %}
+                    </h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; color: #5c8ab5;">
+                        <span>{{ movie.year }}</span>
+                        {% if movie.rating %}<span>{{ movie.rating }}</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Series -->
+    {% if shows_grouped %}
+    <section style="margin-bottom: 50px;">
+        <h2 style="margin: 0 0 25px 0; font-size: 0.8em; font-weight: 500; color: #5c8ab5; text-transform: uppercase; letter-spacing: 2px;">Séries</h2>
+
+        {% for series_title, episodes in shows_grouped.items() %}
+        <div style="background: #0d2137; border-radius: 10px; padding: 20px; margin-bottom: 12px; border: 1px solid #1e3a5f;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div>
+                    <h3 style="margin: 0 0 6px 0; font-size: 1em; font-weight: 500; color: #e3f2fd;">{{ series_title }}</h3>
+                    <div style="font-size: 0.85em; color: #5c8ab5;">
+                        {% for episode in episodes[:4] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %} · {% endif %}{% endfor %}
+                    </div>
+                </div>
+                <div style="background: #1e3a5f; color: #e3f2fd; padding: 8px 16px; border-radius: 8px; font-weight: 600;">
+                    +{{ episodes|length }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </section>
+    {% endif %}
+
+    <!-- Games & Books -->
+    {% if games or books %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 50px;">
+        {% if games %}
+        <section>
+            <h2 style="margin: 0 0 20px 0; font-size: 0.8em; font-weight: 500; color: #5c8ab5; text-transform: uppercase; letter-spacing: 2px;">Jeux</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                {% for game in games %}
+                <span style="background: #0d2137; border: 1px solid #1e3a5f; padding: 8px 14px; border-radius: 6px; font-size: 0.85em; color: #b4d0e7;">
+                    {{ game.name[:18] }}{% if game.name|length > 18 %}...{% endif %}
+                </span>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if books %}
+        <section>
+            <h2 style="margin: 0 0 20px 0; font-size: 0.8em; font-weight: 500; color: #5c8ab5; text-transform: uppercase; letter-spacing: 2px;">Livres</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                {% for book in books %}
+                <span style="background: #0d2137; border: 1px solid #1e3a5f; padding: 8px 14px; border-radius: 6px; font-size: 0.85em; color: #b4d0e7;">
+                    {{ book.name[:18] }}{% if book.name|length > 18 %}...{% endif %}
+                </span>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <footer style="padding-top: 30px; border-top: 1px solid #1e3a5f; text-align: center;">
+        <p style="margin: 0; font-size: 0.8em; color: #3d6a94;">{{ now().strftime('%d/%m/%Y %H:%M') }}</p>
+    </footer>
+
+</div>

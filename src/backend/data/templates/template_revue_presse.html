@@ -1,0 +1,193 @@
+<!-- Template Revue de Presse - Style journal/critique cinéma -->
+<div style="max-width: 800px; margin: 0 auto; background: #f5f0e6; font-family: 'Times New Roman', Georgia, serif; overflow: hidden;">
+
+    <!-- Bandeau en-tête journal -->
+    <div style="background: #1a1a1a; padding: 8px 20px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="color: #c9a227; font-size: 0.75em; text-transform: uppercase; letter-spacing: 2px;">Édition Spéciale</span>
+        <span style="color: #888; font-size: 0.75em;">{{ now().strftime('%A %d %B %Y') }}</span>
+        <span style="color: #c9a227; font-size: 0.75em; text-transform: uppercase; letter-spacing: 2px;">N°{{ now().strftime('%W') }}</span>
+    </div>
+
+    <!-- Titre du journal -->
+    <div style="background: #fff; padding: 30px 40px; text-align: center; border-bottom: 3px double #1a1a1a;">
+        <h1 style="margin: 0; font-size: 3.5em; font-weight: normal; color: #1a1a1a; font-family: 'Times New Roman', serif; letter-spacing: -1px;">
+            LA GAZETTE DU CINÉMA
+        </h1>
+        <p style="margin: 10px 0 0 0; font-size: 1em; color: #666; font-style: italic;">
+            "Toute l'actualité de vos écrans, chaque semaine"
+        </p>
+    </div>
+
+    <!-- Sommaire -->
+    {% if movies or shows_grouped %}
+    <div style="background: #fff; padding: 15px 40px; border-bottom: 1px solid #ddd; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+        {% if movies %}<span style="font-size: 0.8em; color: #1a1a1a;">CRITIQUES FILMS p.1</span>{% endif %}
+        {% if shows_grouped %}<span style="font-size: 0.8em; color: #1a1a1a;">SÉRIES À SUIVRE p.2</span>{% endif %}
+        {% if top_movies %}<span style="font-size: 0.8em; color: #1a1a1a;">BOX OFFICE p.3</span>{% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Article Principal - Premier film -->
+    {% if movies and movies|length > 0 %}
+    {% set main_movie = movies[0] %}
+    <div style="background: #fff; padding: 30px 40px; border-bottom: 2px solid #1a1a1a;">
+        <div style="display: flex; gap: 30px;">
+            {% if main_movie.poster_url %}
+            <div style="flex-shrink: 0; position: relative;">
+                <img src="{{ main_movie.poster_url }}" alt="{{ main_movie.title }}" style="width: 200px; height: 300px; object-fit: cover; border: 1px solid #ddd;">
+                {% if main_movie.rating %}
+                <div style="position: absolute; top: -10px; right: -10px; background: #c9a227; color: #fff; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1em; font-weight: bold; border: 3px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">
+                    {{ main_movie.rating }}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+            <div style="flex: 1;">
+                <div style="font-size: 0.75em; color: #c9a227; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">★ CRITIQUE DE LA SEMAINE ★</div>
+                <h2 style="margin: 0 0 15px 0; font-size: 2.2em; font-weight: normal; color: #1a1a1a; line-height: 1.1;">{{ main_movie.title }}</h2>
+
+                {% if main_movie.tagline %}
+                <p style="margin: 0 0 15px 0; font-size: 1.2em; font-style: italic; color: #666; border-left: 3px solid #c9a227; padding-left: 15px;">
+                    "{{ main_movie.tagline }}"
+                </p>
+                {% endif %}
+
+                <div style="font-size: 0.9em; color: #444; margin-bottom: 15px;">
+                    <strong>{{ main_movie.year }}</strong>
+                    {% if main_movie.director %} • Réalisé par <strong>{{ main_movie.director }}</strong>{% endif %}
+                    {% if main_movie.duration %} • {{ format_duration(main_movie.duration) }}{% endif %}
+                </div>
+
+                {% if main_movie.cast %}
+                <p style="margin: 0 0 15px 0; font-size: 0.9em; color: #555;">
+                    <strong>Distribution :</strong> {{ format_cast_list(main_movie.cast, 5) }}
+                </p>
+                {% endif %}
+
+                {% if main_movie.summary %}
+                <p style="margin: 0; font-size: 1em; color: #333; line-height: 1.7; text-align: justify;">
+                    {{ main_movie.summary }}
+                </p>
+                {% endif %}
+
+                {% if main_movie.genres %}
+                <div style="margin-top: 15px;">
+                    {% for genre in main_movie.genres[:4] %}
+                    <span style="display: inline-block; background: #1a1a1a; color: #fff; padding: 3px 12px; font-size: 0.75em; margin-right: 5px; text-transform: uppercase;">{{ genre }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Autres critiques en colonnes journal -->
+    {% if movies and movies|length > 1 %}
+    <div style="background: #f5f0e6; padding: 30px 40px;">
+        <h3 style="margin: 0 0 20px 0; font-size: 1.3em; color: #1a1a1a; text-transform: uppercase; letter-spacing: 2px; border-bottom: 2px solid #1a1a1a; padding-bottom: 10px;">
+            Également à l'affiche
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 25px;">
+            {% for movie in movies[1:5] %}
+            <div style="background: #fff; padding: 20px; border: 1px solid #ddd;">
+                <div style="display: flex; gap: 15px;">
+                    {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 70px; height: 105px; object-fit: cover; flex-shrink: 0;">
+                    {% endif %}
+                    <div>
+                        <h4 style="margin: 0 0 8px 0; font-size: 1.1em; font-weight: bold; color: #1a1a1a; line-height: 1.2;">{{ movie.title }}</h4>
+                        <div style="font-size: 0.8em; color: #666; margin-bottom: 8px;">
+                            {{ movie.year }}{% if movie.director %} • {{ movie.director }}{% endif %}
+                        </div>
+                        {% if movie.rating %}
+                        <div style="display: flex; align-items: center; gap: 5px;">
+                            <span style="font-size: 0.85em; color: #c9a227; font-weight: bold;">Note :</span>
+                            <span style="font-size: 1em; font-weight: bold; color: #1a1a1a;">{{ movie.rating }}/10</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% if movie.summary %}
+                <p style="margin: 12px 0 0 0; font-size: 0.85em; color: #555; line-height: 1.5; text-align: justify;">
+                    {{ truncate_text(movie.summary, 150) }}
+                </p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section Séries - Style rubrique -->
+    {% if shows_grouped %}
+    <div style="background: #fff; padding: 30px 40px; border-top: 3px solid #1a1a1a;">
+        <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 25px;">
+            <h3 style="margin: 0; font-size: 1.3em; color: #1a1a1a; text-transform: uppercase; letter-spacing: 2px;">
+                📺 Séries - Notre Sélection
+            </h3>
+            <div style="flex: 1; height: 1px; background: #ddd;"></div>
+        </div>
+
+        {% for series_title, episodes in shows_grouped.items() %}
+        <div style="display: flex; gap: 20px; margin-bottom: 25px; padding-bottom: 25px; border-bottom: 1px dashed #ddd;">
+            {% if episodes[0].poster_url %}
+            <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 80px; height: 120px; object-fit: cover; flex-shrink: 0; border: 1px solid #ddd;">
+            {% endif %}
+            <div style="flex: 1;">
+                <h4 style="margin: 0 0 8px 0; font-size: 1.2em; font-weight: bold; color: #1a1a1a;">{{ series_title }}</h4>
+                <div style="font-size: 0.85em; color: #c9a227; margin-bottom: 10px;">
+                    {{ episodes|length }} nouvel{{ 's' if episodes|length > 1 else '' }} épisode{{ 's' if episodes|length > 1 else '' }}
+                </div>
+                <div style="font-size: 0.85em; color: #666;">
+                    {% for episode in episodes[:4] %}
+                    <span style="background: #f5f0e6; padding: 2px 8px; margin-right: 5px;">S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}</span>
+                    {% endfor %}
+                    {% if episodes|length > 4 %}<span style="color: #888;">+{{ episodes|length - 4 }} autres</span>{% endif %}
+                </div>
+                {% if episodes[0].summary %}
+                <p style="margin: 10px 0 0 0; font-size: 0.9em; color: #555; line-height: 1.5;">
+                    {{ truncate_text(episodes[0].summary, 200) }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Encart Box Office -->
+    {% if top_movies %}
+    <div style="background: #1a1a1a; padding: 25px 40px; color: #fff;">
+        <h3 style="margin: 0 0 20px 0; font-size: 1.2em; color: #c9a227; text-transform: uppercase; letter-spacing: 2px; text-align: center;">
+            🏆 Box Office de la Semaine
+        </h3>
+        <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+            {% for movie in top_movies[:3] %}
+            <div style="text-align: center; width: 120px;">
+                <div style="font-size: 2em; font-weight: bold; color: #c9a227; margin-bottom: 5px;">{{ loop.index }}</div>
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 80px; height: 120px; object-fit: cover; margin-bottom: 8px;">
+                {% endif %}
+                <div style="font-size: 0.85em; color: #fff; line-height: 1.3;">{{ movie.title }}</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Pied de page style journal -->
+    <div style="background: #fff; padding: 20px 40px; border-top: 3px double #1a1a1a; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-size: 0.75em; color: #888;">
+            La Gazette du Cinéma © {{ now().strftime('%Y') }}
+        </div>
+        <div style="font-size: 0.75em; color: #888; font-style: italic;">
+            Prochain numéro la semaine prochaine
+        </div>
+        <div style="font-size: 0.75em; color: #888;">
+            {{ now().strftime('%d/%m/%Y %H:%M') }}
+        </div>
+    </div>
+
+</div>

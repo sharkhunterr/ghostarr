@@ -1,0 +1,151 @@
+<!-- Template Netflix - Interface streaming moderne -->
+<div style="max-width: 100%; margin: 0 auto; background: #141414; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #fff;">
+
+    <!-- Header Netflix -->
+    <div style="background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(20,20,20,0.8) 100%); padding: 20px 4%; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-size: clamp(1.8em, 6vw, 2.5em); font-weight: 900; color: #e50914; letter-spacing: -2px;">MEDIAFLIX</div>
+            <div style="font-size: 0.9em; color: #999;">{{ now().strftime('%d %B %Y') }}</div>
+        </div>
+    </div>
+
+    <!-- Hero Section - Film vedette -->
+    {% if movies and movies|length > 0 %}
+    {% set hero = movies[0] %}
+    <div style="position: relative; height: 500px; overflow: hidden;">
+        {% if hero.backdrop_url %}
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: url('{{ hero.backdrop_url }}'); background-size: cover; background-position: center top;"></div>
+        {% endif %}
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(90deg, rgba(20,20,20,1) 0%, rgba(20,20,20,0.7) 30%, transparent 60%), linear-gradient(0deg, rgba(20,20,20,1) 0%, transparent 50%);"></div>
+
+        <div style="position: absolute; bottom: 80px; left: 4%; max-width: 500px; z-index: 2;">
+            <div style="display: inline-block; background: #e50914; color: #fff; padding: 4px 12px; font-size: 0.75em; font-weight: 700; letter-spacing: 1px; margin-bottom: 15px;">NOUVEAU</div>
+            <h1 style="margin: 0 0 15px 0; font-size: clamp(2em, 6vw, 3.5em); font-weight: 900; line-height: 1.1; text-shadow: 2px 2px 8px rgba(0,0,0,0.8);">{{ hero.title }}</h1>
+
+            <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 15px; font-size: 0.9em;">
+                {% if hero.rating %}<span style="color: #46d369; font-weight: 700;">{{ (hero.rating * 10)|int }}% Match</span>{% endif %}
+                <span style="color: #999;">{{ hero.year }}</span>
+                {% if hero.duration %}<span style="border: 1px solid #999; padding: 0 5px; font-size: 0.8em;">{{ format_duration(hero.duration) }}</span>{% endif %}
+            </div>
+
+            {% if hero.summary %}
+            <p style="margin: 0 0 20px 0; font-size: 1em; color: #ddd; line-height: 1.5; text-shadow: 1px 1px 3px rgba(0,0,0,0.8);">{{ truncate_text(hero.summary, 200) }}</p>
+            {% endif %}
+
+            {% if hero.genres %}
+            <div style="font-size: 0.85em; color: #999;">
+                {{ hero.genres[:3]|join(' • ') }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section Films - Carrousel horizontal -->
+    {% if movies %}
+    <div style="padding: 30px 4%;">
+        <h2 style="margin: 0 0 15px 0; font-size: 1.4em; font-weight: 700;">🎬 Nouveaux Films</h2>
+
+        <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 20px; scroll-snap-type: x mandatory;">
+            {% for movie in movies %}
+            <div style="flex: 0 0 auto; width: 200px; scroll-snap-align: start; position: relative; border-radius: 4px; overflow: hidden; transition: transform 0.2s;">
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 300px; object-fit: cover;">
+                {% else %}
+                <div style="width: 100%; height: 300px; background: linear-gradient(135deg, #e50914, #831010); display: flex; align-items: center; justify-content: center; font-size: 3em;">🎬</div>
+                {% endif %}
+
+                <!-- Info overlay -->
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.95)); padding: 15px 10px 10px;">
+                    <div style="font-size: 0.85em; font-weight: 700; margin-bottom: 5px; line-height: 1.2;">{{ movie.title[:30] }}{% if movie.title|length > 30 %}...{% endif %}</div>
+                    <div style="display: flex; gap: 8px; align-items: center; font-size: 0.75em;">
+                        {% if movie.rating %}<span style="color: #46d369;">{{ (movie.rating * 10)|int }}%</span>{% endif %}
+                        <span style="color: #999;">{{ movie.year }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section Séries - Style rangées Netflix -->
+    {% if shows_grouped %}
+    <div style="padding: 20px 4%; background: linear-gradient(180deg, #141414 0%, #1a1a1a 100%);">
+        <h2 style="margin: 0 0 15px 0; font-size: 1.4em; font-weight: 700;">📺 Séries en Cours</h2>
+
+        <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 20px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="flex: 0 0 auto; width: 300px; background: #2a2a2a; border-radius: 6px; overflow: hidden;">
+                <div style="display: flex; height: 170px;">
+                    {% if episodes[0].poster_url %}
+                    <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 120px; height: 100%; object-fit: cover;">
+                    {% endif %}
+                    <div style="flex: 1; padding: 15px;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 1em; font-weight: 700; line-height: 1.2;">{{ series_title }}</h3>
+                        <div style="background: #e50914; color: #fff; padding: 3px 8px; font-size: 0.7em; font-weight: 700; display: inline-block; border-radius: 3px; margin-bottom: 10px;">
+                            +{{ episodes|length }} épisodes
+                        </div>
+                        <div style="font-size: 0.8em; color: #999;">
+                            {% for episode in episodes[:3] %}
+                            S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %}, {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section Jeux -->
+    {% if games %}
+    <div style="padding: 20px 4%;">
+        <h2 style="margin: 0 0 15px 0; font-size: 1.4em; font-weight: 700;">🎮 Jeux Mobiles</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;">
+            {% for game in games[:8] %}
+            <div style="background: #2a2a2a; border-radius: 10px; overflow: hidden;">
+                {% if game.cover_url %}
+                <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; height: 180px; object-fit: cover;">
+                {% endif %}
+                <div style="padding: 10px;">
+                    <div style="font-size: 0.85em; font-weight: 700; line-height: 1.2; margin-bottom: 5px;">{{ game.name[:25] }}{% if game.name|length > 25 %}...{% endif %}</div>
+                    {% if game.platform %}
+                    <div style="font-size: 0.7em; color: #999;">{{ game.platform }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Top 10 Section -->
+    {% if top_movies %}
+    <div style="padding: 30px 4%; background: #0a0a0a;">
+        <h2 style="margin: 0 0 20px 0; font-size: 1.4em; font-weight: 700;">🔥 Top 10 de la Semaine</h2>
+
+        <div style="display: flex; gap: 15px; overflow-x: auto; padding-bottom: 20px;">
+            {% for movie in top_movies[:10] %}
+            <div style="flex: 0 0 auto; display: flex; align-items: end; gap: -20px;">
+                <div style="font-size: 8em; font-weight: 900; color: #141414; text-shadow: -3px 0 0 #999; line-height: 0.8; margin-right: -30px; z-index: 1;">{{ loop.index }}</div>
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 120px; height: 180px; object-fit: cover; border-radius: 4px; position: relative; z-index: 2;">
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="padding: 30px 4%; background: #0a0a0a; text-align: center; border-top: 1px solid #333;">
+        <div style="font-size: 2em; font-weight: 900; color: #e50914; margin-bottom: 10px;">MEDIAFLIX</div>
+        <p style="margin: 0; font-size: 0.85em; color: #666;">
+            {{ now().strftime('%d/%m/%Y à %H:%M') }} • Votre médiathèque personnelle
+        </p>
+    </div>
+
+</div>

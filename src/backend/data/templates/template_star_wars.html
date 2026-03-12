@@ -1,0 +1,134 @@
+<!-- Template Star Wars - Style holographique et galactique -->
+<div style="max-width: 900px; margin: 0 auto; background: #000; font-family: 'Orbitron', 'Eurostile', 'Arial Black', sans-serif; color: #ffe81f; padding: 0; position: relative; overflow: hidden;">
+
+    <!-- Starfield background -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 1px, transparent 1px), radial-gradient(circle at 80% 70%, rgba(255,255,255,0.1) 1px, transparent 1px), radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05) 1px, transparent 1px); background-size: 100px 100px, 150px 150px, 200px 200px;"></div>
+
+    <!-- Content wrapper -->
+    <div style="position: relative; z-index: 1;">
+
+        <!-- Opening crawl style header -->
+        <header style="text-align: center; padding: 50px 30px; perspective: 500px;">
+            <div style="font-size: 0.8em; color: #4bd5ee; letter-spacing: 5px; margin-bottom: 20px;">A LONG TIME AGO IN A GALAXY FAR, FAR AWAY....</div>
+            <h1 style="margin: 0; font-size: 4em; font-weight: 900; letter-spacing: 8px; text-shadow: 0 0 20px rgba(255,232,31,0.5);">
+                MEDIA
+            </h1>
+            <h2 style="margin: 10px 0 0 0; font-size: 1.5em; font-weight: 400; letter-spacing: 3px; color: #ffe81f;">
+                EPISODE {{ now().strftime('%W') }}
+            </h2>
+            <div style="font-size: 0.9em; color: #4bd5ee; margin-top: 20px;">{{ now().strftime('%d.%m.%Y') }}</div>
+        </header>
+
+        <!-- Stats as HUD -->
+        <div style="display: flex; justify-content: center; gap: 40px; padding: 30px; flex-wrap: wrap; border-top: 1px solid #ffe81f30; border-bottom: 1px solid #ffe81f30;">
+            {% if movies %}
+            <div style="text-align: center;">
+                <div style="font-size: 3em; font-weight: 900; text-shadow: 0 0 10px rgba(255,232,31,0.5);">{{ movies|length }}</div>
+                <div style="font-size: 0.75em; color: #4bd5ee; letter-spacing: 2px;">HOLOVIDS</div>
+            </div>
+            {% endif %}
+            {% if shows_grouped %}
+            <div style="text-align: center;">
+                <div style="font-size: 3em; font-weight: 900; text-shadow: 0 0 10px rgba(255,232,31,0.5);">{{ shows_grouped|length }}</div>
+                <div style="font-size: 0.75em; color: #4bd5ee; letter-spacing: 2px;">TRANSMISSIONS</div>
+            </div>
+            {% endif %}
+            {% if games %}
+            <div style="text-align: center;">
+                <div style="font-size: 3em; font-weight: 900; text-shadow: 0 0 10px rgba(255,232,31,0.5);">{{ games|length }}</div>
+                <div style="font-size: 0.75em; color: #4bd5ee; letter-spacing: 2px;">SIMULATIONS</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Films as Hologram displays -->
+        {% if movies %}
+        <section style="padding: 40px 30px;">
+            <h2 style="margin: 0 0 30px 0; font-size: 1.2em; letter-spacing: 3px; color: #4bd5ee; text-align: center;">
+                ▸ HOLONET ARCHIVES ◂
+            </h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px;">
+                {% for movie in movies %}
+                <div style="background: linear-gradient(180deg, rgba(75,213,238,0.1) 0%, rgba(75,213,238,0.02) 100%); border: 1px solid #4bd5ee50; padding: 15px; position: relative;">
+                    <!-- Corner accents -->
+                    <div style="position: absolute; top: 0; left: 0; width: 15px; height: 15px; border-top: 2px solid #4bd5ee; border-left: 2px solid #4bd5ee;"></div>
+                    <div style="position: absolute; top: 0; right: 0; width: 15px; height: 15px; border-top: 2px solid #4bd5ee; border-right: 2px solid #4bd5ee;"></div>
+                    <div style="position: absolute; bottom: 0; left: 0; width: 15px; height: 15px; border-bottom: 2px solid #4bd5ee; border-left: 2px solid #4bd5ee;"></div>
+                    <div style="position: absolute; bottom: 0; right: 0; width: 15px; height: 15px; border-bottom: 2px solid #4bd5ee; border-right: 2px solid #4bd5ee;"></div>
+
+                    {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" style="width: 100%; height: 220px; object-fit: cover; filter: brightness(0.9) saturate(0.8); border: 1px solid #4bd5ee30;">
+                    {% else %}
+                    <div style="width: 100%; height: 220px; background: linear-gradient(135deg, #4bd5ee10, #ffe81f10); display: flex; align-items: center; justify-content: center; font-size: 3em; border: 1px solid #4bd5ee30;">🎬</div>
+                    {% endif %}
+
+                    <div style="padding-top: 15px;">
+                        <h3 style="margin: 0 0 8px 0; font-size: 0.9em; font-weight: 700; color: #ffe81f; letter-spacing: 1px;">
+                            {{ movie.title[:22] }}{% if movie.title|length > 22 %}...{% endif %}
+                        </h3>
+                        <div style="font-size: 0.75em; color: #4bd5ee;">
+                            {{ movie.year }}{% if movie.rating %} • {{ movie.rating }}/10{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Series as Transmissions -->
+        {% if shows_grouped %}
+        <section style="padding: 0 30px 40px;">
+            <h2 style="margin: 0 0 30px 0; font-size: 1.2em; letter-spacing: 3px; color: #4bd5ee; text-align: center;">
+                ▸ INCOMING TRANSMISSIONS ◂
+            </h2>
+
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="background: linear-gradient(90deg, rgba(75,213,238,0.1) 0%, transparent 100%); border-left: 3px solid #ffe81f; padding: 20px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <h3 style="margin: 0 0 8px 0; font-size: 1.1em; font-weight: 700; color: #ffe81f; letter-spacing: 1px;">{{ series_title }}</h3>
+                        <div style="font-size: 0.8em; color: #4bd5ee;">
+                            {% for episode in episodes[:4] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %} ▪ {% endif %}{% endfor %}
+                        </div>
+                    </div>
+                    <div style="background: #ffe81f; color: #000; padding: 10px 20px; font-weight: 900; font-size: 1.2em;">
+                        +{{ episodes|length }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        <!-- Games -->
+        {% if games %}
+        <section style="padding: 0 30px 40px;">
+            <h2 style="margin: 0 0 25px 0; font-size: 1em; letter-spacing: 3px; color: #4bd5ee; text-align: center;">
+                ▸ COMBAT SIMULATIONS ◂
+            </h2>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+                {% for game in games %}
+                <div style="background: rgba(255,232,31,0.1); border: 1px solid #ffe81f50; padding: 10px 18px; font-size: 0.85em; color: #ffe81f;">
+                    {{ game.name[:18] }}{% if game.name|length > 18 %}...{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 40px 30px; border-top: 1px solid #ffe81f30;">
+            <div style="font-size: 1.5em; margin-bottom: 15px;">☆</div>
+            <p style="margin: 0; font-size: 0.85em; color: #4bd5ee; letter-spacing: 2px;">
+                MAY THE FORCE BE WITH YOU
+            </p>
+            <p style="margin: 15px 0 0 0; font-size: 0.75em; color: #ffe81f50;">
+                {{ now().strftime('%d/%m/%Y %H:%M') }} • GALACTIC STANDARD TIME
+            </p>
+        </footer>
+
+    </div>
+</div>

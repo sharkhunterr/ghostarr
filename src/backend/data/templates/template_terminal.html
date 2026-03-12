@@ -1,0 +1,139 @@
+<!-- Template Terminal - Style console/CLI rétro -->
+<div style="max-width: 100%; margin: 0 auto; background: #0c0c0c; font-family: 'Courier New', 'Consolas', monospace; color: #00ff00; padding: 0; border: 2px solid #333;">
+
+    <!-- Barre de titre terminal -->
+    <div style="background: linear-gradient(180deg, #444 0%, #222 100%); padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #555;">
+        <div style="display: flex; gap: 8px;">
+            <div style="width: 12px; height: 12px; background: #ff5f56; border-radius: 50%;"></div>
+            <div style="width: 12px; height: 12px; background: #ffbd2e; border-radius: 50%;"></div>
+            <div style="width: 12px; height: 12px; background: #27ca40; border-radius: 50%;"></div>
+        </div>
+        <div style="font-size: 0.85em; color: #aaa;">media@server:~/newsletter</div>
+        <div style="width: 50px;"></div>
+    </div>
+
+    <!-- Contenu terminal -->
+    <div style="padding: 20px; line-height: 1.6; font-size: 0.95em;">
+
+        <!-- Header ASCII art -->
+        <pre style="color: #00ff00; font-size: 0.7em; line-height: 1.2; margin: 0 0 20px 0;">
+ __  __          _ _       _   _ _     _
+|  \/  | ___  __| (_) __ _| \ | | |   | |
+| |\/| |/ _ \/ _` | |/ _` |  \| | |   | |
+| |  | |  __/ (_| | | (_| | |\  | |___| |__
+|_|  |_|\___|\__,_|_|\__,_|_| \_|_____|____|
+        </pre>
+
+        <!-- Commande système -->
+        <div style="margin-bottom: 25px;">
+            <span style="color: #00ff00;">media@server</span><span style="color: #fff;">:</span><span style="color: #5c94fc;">~/newsletter</span><span style="color: #fff;">$</span> <span style="color: #ffff00;">./scan_media.sh --date="{{ now().strftime('%Y-%m-%d') }}"</span>
+        </div>
+
+        <!-- Output système -->
+        <div style="color: #ccc; margin-bottom: 25px;">
+            <div>[<span style="color: #00ff00;">✓</span>] Scanning media library...</div>
+            <div>[<span style="color: #00ff00;">✓</span>] Found {{ movies|length if movies else 0 }} new movies</div>
+            <div>[<span style="color: #00ff00;">✓</span>] Found {{ shows_grouped|length if shows_grouped else 0 }} active series</div>
+            <div>[<span style="color: #00ff00;">✓</span>] Found {{ games|length if games else 0 }} games</div>
+            <div style="color: #00ff00; margin-top: 10px;">Scan complete. Generating report...</div>
+        </div>
+
+        <!-- Films -->
+        {% if movies %}
+        <div style="margin-bottom: 30px;">
+            <div style="color: #ffff00; margin-bottom: 15px;">
+                ╔══════════════════════════════════════════════════════════════╗
+                ║  MOVIES DATABASE                                              ║
+                ╚══════════════════════════════════════════════════════════════╝
+            </div>
+
+            <div style="border: 1px solid #333; background: #0a0a0a;">
+                <!-- Header tableau -->
+                <div style="display: grid; grid-template-columns: 50px 1fr 80px 80px 80px; background: #1a1a1a; padding: 8px 10px; border-bottom: 1px solid #333; color: #5c94fc;">
+                    <span>ID</span>
+                    <span>TITLE</span>
+                    <span>YEAR</span>
+                    <span>RATING</span>
+                    <span>STATUS</span>
+                </div>
+
+                {% for movie in movies %}
+                <div style="display: grid; grid-template-columns: 50px 1fr 80px 80px 80px; padding: 8px 10px; border-bottom: 1px solid #222; color: #ccc;">
+                    <span style="color: #666;">{{ "%03d"|format(loop.index) }}</span>
+                    <span style="color: #00ff00;">{{ movie.title[:40] }}{% if movie.title|length > 40 %}...{% endif %}</span>
+                    <span>{{ movie.year }}</span>
+                    <span style="color: {{ '#00ff00' if movie.rating and movie.rating >= 7 else '#ffff00' if movie.rating and movie.rating >= 5 else '#ff5555' }};">{{ movie.rating if movie.rating else 'N/A' }}</span>
+                    <span style="color: #00ff00;">[NEW]</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div style="color: #666; margin-top: 10px;">Total: {{ movies|length }} entries | Memory: {{ (movies|length * 2.5)|int }}MB</div>
+        </div>
+        {% endif %}
+
+        <!-- Séries -->
+        {% if shows_grouped %}
+        <div style="margin-bottom: 30px;">
+            <div style="color: #ff55ff; margin-bottom: 15px;">
+                ╔══════════════════════════════════════════════════════════════╗
+                ║  TV SERIES DATABASE                                           ║
+                ╚══════════════════════════════════════════════════════════════╝
+            </div>
+
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="margin-bottom: 15px; padding: 10px; border-left: 3px solid #ff55ff; background: rgba(255,85,255,0.05);">
+                <div style="color: #ff55ff; margin-bottom: 8px;">
+                    > {{ series_title }}
+                </div>
+                <div style="color: #888; padding-left: 15px;">
+                    ├── Episodes: {{ episodes|length }} new
+                    <br>├── Latest: {% for episode in episodes[:3] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %}, {% endif %}{% endfor %}
+                    <br>└── Status: <span style="color: #00ff00;">ACTIVE</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Jeux -->
+        {% if games %}
+        <div style="margin-bottom: 30px;">
+            <div style="color: #55ffff; margin-bottom: 15px;">
+                ╔══════════════════════════════════════════════════════════════╗
+                ║  GAMES DATABASE                                               ║
+                ╚══════════════════════════════════════════════════════════════╝
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">
+                {% for game in games %}
+                <div style="border: 1px solid #55ffff; padding: 10px; background: rgba(85,255,255,0.05);">
+                    <div style="color: #55ffff; font-size: 0.85em;">[GAME_{{ "%03d"|format(loop.index) }}]</div>
+                    <div style="color: #fff; margin: 5px 0;">{{ game.name[:25] }}{% if game.name|length > 25 %}...{% endif %}</div>
+                    {% if game.platform %}
+                    <div style="color: #888; font-size: 0.85em;">Platform: {{ game.platform }}</div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Footer -->
+        <div style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed #333;">
+            <div style="color: #666;">
+                ─────────────────────────────────────────────────────────────────
+            </div>
+            <div style="color: #888; margin-top: 10px;">
+                Report generated: {{ now().strftime('%Y-%m-%d %H:%M:%S') }} UTC
+                <br>System: MediaServer v3.2.1 | Ghostarr Newsletter Engine
+                <br>Runtime: {{ (movies|length if movies else 0) * 0.3 + (shows_grouped|length if shows_grouped else 0) * 0.5 }}s
+            </div>
+            <div style="margin-top: 15px;">
+                <span style="color: #00ff00;">media@server</span><span style="color: #fff;">:</span><span style="color: #5c94fc;">~/newsletter</span><span style="color: #fff;">$</span> <span style="color: #00ff00; animation: blink 1s infinite;">█</span>
+            </div>
+        </div>
+
+    </div>
+
+</div>

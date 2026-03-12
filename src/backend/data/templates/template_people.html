@@ -1,0 +1,193 @@
+<!-- Template People/Célébrités - Style magazine glamour -->
+<div style="max-width: 800px; margin: 0 auto; background: #fff; font-family: 'Helvetica Neue', Arial, sans-serif; overflow: hidden;">
+
+    <!-- Header People Magazine -->
+    <div style="background: linear-gradient(135deg, #ff1493 0%, #ff69b4 50%, #ff1493 100%); padding: 20px; text-align: center; position: relative;">
+        <div style="position: absolute; top: 10px; left: 20px; font-size: 0.7em; color: rgba(255,255,255,0.8);">EXCLUSIF</div>
+        <div style="position: absolute; top: 10px; right: 20px; font-size: 0.7em; color: rgba(255,255,255,0.8);">{{ now().strftime('%d.%m.%Y') }}</div>
+        <h1 style="margin: 0; font-size: 3em; color: #fff; font-weight: 800; letter-spacing: -2px; text-shadow: 2px 2px 0 rgba(0,0,0,0.2);">
+            STAR<span style="color: #ffd700;">LIGHT</span>
+        </h1>
+        <p style="margin: 5px 0 0 0; font-size: 0.9em; color: #fff; letter-spacing: 3px; text-transform: uppercase;">
+            L'actualité des stars qui brillent
+        </p>
+    </div>
+
+    <!-- Flash Info Bandeau -->
+    <div style="background: #ffd700; padding: 10px 20px; text-align: center;">
+        <span style="font-size: 0.85em; font-weight: bold; color: #1a1a1a; text-transform: uppercase; letter-spacing: 1px;">
+            ⚡ FLASH ACTU : {{ movies|length if movies else 0 }} films + {{ shows_grouped|length if shows_grouped else 0 }} séries cette semaine ⚡
+        </span>
+    </div>
+
+    <!-- Vedette de la semaine - Premier film en grand -->
+    {% if movies and movies|length > 0 %}
+    {% set star_movie = movies[0] %}
+    <div style="position: relative; background: #000;">
+        {% if star_movie.poster_url %}
+        <div style="position: relative; height: 400px; overflow: hidden;">
+            <img src="{{ star_movie.poster_url }}" alt="{{ star_movie.title }}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.7;">
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);"></div>
+        </div>
+        {% endif %}
+
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 30px; color: #fff;">
+            <div style="display: inline-block; background: #ff1493; color: #fff; padding: 5px 15px; font-size: 0.75em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px;">
+                🌟 Événement de la semaine
+            </div>
+            <h2 style="margin: 0 0 10px 0; font-size: 2.5em; font-weight: 800; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); line-height: 1.1;">
+                {{ star_movie.title }}
+            </h2>
+            {% if star_movie.tagline %}
+            <p style="margin: 0 0 15px 0; font-size: 1.3em; font-style: italic; color: #ffd700;">
+                "{{ star_movie.tagline }}"
+            </p>
+            {% endif %}
+            <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                <span style="font-size: 0.9em;">📅 {{ star_movie.year }}</span>
+                {% if star_movie.rating %}
+                <span style="background: #ffd700; color: #000; padding: 5px 12px; font-weight: bold; border-radius: 20px;">
+                    ⭐ {{ star_movie.rating }}/10
+                </span>
+                {% endif %}
+                {% if star_movie.director %}
+                <span style="font-size: 0.9em;">🎬 {{ star_movie.director }}</span>
+                {% endif %}
+            </div>
+            {% if star_movie.cast %}
+            <div style="margin-top: 15px; font-size: 0.95em;">
+                <strong style="color: #ff69b4;">À l'affiche :</strong> {{ format_cast_list(star_movie.cast, 4) }}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section "Ils ont brillé cette semaine" -->
+    {% if movies and movies|length > 1 %}
+    <div style="padding: 30px 20px; background: #f8f8f8;">
+        <h3 style="margin: 0 0 25px 0; font-size: 1.4em; color: #1a1a1a; text-align: center; text-transform: uppercase; letter-spacing: 2px;">
+            <span style="color: #ff1493;">★</span> Ils font l'actualité <span style="color: #ff1493;">★</span>
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+            {% for movie in movies[1:5] %}
+            <div style="background: #fff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div style="display: flex;">
+                    {% if movie.poster_url %}
+                    <div style="flex-shrink: 0; position: relative;">
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100px; height: 150px; object-fit: cover;">
+                        {% if movie.rating and movie.rating >= 7 %}
+                        <div style="position: absolute; top: 5px; left: 5px; background: #ff1493; color: #fff; padding: 3px 8px; font-size: 0.65em; font-weight: bold; border-radius: 3px;">
+                            COUP DE ❤️
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <div style="padding: 15px; flex: 1;">
+                        <h4 style="margin: 0 0 8px 0; font-size: 1.05em; font-weight: bold; color: #1a1a1a; line-height: 1.2;">{{ movie.title }}</h4>
+                        <div style="font-size: 0.8em; color: #888; margin-bottom: 8px;">
+                            {{ movie.year }}{% if movie.director %} • {{ movie.director }}{% endif %}
+                        </div>
+                        {% if movie.genres %}
+                        <div style="margin-bottom: 8px;">
+                            {% for genre in movie.genres[:2] %}
+                            <span style="display: inline-block; background: linear-gradient(135deg, #ff1493, #ff69b4); color: #fff; padding: 2px 8px; font-size: 0.65em; border-radius: 10px; margin-right: 3px;">{{ genre }}</span>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% if movie.rating %}
+                        <div style="font-size: 0.85em;">
+                            <span style="color: #ffd700;">★</span> {{ movie.rating }}/10
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section Séries - "En coulisses" -->
+    {% if shows_grouped %}
+    <div style="padding: 30px 20px; background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);">
+        <h3 style="margin: 0 0 25px 0; font-size: 1.4em; color: #fff; text-align: center; text-transform: uppercase; letter-spacing: 2px;">
+            📺 En coulisses - Les séries qui font parler
+        </h3>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="background: #fff; border-radius: 10px; overflow: hidden; width: 160px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                {% if episodes[0].poster_url %}
+                <div style="position: relative;">
+                    <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 100%; height: 200px; object-fit: cover;">
+                    <div style="position: absolute; top: 8px; right: 8px; background: #ff1493; color: #fff; padding: 3px 8px; font-size: 0.7em; font-weight: bold; border-radius: 3px;">
+                        +{{ episodes|length }} ép.
+                    </div>
+                </div>
+                {% endif %}
+                <div style="padding: 12px;">
+                    <h4 style="margin: 0 0 8px 0; font-size: 0.9em; font-weight: bold; color: #1a1a1a; line-height: 1.2;">{{ series_title }}</h4>
+                    <div style="font-size: 0.75em; color: #888;">
+                        {% for episode in episodes[:2] %}
+                        S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Section Jeux - "Les stars du gaming" -->
+    {% if games %}
+    <div style="padding: 30px 20px; background: #f8f8f8;">
+        <h3 style="margin: 0 0 25px 0; font-size: 1.4em; color: #1a1a1a; text-align: center; text-transform: uppercase; letter-spacing: 2px;">
+            🎮 Les stars du gaming
+        </h3>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center;">
+            {% for game in games[:6] %}
+            <div style="background: #fff; border-radius: 10px; overflow: hidden; width: 140px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                {% if game.cover_url %}
+                <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100%; height: 180px; object-fit: cover;">
+                {% endif %}
+                <div style="padding: 10px;">
+                    <h4 style="margin: 0 0 5px 0; font-size: 0.85em; font-weight: bold; color: #1a1a1a; line-height: 1.2;">{{ game.name }}</h4>
+                    {% if game.platform %}
+                    <div style="font-size: 0.7em; color: #ff1493;">{{ game.platform }}</div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Horoscope fictif / Citation -->
+    <div style="background: linear-gradient(135deg, #ff1493 0%, #ff69b4 100%); padding: 25px 30px; text-align: center;">
+        <div style="font-size: 2em; margin-bottom: 10px;">✨</div>
+        <p style="margin: 0; font-size: 1.1em; color: #fff; font-style: italic; line-height: 1.6;">
+            "Le cinéma, c'est l'écriture moderne dont l'encre est la lumière."
+        </p>
+        <p style="margin: 10px 0 0 0; font-size: 0.85em; color: rgba(255,255,255,0.8);">
+            — Jean Cocteau
+        </p>
+    </div>
+
+    <!-- Footer People -->
+    <div style="background: #1a1a1a; padding: 20px; text-align: center;">
+        <div style="font-size: 1.5em; font-weight: 800; color: #fff; margin-bottom: 5px;">
+            STAR<span style="color: #ffd700;">LIGHT</span>
+        </div>
+        <p style="margin: 0; font-size: 0.75em; color: #888;">
+            Votre dose hebdomadaire de glamour • {{ now().strftime('%d/%m/%Y à %H:%M') }}
+        </p>
+        <div style="margin-top: 10px; font-size: 1.2em;">
+            💖 📸 🌟 💫 ✨
+        </div>
+    </div>
+
+</div>

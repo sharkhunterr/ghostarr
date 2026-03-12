@@ -1,0 +1,187 @@
+<!-- Template Plex - Interface médiathèque Plex -->
+<div style="max-width: 100%; margin: 0 auto; background: #1f1f1f; font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, sans-serif; color: #eee;">
+
+    <!-- Header Plex -->
+    <div style="background: #282828; padding: 15px 4%; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3d3d3d;">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div style="background: #e5a00d; width: 40px; height: 40px; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 1.5em; font-weight: 900; color: #1f1f1f;">▶</span>
+            </div>
+            <div>
+                <div style="font-size: 1.3em; font-weight: 700; color: #fff;">Plex</div>
+                <div style="font-size: 0.75em; color: #999;">Media Server</div>
+            </div>
+        </div>
+        <div style="font-size: 0.85em; color: #999;">{{ now().strftime('%d %B %Y') }}</div>
+    </div>
+
+    <!-- Stats Banner -->
+    <div style="background: linear-gradient(135deg, #e5a00d 0%, #cc8f00 100%); padding: 25px 4%; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 20px;">
+        {% if movies %}
+        <div style="text-align: center;">
+            <div style="font-size: 2.5em; font-weight: 900; color: #1f1f1f;">{{ movies|length }}</div>
+            <div style="font-size: 0.85em; color: #333; font-weight: 600;">Nouveaux Films</div>
+        </div>
+        {% endif %}
+        {% if shows_grouped %}
+        <div style="text-align: center;">
+            <div style="font-size: 2.5em; font-weight: 900; color: #1f1f1f;">{{ shows_grouped|length }}</div>
+            <div style="font-size: 0.85em; color: #333; font-weight: 600;">Séries Actives</div>
+        </div>
+        {% endif %}
+        {% if games %}
+        <div style="text-align: center;">
+            <div style="font-size: 2.5em; font-weight: 900; color: #1f1f1f;">{{ games|length }}</div>
+            <div style="font-size: 0.85em; color: #333; font-weight: 600;">Jeux</div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Recently Added - Films -->
+    {% if movies %}
+    <div style="padding: 30px 4%;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; font-size: 1.4em; font-weight: 700; color: #fff;">🎬 Récemment Ajouté - Films</h2>
+            <span style="background: #e5a00d; color: #1f1f1f; padding: 4px 12px; font-size: 0.75em; font-weight: 700; border-radius: 3px;">{{ movies|length }} titres</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;">
+            {% for movie in movies[:12] %}
+            <div style="position: relative; border-radius: 8px; overflow: hidden; background: #282828; transition: transform 0.2s;">
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 270px; object-fit: cover;">
+                {% else %}
+                <div style="width: 100%; height: 270px; background: linear-gradient(135deg, #e5a00d, #cc8f00); display: flex; align-items: center; justify-content: center; font-size: 3em;">🎬</div>
+                {% endif %}
+
+                <!-- Unwatched indicator -->
+                <div style="position: absolute; top: 0; right: 0; width: 0; height: 0; border-style: solid; border-width: 0 35px 35px 0; border-color: transparent #e5a00d transparent transparent;"></div>
+
+                <!-- Info overlay -->
+                <div style="padding: 12px;">
+                    <h3 style="margin: 0 0 5px 0; font-size: 0.95em; font-weight: 600; color: #fff; line-height: 1.2;">{{ movie.title[:35] }}{% if movie.title|length > 35 %}...{% endif %}</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8em; color: #999;">
+                        <span>{{ movie.year }}</span>
+                        {% if movie.rating %}
+                        <span style="color: #e5a00d;">★ {{ movie.rating }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- On Deck - Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 30px 4%; background: #282828;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="margin: 0; font-size: 1.4em; font-weight: 700; color: #fff;">📺 En Cours - Séries</h2>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="background: #1f1f1f; border-radius: 8px; overflow: hidden; display: flex;">
+                <!-- Poster -->
+                {% if episodes[0].poster_url %}
+                <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 120px; height: 180px; object-fit: cover; flex-shrink: 0;">
+                {% endif %}
+
+                <!-- Info -->
+                <div style="flex: 1; padding: 20px; display: flex; flex-direction: column; justify-content: center;">
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.2em; font-weight: 700; color: #fff;">{{ series_title }}</h3>
+
+                    <!-- Progress bar -->
+                    <div style="background: #3d3d3d; height: 4px; border-radius: 2px; margin-bottom: 15px; overflow: hidden;">
+                        <div style="background: #e5a00d; height: 100%; width: {{ (loop.index * 15) % 100 }}%;"></div>
+                    </div>
+
+                    <!-- Episodes list -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        {% for episode in episodes[:6] %}
+                        <span style="background: #e5a00d; color: #1f1f1f; padding: 5px 12px; font-size: 0.8em; font-weight: 700; border-radius: 4px;">
+                            S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}
+                        </span>
+                        {% endfor %}
+                        {% if episodes|length > 6 %}
+                        <span style="background: #3d3d3d; color: #999; padding: 5px 12px; font-size: 0.8em; border-radius: 4px;">
+                            +{{ episodes|length - 6 }} autres
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Play button -->
+                <div style="width: 80px; display: flex; align-items: center; justify-content: center; background: rgba(229,160,13,0.1);">
+                    <div style="width: 50px; height: 50px; background: #e5a00d; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 1.5em; color: #1f1f1f; margin-left: 4px;">▶</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Libraries Grid -->
+    {% if games or books %}
+    <div style="padding: 30px 4%;">
+        <h2 style="margin: 0 0 20px 0; font-size: 1.4em; font-weight: 700; color: #fff;">📚 Autres Bibliothèques</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            {% if games %}
+            <div style="background: #282828; border-radius: 8px; padding: 20px;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #10b981; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3em;">🎮</div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.1em; font-weight: 700; color: #fff;">Jeux Vidéo</h3>
+                        <div style="font-size: 0.8em; color: #999;">{{ games|length }} titres</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; overflow-x: auto;">
+                    {% for game in games[:5] %}
+                    {% if game.cover_url %}
+                    <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 70px; height: 100px; object-fit: cover; border-radius: 4px; flex-shrink: 0;">
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if books %}
+            <div style="background: #282828; border-radius: 8px; padding: 20px;">
+                <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <div style="background: #f59e0b; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3em;">📚</div>
+                    <div>
+                        <h3 style="margin: 0; font-size: 1.1em; font-weight: 700; color: #fff;">BD & Comics</h3>
+                        <div style="font-size: 0.8em; color: #999;">{{ books|length }} titres</div>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; overflow-x: auto;">
+                    {% for book in books[:5] %}
+                    {% if book.thumbnail_url %}
+                    <img src="{{ book.thumbnail_url }}" alt="{{ book.name }}" style="width: 70px; height: 100px; object-fit: cover; border-radius: 4px; flex-shrink: 0;">
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="background: #282828; padding: 25px 4%; text-align: center; border-top: 1px solid #3d3d3d;">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 10px;">
+            <div style="background: #e5a00d; width: 30px; height: 30px; border-radius: 4px; display: flex; align-items: center; justify-content: center;">
+                <span style="font-weight: 900; color: #1f1f1f;">▶</span>
+            </div>
+            <span style="font-size: 1.2em; font-weight: 700; color: #fff;">Plex Media Server</span>
+        </div>
+        <p style="margin: 0; font-size: 0.85em; color: #666;">
+            Newsletter générée le {{ now().strftime('%d/%m/%Y à %H:%M') }}
+        </p>
+    </div>
+
+</div>

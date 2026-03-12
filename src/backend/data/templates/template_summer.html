@@ -1,0 +1,125 @@
+<!-- Template Summer Vibes - Films & Séries estivaux -->
+<div style="max-width: 800px; margin: 0 auto; background: linear-gradient(180deg, #87ceeb 0%, #f0e68c 50%, #ffa07a 100%); color: #333; font-family: 'Helvetica Neue', Arial, sans-serif; border-radius: 20px; overflow: hidden;">
+
+    <!-- Header Summer -->
+    <div style="background: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%); padding: 40px 20px; text-align: center; position: relative;">
+        <div style="position: absolute; top: 20px; left: 20px; font-size: 2em;">🌴</div>
+        <div style="position: absolute; top: 15px; right: 25px; font-size: 2.5em;">☀️</div>
+        <div style="position: absolute; bottom: 15px; left: 30px; font-size: 1.8em;">🏖️</div>
+        <div style="position: absolute; bottom: 20px; right: 20px; font-size: 1.5em;">🍹</div>
+
+        <h1 style="margin: 0; font-size: 2.8em; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); letter-spacing: 2px;">
+            SUMMER VIBES
+        </h1>
+        <p style="margin: 15px 0 0 0; font-size: 1.2em; color: #fff; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+            🌊 Nouveautés de la semaine du {{ now().strftime('%d/%m/%Y') }} 🌊
+        </p>
+    </div>
+
+    <!-- Statistiques colorées -->
+    {% if movies or shows_grouped %}
+    <div style="background: rgba(255,255,255,0.9); padding: 20px; display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+        {% if movies %}
+        <div style="text-align: center;">
+            <div style="font-size: 2.5em; font-weight: bold; color: #ff6b6b;">{{ movies|length }}</div>
+            <div style="font-size: 0.9em; color: #666;">🎬 Films</div>
+        </div>
+        {% endif %}
+        {% if shows_grouped %}
+        <div style="text-align: center;">
+            <div style="font-size: 2.5em; font-weight: bold; color: #48dbfb;">{{ shows_grouped|length }}</div>
+            <div style="font-size: 0.9em; color: #666;">📺 Séries</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Section Films -->
+    {% if movies %}
+    <div style="padding: 30px; background: rgba(255,255,255,0.85);">
+        <h2 style="color: #ff6b6b; font-size: 2em; text-align: center; margin-bottom: 25px;">
+            🎬 Films à voir cet été
+        </h2>
+
+        {% for movie in movies %}
+        <div style="background: linear-gradient(135deg, #fff 0%, #fff5f5 100%); border-radius: 15px; margin-bottom: 20px; display: flex; overflow: hidden; box-shadow: 0 5px 20px rgba(255,107,107,0.2); border-left: 5px solid #ff6b6b;">
+            <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 120px; height: 180px; object-fit: cover;">
+            <div style="padding: 20px; flex: 1;">
+                <h3 style="color: #333; font-size: 1.4em; margin: 0 0 8px 0;">{{ movie.title }}</h3>
+                {% if movie.tagline %}
+                <p style="color: #ff6b6b; font-style: italic; margin: 0 0 12px 0; font-size: 0.95em;">{{ movie.tagline }}</p>
+                {% endif %}
+
+                <div style="color: #666; font-size: 0.9em; margin-bottom: 12px;">
+                    📅 {{ movie.year }}{% if movie.rating %} • ⭐ {{ movie.rating }}{% endif %}{% if movie.duration %} • ⏱️ {{ format_duration(movie.duration) }}{% endif %}
+                </div>
+
+                {% if movie.genres %}
+                <div style="margin-bottom: 12px;">
+                    {% for genre in movie.genres[:3] %}
+                    <span style="background: linear-gradient(135deg, #ff6b6b, #feca57); color: #fff; padding: 4px 12px; border-radius: 15px; font-size: 0.75em; margin-right: 5px;">{{ genre }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if movie.summary %}
+                <p style="color: #555; line-height: 1.5; margin: 0; font-size: 0.9em;">{{ truncate_text(movie.summary, 180) }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Section Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 30px; background: rgba(255,255,255,0.75);">
+        <h2 style="color: #48dbfb; font-size: 2em; text-align: center; margin-bottom: 25px;">
+            📺 Séries pour les vacances
+        </h2>
+
+        {% for series_title, episodes in shows_grouped.items() %}
+        <div style="background: linear-gradient(135deg, #fff 0%, #f0ffff 100%); border-radius: 15px; margin-bottom: 20px; display: flex; overflow: hidden; box-shadow: 0 5px 20px rgba(72,219,251,0.2); border-left: 5px solid #48dbfb;">
+            <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 120px; height: 180px; object-fit: cover;">
+            <div style="padding: 20px; flex: 1;">
+                <h3 style="color: #333; font-size: 1.4em; margin: 0 0 8px 0;">{{ series_title }}</h3>
+
+                <div style="background: linear-gradient(135deg, #48dbfb, #0abde3); color: #fff; padding: 5px 12px; border-radius: 15px; font-size: 0.8em; margin-bottom: 12px; display: inline-block;">
+                    🌟 {{ episodes|length }} nouvel épisode{{ 's' if episodes|length > 1 else '' }}
+                </div>
+
+                <div style="color: #48dbfb; font-size: 0.9em; margin-bottom: 12px;">
+                    {% for episode in episodes[:4] %}
+                    S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %} • {% endif %}
+                    {% endfor %}
+                </div>
+
+                {% if episodes[0].genres %}
+                <div style="margin-bottom: 12px;">
+                    {% for genre in episodes[0].genres[:3] %}
+                    <span style="background: linear-gradient(135deg, #48dbfb, #0abde3); color: #fff; padding: 4px 12px; border-radius: 15px; font-size: 0.75em; margin-right: 5px;">{{ genre }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if episodes[0].summary %}
+                <p style="color: #555; line-height: 1.5; margin: 0; font-size: 0.9em;">{{ truncate_text(episodes[0].summary, 180) }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Footer Summer -->
+    <div style="background: linear-gradient(135deg, #feca57 0%, #ff6b6b 100%); padding: 25px; text-align: center;">
+        <div style="font-size: 2em; margin-bottom: 10px;">🌴 🌺 🍉 🏄 🌅</div>
+        <p style="margin: 0; color: #fff; font-size: 1.1em; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+            Profitez de l'été !
+        </p>
+        <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.8); font-size: 0.8em;">
+            Newsletter générée le {{ now().strftime('%d/%m/%Y à %H:%M') }}
+        </p>
+    </div>
+
+</div>

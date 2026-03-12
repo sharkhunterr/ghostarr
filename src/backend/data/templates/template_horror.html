@@ -1,0 +1,134 @@
+<!-- Template Horror - Style film d'horreur sanglant -->
+<div style="max-width: 850px; margin: 0 auto; background: #0a0a0a; font-family: 'Creepster', 'Nosifer', 'Times New Roman', serif; color: #c9c9c9; padding: 0; position: relative; overflow: hidden;">
+
+    <!-- Blood drips top -->
+    <div style="position: absolute; top: 0; left: 0; right: 0; height: 80px; background: linear-gradient(180deg, #8b0000 0%, #5a0000 20%, transparent 100%); clip-path: polygon(0 0, 5% 0, 5% 60%, 8% 80%, 8% 0, 15% 0, 15% 40%, 18% 70%, 18% 0, 25% 0, 25% 50%, 28% 65%, 28% 0, 40% 0, 40% 45%, 42% 75%, 42% 0, 55% 0, 55% 55%, 58% 85%, 58% 0, 70% 0, 70% 35%, 72% 60%, 72% 0, 85% 0, 85% 50%, 88% 90%, 88% 0, 100% 0, 100% 100%, 0 100%);"></div>
+
+    <div style="position: relative; z-index: 1;">
+
+        <!-- Header -->
+        <header style="text-align: center; padding: 80px 30px 40px;">
+            <h1 style="margin: 0; font-size: 4em; color: #8b0000; text-shadow: 3px 3px 6px #000, 0 0 20px #5a0000; letter-spacing: 5px; font-weight: 400;">
+                NIGHTMARE
+            </h1>
+            <div style="font-size: 1em; color: #5a5a5a; margin-top: 15px; letter-spacing: 3px;">
+                ☠ {{ now().strftime('%d %B %Y') }} ☠
+            </div>
+        </header>
+
+        <!-- Warning -->
+        <div style="background: repeating-linear-gradient(45deg, #1a1a00, #1a1a00 10px, #0a0a0a 10px, #0a0a0a 20px); padding: 15px; margin: 0 30px 30px; text-align: center;">
+            <span style="color: #ffcc00; font-size: 0.9em; letter-spacing: 2px;">⚠ VIEWER DISCRETION ADVISED ⚠</span>
+        </div>
+
+        <!-- Films - Horror posters -->
+        {% if movies %}
+        <section style="padding: 0 30px 40px;">
+            <h2 style="margin: 0 0 25px 0; font-size: 1.5em; color: #8b0000; text-align: center; text-shadow: 2px 2px 4px #000;">
+                🩸 FEATURES 🩸
+            </h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 25px;">
+                {% for movie in movies %}
+                <div style="background: #111; position: relative; overflow: hidden;">
+                    <!-- Scratched frame -->
+                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(139,0,0,0.1) 50px, rgba(139,0,0,0.1) 51px); pointer-events: none; z-index: 2;"></div>
+
+                    {% if movie.poster_url %}
+                    <img src="{{ movie.poster_url }}" style="width: 100%; height: 260px; object-fit: cover; filter: contrast(1.2) brightness(0.8) saturate(0.7);">
+                    {% else %}
+                    <div style="width: 100%; height: 260px; background: linear-gradient(180deg, #1a0000 0%, #0a0a0a 100%); display: flex; align-items: center; justify-content: center; font-size: 4em; color: #3a0000;">💀</div>
+                    {% endif %}
+
+                    <!-- Blood splatter corner -->
+                    <div style="position: absolute; top: 0; right: 0; width: 60px; height: 60px; background: radial-gradient(circle at 100% 0%, #8b0000 0%, transparent 70%);"></div>
+
+                    <div style="padding: 15px; background: linear-gradient(180deg, transparent 0%, rgba(139,0,0,0.2) 100%);">
+                        <h3 style="margin: 0 0 8px 0; font-size: 1em; color: #fff; text-shadow: 1px 1px 2px #000;">
+                            {{ movie.title[:22] }}{% if movie.title|length > 22 %}...{% endif %}
+                        </h3>
+                        <div style="font-size: 0.85em; color: #8b0000;">
+                            {{ movie.year }}{% if movie.rating %} • ☠ {{ movie.rating }}/10{% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Series - Creepy episodes -->
+        {% if shows_grouped %}
+        <section style="padding: 0 30px 40px;">
+            <h2 style="margin: 0 0 25px 0; font-size: 1.5em; color: #8b0000; text-align: center; text-shadow: 2px 2px 4px #000;">
+                👁 ANTHOLOGY 👁
+            </h2>
+
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="background: linear-gradient(90deg, #1a0000, #0a0a0a 30%); border-left: 4px solid #8b0000; padding: 20px; margin-bottom: 15px; position: relative;">
+                <!-- Scratch marks -->
+                <div style="position: absolute; top: 10px; right: 20px; color: #3a0000; font-size: 2em; transform: rotate(15deg);">///</div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <h3 style="margin: 0 0 8px 0; font-size: 1.2em; color: #fff; text-shadow: 1px 1px 2px #000;">{{ series_title }}</h3>
+                        <div style="font-size: 0.85em; color: #666;">
+                            {% for episode in episodes[:3] %}
+                            <span style="color: #8b0000;">S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}</span>{% if not loop.last %} • {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div style="background: #8b0000; color: #fff; padding: 12px 20px; font-size: 1.5em; font-weight: bold; text-shadow: 1px 1px 2px #000;">
+                        +{{ episodes|length }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        <!-- Games -->
+        {% if games %}
+        <section style="padding: 0 30px 40px;">
+            <h2 style="margin: 0 0 20px 0; font-size: 1.2em; color: #8b0000;">🎮 SURVIVAL GAMES</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                {% for game in games %}
+                <span style="background: #1a0000; border: 1px solid #3a0000; padding: 10px 18px; color: #c9c9c9; font-size: 0.9em;">
+                    {{ game.name[:18] }}{% if game.name|length > 18 %}...{% endif %}
+                </span>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Books -->
+        {% if books %}
+        <section style="padding: 0 30px 40px;">
+            <h2 style="margin: 0 0 20px 0; font-size: 1.2em; color: #8b0000;">📕 FORBIDDEN TOMES</h2>
+            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                {% for book in books %}
+                <span style="background: #0a0505; border: 1px solid #3a0000; padding: 10px 18px; color: #999; font-size: 0.9em; font-style: italic;">
+                    "{{ book.name[:18] }}{% if book.name|length > 18 %}..."{% endif %}
+                </span>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding: 40px 30px; border-top: 1px solid #3a0000; background: linear-gradient(180deg, #0a0a0a 0%, #1a0000 100%);">
+            <div style="font-size: 2em; margin-bottom: 15px;">💀</div>
+            <p style="margin: 0; font-size: 1em; color: #8b0000; font-style: italic;">
+                "They're coming to get you..."
+            </p>
+            <p style="margin: 15px 0 0 0; font-size: 0.75em; color: #3a3a3a;">
+                {{ now().strftime('%d/%m/%Y %H:%M') }} • SWEET DREAMS
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- Blood drips bottom -->
+    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 40px; background: linear-gradient(0deg, #5a0000 0%, transparent 100%);"></div>
+
+</div>

@@ -1,0 +1,112 @@
+<!-- Template Gradient Mesh - Dégradés colorés modernes -->
+<div style="max-width: 900px; margin: 0 auto; background: #0f0f0f; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; color: #fff; overflow: hidden;">
+
+    <!-- Header with mesh gradient -->
+    <div style="position: relative; padding: 60px 40px; overflow: hidden;">
+        <!-- Gradient blobs -->
+        <div style="position: absolute; top: -100px; left: -100px; width: 400px; height: 400px; background: radial-gradient(circle, #ff006e 0%, transparent 70%); opacity: 0.6; filter: blur(60px);"></div>
+        <div style="position: absolute; top: 50px; right: -50px; width: 300px; height: 300px; background: radial-gradient(circle, #8338ec 0%, transparent 70%); opacity: 0.6; filter: blur(60px);"></div>
+        <div style="position: absolute; bottom: -50px; left: 30%; width: 350px; height: 350px; background: radial-gradient(circle, #3a86ff 0%, transparent 70%); opacity: 0.5; filter: blur(60px);"></div>
+
+        <div style="position: relative; z-index: 1;">
+            <h1 style="margin: 0; font-size: 3.5em; font-weight: 800; letter-spacing: -0.02em;">
+                <span style="background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Media</span>
+            </h1>
+            <p style="margin: 15px 0 0 0; font-size: 1.1em; color: rgba(255,255,255,0.6);">{{ now().strftime('%d %B %Y') }}</p>
+        </div>
+    </div>
+
+    <!-- Films -->
+    {% if movies %}
+    <div style="padding: 0 40px 40px;">
+        <h2 style="margin: 0 0 25px 0; font-size: 1.1em; font-weight: 600; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 2px;">Films</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px;">
+            {% for movie in movies %}
+            <div style="position: relative; border-radius: 20px; overflow: hidden; background: linear-gradient(135deg, {{ ['#ff006e20', '#8338ec20', '#3a86ff20', '#fb560020', '#ffbe0b20'][loop.index0 % 5] }}, transparent);">
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" style="width: 100%; height: 260px; object-fit: cover;">
+                {% else %}
+                <div style="width: 100%; height: 260px; background: linear-gradient(135deg, {{ ['#ff006e', '#8338ec', '#3a86ff'][loop.index0 % 3] }}40, transparent); display: flex; align-items: center; justify-content: center; font-size: 3em;">🎬</div>
+                {% endif %}
+
+                <div style="padding: 18px;">
+                    <h3 style="margin: 0 0 8px 0; font-size: 1em; font-weight: 600;">{{ movie.title[:22] }}{% if movie.title|length > 22 %}...{% endif %}</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85em; color: rgba(255,255,255,0.5);">
+                        <span>{{ movie.year }}</span>
+                        {% if movie.rating %}
+                        <span style="background: linear-gradient(135deg, #ff006e, #8338ec); padding: 4px 10px; border-radius: 8px; color: #fff; font-weight: 500;">{{ movie.rating }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Series -->
+    {% if shows_grouped %}
+    <div style="padding: 0 40px 40px;">
+        <h2 style="margin: 0 0 25px 0; font-size: 1.1em; font-weight: 600; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 2px;">Séries</h2>
+
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="position: relative; background: rgba(255,255,255,0.03); border-radius: 16px; padding: 22px; overflow: hidden;">
+                <!-- Gradient accent -->
+                <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: linear-gradient(180deg, {{ ['#ff006e', '#8338ec', '#3a86ff', '#fb5600', '#ffbe0b'][loop.index0 % 5] }}, transparent);"></div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; padding-left: 15px;">
+                    <div>
+                        <h3 style="margin: 0 0 8px 0; font-size: 1.15em; font-weight: 600;">{{ series_title }}</h3>
+                        <div style="font-size: 0.85em; color: rgba(255,255,255,0.4);">
+                            {% for episode in episodes[:4] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %} · {% endif %}{% endfor %}
+                        </div>
+                    </div>
+                    <div style="background: linear-gradient(135deg, {{ ['#ff006e', '#8338ec', '#3a86ff'][loop.index0 % 3] }}, {{ ['#8338ec', '#3a86ff', '#ff006e'][loop.index0 % 3] }}); padding: 12px 22px; border-radius: 12px; font-weight: 700; font-size: 1.1em;">
+                        +{{ episodes|length }}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Games & Books -->
+    {% if games or books %}
+    <div style="padding: 0 40px 40px; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+        {% if games %}
+        <div style="background: linear-gradient(135deg, #ff006e15, #8338ec15); border-radius: 20px; padding: 25px;">
+            <h3 style="margin: 0 0 20px 0; font-size: 1em; font-weight: 600; color: rgba(255,255,255,0.6);">🎮 Jeux</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                {% for game in games[:6] %}
+                <span style="background: rgba(255,255,255,0.08); padding: 10px 16px; border-radius: 10px; font-size: 0.9em;">
+                    {{ game.name[:15] }}{% if game.name|length > 15 %}...{% endif %}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if books %}
+        <div style="background: linear-gradient(135deg, #3a86ff15, #ffbe0b15); border-radius: 20px; padding: 25px;">
+            <h3 style="margin: 0 0 20px 0; font-size: 1em; font-weight: 600; color: rgba(255,255,255,0.6);">📚 Livres</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                {% for book in books[:6] %}
+                <span style="background: rgba(255,255,255,0.08); padding: 10px 16px; border-radius: 10px; font-size: 0.9em;">
+                    {{ book.name[:15] }}{% if book.name|length > 15 %}...{% endif %}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="padding: 30px 40px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05);">
+        <p style="margin: 0; font-size: 0.85em; color: rgba(255,255,255,0.3);">{{ now().strftime('%d/%m/%Y %H:%M') }}</p>
+    </div>
+
+</div>

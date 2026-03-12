@@ -1,0 +1,116 @@
+<!-- Template Gaming Central - Jeux Vidéo uniquement (ROMM) -->
+<div style="max-width: 800px; margin: 0 auto; background: #0f0f0f; color: #e0e0e0; font-family: 'Rajdhani', 'Segoe UI', sans-serif; border-radius: 0; overflow: hidden; border: 2px solid #00ff88;">
+
+    <!-- Header Gaming avec effet néon -->
+    <div style="background: linear-gradient(180deg, #0a0a0a 0%, #1a0a2e 50%, #0f0f0f 100%); padding: 40px 20px; text-align: center; position: relative; border-bottom: 2px solid #00ff88;">
+        <!-- Effet grille -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(0,255,136,0.03) 50px, rgba(0,255,136,0.03) 51px), repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,255,136,0.03) 50px, rgba(0,255,136,0.03) 51px);"></div>
+
+        <div style="position: relative; z-index: 2;">
+            <div style="font-size: 3em; margin-bottom: 10px; text-shadow: 0 0 20px #00ff88;">🎮</div>
+            <h1 style="margin: 0; font-size: 2.5em; color: #00ff88; text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88, 0 0 40px #00ff88; letter-spacing: 5px; font-weight: bold; text-transform: uppercase;">
+                GAME ZONE
+            </h1>
+            <p style="margin: 15px 0 0 0; font-size: 1em; color: #888; letter-spacing: 3px; text-transform: uppercase;">
+                Nouveaux jeux • {{ now().strftime('%d.%m.%Y') }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Stats Gaming -->
+    {% if games %}
+    <div style="background: #1a1a2e; padding: 20px; display: flex; justify-content: center; gap: 40px; border-bottom: 1px solid #00ff8833;">
+        <div style="text-align: center;">
+            <div style="font-size: 3em; font-weight: bold; color: #00ff88; text-shadow: 0 0 10px #00ff88;">{{ games|length }}</div>
+            <div style="font-size: 0.8em; color: #666; text-transform: uppercase; letter-spacing: 2px;">Nouveaux Jeux</div>
+        </div>
+        {% set platforms = games|map(attribute='platform')|select|unique|list %}
+        {% if platforms %}
+        <div style="text-align: center;">
+            <div style="font-size: 3em; font-weight: bold; color: #ff00ff; text-shadow: 0 0 10px #ff00ff;">{{ platforms|length }}</div>
+            <div style="font-size: 0.8em; color: #666; text-transform: uppercase; letter-spacing: 2px;">Plateformes</div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Liste des jeux -->
+    {% if games %}
+    <div style="padding: 30px;">
+        {% for game in games %}
+        <div style="background: linear-gradient(135deg, #1a1a2e 0%, #0f0f0f 100%); border-radius: 10px; margin-bottom: 20px; display: flex; overflow: hidden; border: 1px solid #00ff8844; position: relative;">
+            <!-- Barre latérale colorée -->
+            <div style="width: 4px; background: linear-gradient(180deg, #00ff88, #00ffff);"></div>
+
+            <!-- Image du jeu -->
+            <div style="position: relative;">
+                {% if game.cover_url %}
+                <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 120px; height: 160px; object-fit: cover;">
+                {% else %}
+                <div style="width: 120px; height: 160px; background: linear-gradient(135deg, #00ff88, #00ffff); display: flex; align-items: center; justify-content: center; font-size: 3em;">🎮</div>
+                {% endif %}
+                <!-- Badge plateforme -->
+                {% if game.platform %}
+                <div style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.9); color: #00ff88; padding: 4px 8px; border-radius: 4px; font-size: 0.7em; font-weight: bold; text-transform: uppercase; border: 1px solid #00ff88;">
+                    {{ game.platform }}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Infos du jeu -->
+            <div style="padding: 20px; flex: 1;">
+                <h3 style="color: #fff; font-size: 1.4em; margin: 0 0 8px 0; text-shadow: 0 0 5px rgba(0,255,136,0.3);">{{ game.name }}</h3>
+
+                <!-- Genres -->
+                {% if game.genres %}
+                <div style="margin-bottom: 12px;">
+                    {% for genre in game.genres[:4] %}
+                    <span style="background: transparent; color: #00ffff; padding: 3px 10px; border-radius: 3px; font-size: 0.75em; margin-right: 5px; border: 1px solid #00ffff;">{{ genre }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Année -->
+                {% if game.year %}
+                <div style="color: #666; font-size: 0.85em; margin-bottom: 12px;">
+                    📅 {{ game.year }}
+                </div>
+                {% endif %}
+
+                <!-- Description -->
+                {% if game.summary %}
+                {% set clean_summary = game.summary|strip_html %}
+                <p style="color: #888; line-height: 1.5; margin: 0; font-size: 0.9em;">{{ clean_summary[:200] }}{% if clean_summary|length > 200 %}...{% endif %}</p>
+                {% endif %}
+            </div>
+
+            <!-- Icône de statut -->
+            <div style="padding: 20px; display: flex; align-items: center;">
+                <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #00ff88, #00ffff); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5em; box-shadow: 0 0 20px rgba(0,255,136,0.5);">
+                    🆕
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- Pas de jeux -->
+    <div style="padding: 60px 30px; text-align: center;">
+        <div style="font-size: 4em; margin-bottom: 20px; opacity: 0.3;">🎮</div>
+        <p style="color: #666; font-size: 1.2em;">Aucun nouveau jeu cette semaine</p>
+        <p style="color: #444; font-size: 0.9em;">Revenez bientôt pour découvrir les nouveautés !</p>
+    </div>
+    {% endif %}
+
+    <!-- Footer Gaming -->
+    <div style="background: linear-gradient(180deg, #1a0a2e 0%, #0a0a0a 100%); padding: 25px; text-align: center; border-top: 2px solid #00ff88;">
+        <div style="font-size: 1.5em; margin-bottom: 10px; opacity: 0.5;">🎮 🕹️ 👾 🏆 ⚡</div>
+        <p style="margin: 0; color: #00ff88; font-size: 0.9em; letter-spacing: 2px; text-transform: uppercase;">
+            Press Start to Continue
+        </p>
+        <p style="margin: 10px 0 0 0; color: #444; font-size: 0.75em;">
+            Généré le {{ now().strftime('%d/%m/%Y à %H:%M') }} • ROMM Integration
+        </p>
+    </div>
+
+</div>

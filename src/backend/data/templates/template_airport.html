@@ -1,0 +1,129 @@
+<!-- Template Airport - Style tableau des départs aéroport -->
+<div style="max-width: 100%; margin: 0 auto; background: #1a1a1a; font-family: 'Roboto Mono', 'Courier New', monospace; color: #fff;">
+
+    <!-- Header Aéroport -->
+    <div style="background: linear-gradient(180deg, #0066cc 0%, #004999 100%); padding: 25px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div style="font-size: 3em;">✈️</div>
+            <div>
+                <div style="font-size: 1.8em; font-weight: bold; letter-spacing: 2px;">MEDIA AIRPORT</div>
+                <div style="font-size: 0.9em; opacity: 0.9;">International Terminal</div>
+            </div>
+        </div>
+        <div style="text-align: right;">
+            <div style="font-size: 2em; font-weight: bold;">{{ now().strftime('%H:%M') }}</div>
+            <div style="font-size: 0.9em;">{{ now().strftime('%d/%m/%Y') }}</div>
+        </div>
+    </div>
+
+    <!-- Departure Board - Films -->
+    {% if movies %}
+    <div style="padding: 20px;">
+        <div style="background: #000; border: 3px solid #333; margin-bottom: 30px;">
+            <!-- Board Header -->
+            <div style="background: #ffcc00; color: #000; padding: 15px 20px; font-size: 1.3em; font-weight: bold;">
+                DEPARTURES / FILMS
+            </div>
+
+            <!-- Column Headers -->
+            <div style="display: grid; grid-template-columns: 80px 1fr 120px 100px 120px; background: #222; padding: 12px 20px; font-size: 0.85em; color: #ffcc00; border-bottom: 1px solid #444;">
+                <span>FLIGHT</span>
+                <span>DESTINATION</span>
+                <span>GATE</span>
+                <span>TIME</span>
+                <span>STATUS</span>
+            </div>
+
+            <!-- Rows -->
+            {% for movie in movies %}
+            <div style="display: grid; grid-template-columns: 80px 1fr 120px 100px 120px; padding: 15px 20px; border-bottom: 1px solid #333; align-items: center; background: {{ '#1a1a1a' if loop.index % 2 == 0 else '#111' }};">
+                <span style="color: #ffcc00; font-weight: bold;">MV{{ "%03d"|format(loop.index) }}</span>
+                <span style="font-weight: bold;">{{ movie.title[:35] }}{% if movie.title|length > 35 %}...{% endif %}</span>
+                <span>{{ movie.year }}</span>
+                <span>{% if movie.duration %}{{ format_duration(movie.duration) }}{% else %}--:--{% endif %}</span>
+                <span style="background: {{ '#00cc00' if movie.rating and movie.rating >= 7 else '#ffcc00' if movie.rating and movie.rating >= 5 else '#ff6600' }}; color: #000; padding: 5px 10px; text-align: center; font-weight: bold; font-size: 0.85em;">
+                    {% if movie.rating and movie.rating >= 7 %}ON TIME{% elif movie.rating and movie.rating >= 5 %}BOARDING{% else %}DELAYED{% endif %}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Arrivals Board - Séries -->
+    {% if shows_grouped %}
+    <div style="padding: 0 20px 20px;">
+        <div style="background: #000; border: 3px solid #333; margin-bottom: 30px;">
+            <div style="background: #00cc66; color: #000; padding: 15px 20px; font-size: 1.3em; font-weight: bold;">
+                ARRIVALS / SERIES
+            </div>
+
+            <div style="display: grid; grid-template-columns: 80px 1fr 150px 120px; background: #222; padding: 12px 20px; font-size: 0.85em; color: #00cc66; border-bottom: 1px solid #444;">
+                <span>FLIGHT</span>
+                <span>ORIGIN</span>
+                <span>EPISODES</span>
+                <span>STATUS</span>
+            </div>
+
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="display: grid; grid-template-columns: 80px 1fr 150px 120px; padding: 15px 20px; border-bottom: 1px solid #333; align-items: center; background: {{ '#1a1a1a' if loop.index % 2 == 0 else '#111' }};">
+                <span style="color: #00cc66; font-weight: bold;">TV{{ "%03d"|format(loop.index) }}</span>
+                <span style="font-weight: bold;">{{ series_title[:30] }}{% if series_title|length > 30 %}...{% endif %}</span>
+                <span>+{{ episodes|length }} new episodes</span>
+                <span style="background: #00cc66; color: #000; padding: 5px 10px; text-align: center; font-weight: bold; font-size: 0.85em;">
+                    LANDED
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Games & Books - Gates Info -->
+    {% if games or books %}
+    <div style="padding: 0 20px 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+            {% if games %}
+            <div style="background: #000; border: 3px solid #333;">
+                <div style="background: #ff6600; color: #000; padding: 12px 20px; font-weight: bold;">
+                    GATE G • GAMING LOUNGE
+                </div>
+                <div style="padding: 15px;">
+                    {% for game in games[:5] %}
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333;">
+                        <span>{{ game.name[:25] }}{% if game.name|length > 25 %}...{% endif %}</span>
+                        <span style="color: #ff6600;">🎮</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if books %}
+            <div style="background: #000; border: 3px solid #333;">
+                <div style="background: #cc66ff; color: #000; padding: 12px 20px; font-weight: bold;">
+                    GATE B • BOOKSTORE
+                </div>
+                <div style="padding: 15px;">
+                    {% for book in books[:5] %}
+                    <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #333;">
+                        <span>{{ book.name[:25] }}{% if book.name|length > 25 %}...{% endif %}</span>
+                        <span style="color: #cc66ff;">📚</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="background: #0066cc; padding: 20px; text-align: center;">
+        <div style="font-size: 1.2em; margin-bottom: 5px;">✈️ MEDIA AIRPORT ✈️</div>
+        <div style="font-size: 0.85em; opacity: 0.8;">
+            Board Updated: {{ now().strftime('%d/%m/%Y %H:%M') }} • Have a nice flight!
+        </div>
+    </div>
+
+</div>

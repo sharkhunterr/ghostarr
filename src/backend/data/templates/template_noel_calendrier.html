@@ -1,0 +1,125 @@
+<!-- Template Noël Calendrier de l'Avent - Format cases numérotées -->
+<div style="max-width: 100%; margin: 0 auto; background: linear-gradient(180deg, #1a2744 0%, #0d1522 100%); font-family: 'Georgia', serif; color: #fff; padding: 30px;">
+
+    <!-- Header enneigé -->
+    <div style="text-align: center; margin-bottom: 40px; position: relative;">
+        <div style="font-size: 3em; margin-bottom: 10px;">🎄 ❄️ 🎁 ❄️ 🎄</div>
+        <h1 style="margin: 0; font-size: clamp(2em, 6vw, 3em); color: #ffd700; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">
+            Calendrier de l'Avent
+        </h1>
+        <p style="margin: 10px 0 0 0; font-size: 1.1em; color: #87ceeb;">
+            Découvrez vos surprises • {{ now().strftime('%B %Y') }}
+        </p>
+
+        <!-- Neige décorative -->
+        <div style="position: absolute; top: 0; left: 5%; font-size: 0.8em; opacity: 0.5;">❄️</div>
+        <div style="position: absolute; top: 20px; right: 10%; font-size: 1.2em; opacity: 0.4;">❄️</div>
+        <div style="position: absolute; bottom: 0; left: 15%; font-size: 0.6em; opacity: 0.3;">❄️</div>
+    </div>
+
+    <!-- Cases du calendrier - Films -->
+    {% if movies %}
+    <div style="margin-bottom: 40px;">
+        <h2 style="margin: 0 0 20px 0; font-size: 1.3em; color: #87ceeb; text-align: center;">🎬 Films à Découvrir</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px;">
+            {% for movie in movies[:12] %}
+            <div style="position: relative; aspect-ratio: 1; background: linear-gradient(135deg, #c41e3a 0%, #8b0000 100%); border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.3); cursor: pointer;">
+                <!-- Numéro de case -->
+                <div style="position: absolute; top: 10px; left: 10px; background: #ffd700; color: #8b0000; width: 35px; height: 35px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2em; font-weight: bold; z-index: 2;">
+                    {{ loop.index }}
+                </div>
+
+                <!-- Contenu "ouvert" -->
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 100%; object-fit: cover;">
+                <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.9)); padding: 40px 10px 10px;">
+                    <div style="font-size: 0.85em; font-weight: bold; line-height: 1.2;">{{ movie.title[:25] }}{% if movie.title|length > 25 %}...{% endif %}</div>
+                    <div style="font-size: 0.75em; color: #ffd700; margin-top: 3px;">{{ movie.year }}{% if movie.rating %} • ⭐{{ movie.rating }}{% endif %}</div>
+                </div>
+                {% else %}
+                <div style="width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px; text-align: center;">
+                    <div style="font-size: 2em; margin-bottom: 10px;">🎬</div>
+                    <div style="font-size: 0.85em; font-weight: bold;">{{ movie.title[:20] }}...</div>
+                </div>
+                {% endif %}
+
+                <!-- Ruban décoratif -->
+                <div style="position: absolute; top: 0; right: 15px; width: 25px; height: 50px; background: #ffd700;"></div>
+                <div style="position: absolute; top: 45px; right: 15px; width: 0; height: 0; border-left: 12.5px solid transparent; border-right: 12.5px solid transparent; border-top: 15px solid #ffd700;"></div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Cases Séries -->
+    {% if shows_grouped %}
+    <div style="margin-bottom: 40px;">
+        <h2 style="margin: 0 0 20px 0; font-size: 1.3em; color: #87ceeb; text-align: center;">📺 Séries en Cadeau</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="background: linear-gradient(135deg, #228b22 0%, #006400 100%); border-radius: 10px; overflow: hidden; position: relative; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+                <!-- Numéro -->
+                <div style="position: absolute; top: 10px; left: 10px; background: #ffd700; color: #006400; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 2;">
+                    {{ loop.index }}
+                </div>
+
+                <div style="display: flex; padding: 15px; gap: 12px;">
+                    {% if episodes[0].poster_url %}
+                    <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 60px; height: 90px; object-fit: cover; border-radius: 5px; flex-shrink: 0;">
+                    {% endif %}
+                    <div style="flex: 1; padding-top: 20px;">
+                        <div style="font-size: 0.9em; font-weight: bold; line-height: 1.2; margin-bottom: 8px;">{{ series_title[:25] }}{% if series_title|length > 25 %}...{% endif %}</div>
+                        <div style="background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 15px; font-size: 0.75em; display: inline-block;">
+                            🎁 {{ episodes|length }} épisodes
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Noeud -->
+                <div style="position: absolute; top: -5px; right: 20px; font-size: 1.5em;">🎀</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Mini cases - Jeux & Livres -->
+    {% if games or books %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; margin-bottom: 30px;">
+        {% if games %}
+        {% for game in games[:6] %}
+        <div style="background: linear-gradient(135deg, #4169e1 0%, #1e3a8a 100%); border-radius: 8px; padding: 12px; text-align: center; position: relative;">
+            <div style="position: absolute; top: 5px; left: 5px; background: #ffd700; width: 22px; height: 22px; border-radius: 50%; font-size: 0.7em; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #1e3a8a;">{{ loop.index }}</div>
+            <div style="font-size: 1.5em; margin-bottom: 5px;">🎮</div>
+            <div style="font-size: 0.7em; line-height: 1.2;">{{ game.name[:15] }}...</div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        {% if books %}
+        {% for book in books[:6] %}
+        <div style="background: linear-gradient(135deg, #9333ea 0%, #581c87 100%); border-radius: 8px; padding: 12px; text-align: center; position: relative;">
+            <div style="position: absolute; top: 5px; left: 5px; background: #ffd700; width: 22px; height: 22px; border-radius: 50%; font-size: 0.7em; font-weight: bold; display: flex; align-items: center; justify-content: center; color: #581c87;">{{ loop.index }}</div>
+            <div style="font-size: 1.5em; margin-bottom: 5px;">📚</div>
+            <div style="font-size: 0.7em; line-height: 1.2;">{{ book.name[:15] }}...</div>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Footer -->
+    <div style="text-align: center; padding: 30px 20px; background: rgba(255,255,255,0.05); border-radius: 15px; margin-top: 20px;">
+        <div style="font-size: 2em; margin-bottom: 15px;">⭐ 🎄 🎅 🎄 ⭐</div>
+        <p style="margin: 0; font-size: 1em; color: #87ceeb;">
+            Joyeuses Fêtes et bonnes découvertes !
+        </p>
+        <p style="margin: 10px 0 0 0; font-size: 0.8em; color: #666;">
+            {{ now().strftime('%d/%m/%Y') }}
+        </p>
+    </div>
+
+</div>

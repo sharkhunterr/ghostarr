@@ -1,0 +1,141 @@
+<!-- Template Harry Potter - Style Poudlard et parchemin magique -->
+<div style="max-width: 850px; margin: 0 auto; background: #1a0a05; font-family: 'Crimson Text', 'Times New Roman', Georgia, serif; color: #d4a76a; padding: 20px;">
+
+    <!-- Parchemin principal -->
+    <div style="background: linear-gradient(180deg, #f5e6c8 0%, #e8d4b0 50%, #d4c4a0 100%); padding: 40px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+
+        <!-- Effet bords brûlés -->
+        <div style="position: absolute; top: 0; left: 0; right: 0; height: 15px; background: linear-gradient(180deg, #8b4513 0%, transparent 100%); opacity: 0.2;"></div>
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 15px; background: linear-gradient(0deg, #8b4513 0%, transparent 100%); opacity: 0.2;"></div>
+
+        <!-- Header -->
+        <header style="text-align: center; margin-bottom: 40px; border-bottom: 2px solid #8b4513; padding-bottom: 30px;">
+            <div style="font-size: 0.9em; color: #8b4513; letter-spacing: 5px; margin-bottom: 10px;">THE DAILY</div>
+            <h1 style="margin: 0; font-size: 4em; font-weight: 400; color: #1a0a05; font-style: italic; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
+                Prophet
+            </h1>
+            <div style="font-size: 0.85em; color: #8b4513; margin-top: 15px; display: flex; justify-content: center; gap: 30px;">
+                <span>⚡</span>
+                <span>{{ now().strftime('%d %B %Y') }}</span>
+                <span>⚡</span>
+            </div>
+            <div style="font-size: 0.75em; color: #654321; margin-top: 8px; font-style: italic;">
+                "All the news that's fit to enchant"
+            </div>
+        </header>
+
+        <!-- Breaking News Banner -->
+        <div style="background: #740001; color: #d3a625; padding: 15px 25px; margin-bottom: 30px; text-align: center; position: relative;">
+            <div style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 1.5em;">🦁</div>
+            <div style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-size: 1.5em;">🦁</div>
+            <span style="font-size: 1.2em; font-weight: bold; letter-spacing: 2px;">BREAKING NEWS</span>
+        </div>
+
+        <!-- Films as News Articles -->
+        {% if movies %}
+        <section style="margin-bottom: 40px;">
+            <h2 style="margin: 0 0 25px 0; font-size: 1.5em; color: #1a0a05; border-bottom: 1px solid #8b4513; padding-bottom: 10px;">
+                🎬 Magical Pictures
+            </h2>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 25px;">
+                {% for movie in movies %}
+                <article style="background: rgba(255,255,255,0.5); padding: 15px; border: 1px solid #8b4513;">
+                    {% if movie.poster_url %}
+                    <div style="border: 3px double #8b4513; margin-bottom: 15px;">
+                        <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" style="width: 100%; height: 200px; object-fit: cover; filter: sepia(20%);">
+                    </div>
+                    {% endif %}
+
+                    <h3 style="margin: 0 0 10px 0; font-size: 1.1em; color: #1a0a05; font-style: italic; line-height: 1.3;">
+                        {{ movie.title[:30] }}{% if movie.title|length > 30 %}...{% endif %}
+                    </h3>
+
+                    <p style="margin: 0; font-size: 0.85em; color: #654321; line-height: 1.5;">
+                        Witnessed by muggles in {{ movie.year }}.
+                        {% if movie.rating %}Rated {{ movie.rating }}/10 by the Ministry.{% endif %}
+                    </p>
+
+                    <!-- Wand decoration -->
+                    <div style="text-align: center; margin-top: 12px; font-size: 1.2em;">✨</div>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Series as Owls/Letters -->
+        {% if shows_grouped %}
+        <section style="margin-bottom: 40px;">
+            <h2 style="margin: 0 0 25px 0; font-size: 1.5em; color: #1a0a05; border-bottom: 1px solid #8b4513; padding-bottom: 10px;">
+                📜 Owl Post Deliveries
+            </h2>
+
+            {% for series_title, episodes in shows_grouped.items() %}
+            <div style="background: rgba(255,255,255,0.4); border: 1px solid #8b4513; padding: 20px; margin-bottom: 15px; position: relative;">
+                <!-- Seal -->
+                <div style="position: absolute; top: -15px; right: 20px; width: 40px; height: 40px; background: #740001; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 3px solid #d3a625;">
+                    <span style="color: #d3a625; font-weight: bold;">{{ episodes|length }}</span>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div style="font-size: 2em;">🦉</div>
+                    <div>
+                        <h3 style="margin: 0 0 8px 0; font-size: 1.2em; color: #1a0a05; font-style: italic;">{{ series_title }}</h3>
+                        <div style="font-size: 0.85em; color: #654321;">
+                            New scrolls received: {% for episode in episodes[:3] %}S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}{% if not loop.last %}, {% endif %}{% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+        {% endif %}
+
+        <!-- Games as Quidditch -->
+        {% if games %}
+        <section style="margin-bottom: 40px;">
+            <h2 style="margin: 0 0 20px 0; font-size: 1.3em; color: #1a0a05; border-bottom: 1px solid #8b4513; padding-bottom: 10px;">
+                🏆 Quidditch Results: Games
+            </h2>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                {% for game in games %}
+                <div style="background: {{ ['#740001', '#1a472a', '#0e1a40', '#f0c75e'][loop.index0 % 4] }}; color: {{ ['#d3a625', '#aaaaaa', '#946b2d', '#1a0a05'][loop.index0 % 4] }}; padding: 10px 18px; border-radius: 5px; font-size: 0.9em;">
+                    {{ game.name[:18] }}{% if game.name|length > 18 %}...{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Books -->
+        {% if books %}
+        <section style="margin-bottom: 30px;">
+            <h2 style="margin: 0 0 20px 0; font-size: 1.3em; color: #1a0a05; border-bottom: 1px solid #8b4513; padding-bottom: 10px;">
+                📚 Flourish & Blotts Arrivals
+            </h2>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                {% for book in books %}
+                <div style="background: rgba(139,69,19,0.1); border: 1px solid #8b4513; padding: 10px 18px; font-size: 0.9em; color: #1a0a05; font-style: italic;">
+                    "{{ book.name[:20] }}{% if book.name|length > 20 %}..."{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- Footer -->
+        <footer style="text-align: center; padding-top: 30px; border-top: 2px double #8b4513;">
+            <div style="font-size: 1.5em; margin-bottom: 10px;">⚡</div>
+            <p style="margin: 0; font-size: 0.85em; color: #654321; font-style: italic;">
+                "I solemnly swear that I am up to no good"
+            </p>
+            <p style="margin: 10px 0 0 0; font-size: 0.75em; color: #8b4513;">
+                {{ now().strftime('%d/%m/%Y %H:%M') }} • Mischief Managed
+            </p>
+        </footer>
+
+    </div>
+</div>
