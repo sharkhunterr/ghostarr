@@ -38,6 +38,10 @@ RUN pip install --no-cache-dir .
 # Copy backend source
 COPY src/backend/ ./
 
+# Copy built-in templates to a fixed location (not affected by volume mounts on /app/data)
+RUN mkdir -p /app/builtin-templates && \
+    cp -r /app/data/templates/* /app/builtin-templates/ 2>/dev/null || true
+
 # Copy Alembic migrations folder
 COPY src/backend/alembic ./alembic
 COPY src/backend/alembic.ini ./alembic.ini

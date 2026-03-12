@@ -129,15 +129,22 @@ async def lifespan(app: FastAPI):
     templates_path.mkdir(parents=True, exist_ok=True)
 
     # Copy built-in templates to user templates directory if not already present
+    # In Docker, built-in templates are at /app/builtin-templates/ (not affected by volume mounts)
+    # In development, they are at data/templates/ relative to the backend root
     import shutil
 
-    builtin_templates_dir = Path(__file__).parent.parent / "data" / "templates"
-    if builtin_templates_dir.exists():
-        for src_file in builtin_templates_dir.glob("*.html"):
-            dest_file = templates_path / src_file.name
-            if not dest_file.exists():
-                shutil.copy2(src_file, dest_file)
-                logger.info(f"Copied built-in template: {src_file.name}")
+    builtin_candidates = [
+        Path("/app/builtin-templates"),  # Docker production
+        Path(__file__).parent.parent / "data" / "templates",  # Development
+    ]
+    for builtin_dir in builtin_candidates:
+        if builtin_dir.exists() and any(builtin_dir.glob("*.html")):
+            for src_file in builtin_dir.glob("*.html"):
+                dest_file = templates_path / src_file.name
+                if not dest_file.exists():
+                    shutil.copy2(src_file, dest_file)
+                    logger.info(f"Copied built-in template: {src_file.name}")
+            break
 
     # Create database tables (in production, use Alembic migrations)
     if settings.app_env == "development":

@@ -38,8 +38,8 @@ class Settings(BaseSettings):
     )
 
     # Paths
-    config_dir: str = Field(default="/config", description="Configuration directory path")
-    templates_dir: str = Field(default="/config/templates", description="Templates directory path")
+    config_dir: str = Field(default="/app/data", description="Configuration directory path")
+    templates_dir: str = Field(default="/app/data/templates", description="Templates directory path")
 
     # Retention
     retention_history_days: int = Field(default=90, description="Days to keep history entries")

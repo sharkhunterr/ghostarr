@@ -11,7 +11,7 @@ services:
       - "3000:3000"  # Frontend (nginx)
       - "8000:8000"  # Backend API
     environment:
-      - DATABASE_URL=sqlite+aiosqlite:////app/data/ghostarr.db
+      - APP_ENV=production
       - LOG_LEVEL=INFO
       - CORS_ORIGINS=["http://localhost:3000","http://localhost:5173"]
     volumes:
@@ -20,7 +20,7 @@ services:
       - ghostarr-network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/health"]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -155,14 +155,14 @@ export function LogViewer() {
                 <div className="space-y-2">
                   <Label>{t('settings.logs.level')}</Label>
                   <Select
-                    value={filters.level || ''}
-                    onValueChange={(v) => handleFilterChange('level', v as LogLevel)}
+                    value={filters.level || 'all'}
+                    onValueChange={(v) => handleFilterChange('level', v === 'all' ? undefined : v as LogLevel)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder={t('common.all')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">{t('common.all')}</SelectItem>
+                      <SelectItem value="all">{t('common.all')}</SelectItem>
                       {LOG_LEVELS.map((level) => (
                         <SelectItem key={level} value={level}>
                           {t(`settings.logs.levels.${level}`)}
@@ -176,14 +176,14 @@ export function LogViewer() {
                 <div className="space-y-2">
                   <Label>{t('settings.logs.source')}</Label>
                   <Select
-                    value={filters.source || ''}
-                    onValueChange={(v) => handleFilterChange('source', v as LogSource)}
+                    value={filters.source || 'all'}
+                    onValueChange={(v) => handleFilterChange('source', v === 'all' ? undefined : v as LogSource)}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder={t('common.all')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">{t('common.all')}</SelectItem>
+                      <SelectItem value="all">{t('common.all')}</SelectItem>
                       {LOG_SOURCES.map((source) => (
                         <SelectItem key={source} value={source}>
                           {source}

@@ -12,11 +12,11 @@ import sys
 
 from sqlalchemy import create_engine, inspect, text
 
-# Database URL from environment
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "sqlite+aiosqlite:////app/data/ghostarr.db"
-)
+# Database URL: use environment variable or derive from config
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    from app.config import settings
+    DATABASE_URL = f"sqlite+aiosqlite:///{settings.config_dir}/ghostarr.db"
 
 # Convert async URL to sync for this script
 # sqlite+aiosqlite:////path -> sqlite:////path
