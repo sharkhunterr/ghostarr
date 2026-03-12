@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.6.1](https://github.com/sharkhunterr/ghostarr/-/compare/v1.6.0...v1.6.1) (2026-03-12)
+
+
+### Bug Fixes
+
+* Fix Docker healthcheck URL and auto-provision templates on startup ([3e44dac](https://github.com/sharkhunterr/ghostarr/-/commit/3e44dac1f5c123392645279316b66efa3aac2ce2))
+
 ## [1.6.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.5.1...v1.6.0) (2026-03-12)
 
 
