@@ -78,6 +78,9 @@ test-results/
 *.sqlite
 *.sqlite3
 data/
+!src/backend/data/
+!src/backend/data/templates/
+!src/backend/data/templates/*.html
 
 # Poetry lock (optional - uncomment if you want to commit it)
 # poetry.lock
