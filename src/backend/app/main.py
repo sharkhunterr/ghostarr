@@ -118,6 +118,7 @@ async def seed_default_templates():
         "plex": ["Streaming", "Films", "Séries", "Jeux", "Livres"],
         "polaroid": ["Rétro", "Films", "Séries", "Jeux", "Livres"],
         "posters": ["Minimal", "Films", "Séries", "Jeux", "Livres", "Livres Audio"],
+        "posters_email": ["Minimal", "Films", "Séries", "Jeux", "Livres", "Livres Audio"],
         "programme_tv": ["Programme TV", "Films"],
         "radio": ["Rétro", "Films", "Séries", "Jeux"],
         "revue_presse": ["Rétro", "Films", "Séries"],
