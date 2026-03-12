@@ -27,86 +27,40 @@ logger = get_logger(__name__)
 
 
 async def seed_default_templates():
-    """Seed default templates if they don't exist."""
+    """Seed all templates found in the templates directory into the database."""
     from sqlalchemy import select
 
     from app.database import AsyncSessionLocal
     from app.models.template import Template
 
-    default_templates = [
-        {
-            "name": "Multimédia Complet",
-            "description": "Template complet avec films, séries, jeux, BD/comics et livres audio",
-            "file_path": "template_multimedia_complet.html",
-            "tags": ["multimedia", "complet", "films", "series", "jeux", "livres"],
-            "is_default": False,
-        },
-        {
-            "name": "Mixte (Films & Séries)",
-            "description": "Template moderne pour films et séries avec statistiques",
-            "file_path": "template_mixe.html",
-            "tags": ["films", "series", "statistiques"],
-            "is_default": False,
-        },
-        {
-            "name": "Nouveautés Small (Plex)",
-            "description": "Template compact pour les nouveautés Plex (films et séries)",
-            "file_path": "template_nouveautes_small.html",
-            "tags": ["plex", "films", "series", "compact"],
-            "is_default": False,
-        },
-        {
-            "name": "Nouveautés Complet",
-            "description": "Template complet avec toutes les nouveautés (Plex, ROMM, Komga, Audiobookshelf)",
-            "file_path": "template_nouveautes_complet.html",
-            "tags": ["plex", "romm", "komga", "audiobookshelf", "complet"],
-            "is_default": False,
-        },
-        {
-            "name": "Statistiques Small",
-            "description": "Template compact pour les statistiques et analytics",
-            "file_path": "template_statistiques_small.html",
-            "tags": ["statistiques", "analytics", "compact"],
-            "is_default": False,
-        },
-        {
-            "name": "Tunarr (Programme TV)",
-            "description": "Programme TV avec les chaînes et émissions Tunarr",
-            "file_path": "template_tunarr.html",
-            "tags": ["tunarr", "tv", "programme"],
-            "is_default": False,
-        },
-        {
-            "name": "Simple Mixte",
-            "description": "Résumé hebdomadaire mixte avec nouveautés et statistiques",
-            "file_path": "template_simple_mixe.html",
-            "tags": ["mixte", "nouveautes", "statistiques", "hebdomadaire"],
-            "is_default": False,
-        },
-        {
-            "name": "Complet Small",
-            "description": "Template tout-en-un compact : médias, stats et programme TV",
-            "file_path": "template_complet_small.html",
-            "tags": ["complet", "compact", "medias", "statistiques", "tunarr"],
-            "is_default": False,
-        },
-    ]
+    templates_path = Path(settings.templates_dir)
+    if not templates_path.exists():
+        return
 
     async with AsyncSessionLocal() as db:
-        for template_data in default_templates:
+        for template_file in sorted(templates_path.glob("*.html")):
+            file_name = template_file.name
             # Check if template already exists by file_path
             result = await db.execute(
-                select(Template).where(Template.file_path == template_data["file_path"])
+                select(Template).where(Template.file_path == file_name)
             )
             existing = result.scalar_one_or_none()
 
             if not existing:
-                # Check if template file exists
-                template_file = Path(settings.templates_dir) / template_data["file_path"]
-                if template_file.exists():
-                    template = Template(**template_data)
-                    db.add(template)
-                    logger.info(f"Seeded template: {template_data['name']}")
+                # Generate a readable name from the filename
+                # template_cyber_punk.html -> Cyber Punk
+                name = file_name.replace("template_", "").replace(".html", "")
+                name = name.replace("_", " ").title()
+
+                template = Template(
+                    name=name,
+                    description=f"Template {name}",
+                    file_path=file_name,
+                    tags=[],
+                    is_default=False,
+                )
+                db.add(template)
+                logger.info(f"Seeded template: {name}")
 
         await db.commit()
 
