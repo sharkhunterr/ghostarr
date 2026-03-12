@@ -1,0 +1,139 @@
+<!-- Template Tunarr - Programme TV Tunarr uniquement -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 700px; margin: 0 auto; background: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #e2e8f0; border-radius: 12px; overflow: hidden;">
+
+    <!-- Header -->
+    <tr>
+        <td style="background: linear-gradient(135deg, #06b6d4, #0891b2, #14b8a6); padding: 30px 20px; text-align: center;">
+            <h1 style="margin: 0; font-size: 2em; color: #ffffff; font-weight: 800;">&#128250; Programme TV</h1>
+            <p style="margin: 10px 0 0 0; color: #ccfbf1; font-size: 0.95em;">Semaine {{ date.week }} &bull; {{ now().strftime('%d %B %Y') }}</p>
+        </td>
+    </tr>
+
+    {% if tv_programs %}
+    <!-- Program Count Badge -->
+    <tr>
+        <td style="padding: 20px 20px 10px 20px; text-align: center;">
+            <table cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto;">
+                <tr>
+                    <td style="background: linear-gradient(135deg, #06b6d4, #14b8a6); color: #ffffff; padding: 6px 18px; border-radius: 20px; font-size: 0.9em; font-weight: 600;">
+                        {{ len(tv_programs) }} programme{{ 's' if len(tv_programs) > 1 else '' }}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!-- Programs grouped by channel -->
+    <tr>
+        <td style="padding: 10px 20px 20px 20px;">
+
+            {% set channels = {} %}
+            {% for program in tv_programs %}
+                {% if program.channel_name not in channels %}
+                    {% set _ = channels.update({program.channel_name: []}) %}
+                {% endif %}
+                {% set _ = channels[program.channel_name].append(program) %}
+            {% endfor %}
+
+            {% for channel_name, channel_programs in channels.items() %}
+            <!-- Channel: {{ channel_name }} -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 24px;">
+                <!-- Channel Header -->
+                <tr>
+                    <td style="background: #1e293b; border-left: 4px solid #06b6d4; padding: 12px 16px; border-radius: 8px 8px 0 0;">
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td style="font-size: 1.1em; font-weight: 700; color: #ffffff;">
+                                    &#128250; {{ channel_name }}
+                                </td>
+                                <td style="text-align: right; font-size: 0.85em; color: #67e8f9;">
+                                    {{ len(channel_programs) }} programme{{ 's' if len(channel_programs) > 1 else '' }}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- Programs in this channel -->
+                {% for program in channel_programs %}
+                <tr>
+                    <td style="background: #1e293b; padding: 0; {% if loop.last %}border-radius: 0 0 8px 8px;{% endif %}">
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top: 1px solid #334155;">
+                            <tr>
+                                <!-- Thumbnail -->
+                                <td width="80" style="padding: 12px; vertical-align: top;">
+                                    {% if program.thumbnail_url %}
+                                    <img src="{{ program.thumbnail_url }}" alt="" width="80" height="60" style="width: 80px; height: 60px; object-fit: cover; border-radius: 6px; display: block;">
+                                    {% else %}
+                                        {% if program.type == 'movie' %}
+                                    <div style="width: 80px; height: 60px; background: linear-gradient(135deg, #1e3a5f, #3b82f6); border-radius: 6px; text-align: center; line-height: 60px; font-size: 1.5em;">&#127916;</div>
+                                        {% elif program.type == 'episode' %}
+                                    <div style="width: 80px; height: 60px; background: linear-gradient(135deg, #3b1f6e, #8b5cf6); border-radius: 6px; text-align: center; line-height: 60px; font-size: 1.5em;">&#128250;</div>
+                                        {% else %}
+                                    <div style="width: 80px; height: 60px; background: linear-gradient(135deg, #374151, #6b7280); border-radius: 6px; text-align: center; line-height: 60px; font-size: 1.5em;">&#128225;</div>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+
+                                <!-- Program Info -->
+                                <td style="padding: 12px 12px 12px 0; vertical-align: top;">
+                                    <!-- Title -->
+                                    <div style="font-weight: 700; color: #ffffff; font-size: 1em; margin-bottom: 6px;">{{ program.title }}</div>
+
+                                    <!-- Time + Duration + Type -->
+                                    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 6px;">
+                                        <tr>
+                                            <td style="color: #67e8f9; font-size: 0.85em; font-weight: 600; padding-right: 8px;">
+                                                {{ program.start_time.strftime('%H:%M') }} - {{ program.end_time.strftime('%H:%M') }}
+                                            </td>
+                                            <td style="padding-right: 8px;">
+                                                <span style="background: #164e63; color: #67e8f9; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; font-weight: 600;">{{ program.duration }}min</span>
+                                            </td>
+                                            <td>
+                                                {% if program.type == 'movie' %}
+                                                <span style="background: #1e3a5f; color: #93c5fd; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; font-weight: 600;">Film</span>
+                                                {% elif program.type == 'episode' %}
+                                                <span style="background: #2e1065; color: #c4b5fd; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; font-weight: 600;">S&eacute;rie</span>
+                                                {% else %}
+                                                <span style="background: #374151; color: #d1d5db; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; font-weight: 600;">Programme</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <!-- Description -->
+                                    {% if program.description %}
+                                    <p style="margin: 0; color: #94a3b8; font-size: 0.82em; line-height: 1.4;">{{ truncate_text(program.description|strip_html, 100) }}</p>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+            {% endfor %}
+
+        </td>
+    </tr>
+
+    {% else %}
+    <!-- No programs -->
+    <tr>
+        <td style="padding: 60px 20px; text-align: center;">
+            <div style="font-size: 3em; margin-bottom: 20px;">&#128250;</div>
+            <h2 style="color: #94a3b8; margin: 0 0 10px 0; font-weight: 600;">Aucun programme TV</h2>
+            <p style="color: #64748b; margin: 0; font-size: 0.9em;">Configurez Tunarr et s&eacute;lectionnez des cha&icirc;nes pour voir le programme.</p>
+        </td>
+    </tr>
+    {% endif %}
+
+    <!-- Footer -->
+    <tr>
+        <td style="background: linear-gradient(135deg, #0891b2, #06b6d4, #14b8a6); padding: 20px; text-align: center;">
+            <p style="margin: 0 0 6px 0; font-size: 0.85em; font-weight: 700; color: #ffffff; letter-spacing: 1px;">&#128250; PROGRAMME TV - TUNARR</p>
+            <p style="margin: 0; font-size: 0.78em; color: #ccfbf1;">G&eacute;n&eacute;r&eacute; le {{ now().strftime('%d/%m/%Y &agrave; %H:%M') }}</p>
+        </td>
+    </tr>
+
+</table>

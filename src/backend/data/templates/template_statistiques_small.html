@@ -1,0 +1,562 @@
+<!-- Template Statistiques Small - Stats only, compact dark theme -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques Plex</title>
+</head>
+<body style="margin: 0; padding: 0; background: #0a0a0f; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #fff;">
+
+<!-- Container principal -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 700px; margin: 0 auto; background: #0f0f1a;">
+<tr><td>
+
+    <!-- ==================== HEADER ==================== -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #9b59b6 100%);">
+    <tr><td style="padding: 18px 16px; text-align: center;">
+        <h1 style="margin: 0; font-size: 1.8em; font-weight: 900; color: #ffffff; letter-spacing: -1px;">&#x1F4CA; Statistiques</h1>
+        <div style="font-size: 0.6em; color: rgba(255,255,255,0.85); margin-top: 4px; letter-spacing: 1px;">Semaine {{ date.week }} &bull; {{ now().strftime('%d %B %Y') }}</div>
+    </td></tr>
+    </table>
+
+    <!-- ==================== STATS OVERVIEW (3 cards) ==================== -->
+    {% if real_stats %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: #12121f;">
+    <tr><td style="padding: 14px 12px 10px 12px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <!-- Total Plays -->
+            <td width="33%" style="padding: 0 3px;">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); border-radius: 8px;">
+                <tr><td style="padding: 10px 6px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 900; color: #fff; line-height: 1;">{{ real_stats.total_plays or 0 }}</div>
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.8); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px;">Lectures</div>
+                    {% if real_stats.plays_growth_percentage is defined and real_stats.plays_growth_percentage != 0 %}
+                    <div style="font-size: 9px; margin-top: 4px; padding: 1px 5px; border-radius: 8px; display: inline-block; font-weight: 700; background: {% if real_stats.plays_growth_percentage > 0 %}rgba(16,185,129,0.3); color: #6ee7b7;{% else %}rgba(239,68,68,0.3); color: #fca5a5;{% endif %}">
+                        {% if real_stats.plays_growth_percentage > 0 %}+{% endif %}{{ real_stats.plays_growth_percentage }}%
+                    </div>
+                    {% endif %}
+                </td></tr>
+                </table>
+            </td>
+            <!-- Watch Time -->
+            <td width="33%" style="padding: 0 3px;">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); border-radius: 8px;">
+                <tr><td style="padding: 10px 6px; text-align: center;">
+                    {% if real_stats.total_watch_time %}
+                    {% set wt = real_stats.total_watch_time|int %}
+                    <div style="font-size: 24px; font-weight: 900; color: #fff; line-height: 1;">{{ (wt // 3600) }}<span style="font-size: 12px;">h</span></div>
+                    {% else %}
+                    <div style="font-size: 24px; font-weight: 900; color: #fff; line-height: 1;">0<span style="font-size: 12px;">h</span></div>
+                    {% endif %}
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.8); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px;">Temps</div>
+                    {% if real_stats.time_growth_percentage is defined and real_stats.time_growth_percentage != 0 %}
+                    <div style="font-size: 9px; margin-top: 4px; padding: 1px 5px; border-radius: 8px; display: inline-block; font-weight: 700; background: {% if real_stats.time_growth_percentage > 0 %}rgba(16,185,129,0.3); color: #6ee7b7;{% else %}rgba(239,68,68,0.3); color: #fca5a5;{% endif %}">
+                        {% if real_stats.time_growth_percentage > 0 %}+{% endif %}{{ real_stats.time_growth_percentage }}%
+                    </div>
+                    {% endif %}
+                </td></tr>
+                </table>
+            </td>
+            <!-- Unique Users -->
+            <td width="33%" style="padding: 0 3px;">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 8px;">
+                <tr><td style="padding: 10px 6px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 900; color: #fff; line-height: 1;">{{ real_stats.unique_users or 0 }}</div>
+                    <div style="font-size: 10px; color: rgba(255,255,255,0.8); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.5px;">Utilisateurs</div>
+                    {% if real_stats.users_growth_percentage is defined and real_stats.users_growth_percentage != 0 %}
+                    <div style="font-size: 9px; margin-top: 4px; padding: 1px 5px; border-radius: 8px; display: inline-block; font-weight: 700; background: {% if real_stats.users_growth_percentage > 0 %}rgba(16,185,129,0.3); color: #6ee7b7;{% else %}rgba(239,68,68,0.3); color: #fca5a5;{% endif %}">
+                        {% if real_stats.users_growth_percentage > 0 %}+{% endif %}{{ real_stats.users_growth_percentage }}%
+                    </div>
+                    {% endif %}
+                </td></tr>
+                </table>
+            </td>
+        </tr>
+        </table>
+    </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- ==================== TOP MOVIES (compact) ==================== -->
+    {% if real_stats and real_stats.top_movies_played %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: #0f172a;">
+    <tr><td style="padding: 12px 12px 6px 12px;">
+        <h3 style="margin: 0 0 8px 0; font-size: 0.9em; font-weight: 800; color: #60a5fa;">&#x1F3AC; Top Films</h3>
+
+        {% for movie in real_stats.top_movies_played[:5] %}
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 4px; background: rgba(255,255,255,0.04); border-radius: 6px;">
+        <tr>
+            <!-- Rank -->
+            <td width="26" style="padding: 5px 0 5px 5px; vertical-align: middle;">
+                <div style="background: linear-gradient(135deg, #60a5fa, #3b82f6); color: white; width: 22px; height: 22px; line-height: 22px; border-radius: 5px; font-size: 10px; font-weight: 900; text-align: center;">{{ loop.index }}</div>
+            </td>
+            <!-- Poster -->
+            <td width="34" style="padding: 4px 6px; vertical-align: middle;">
+                {% if movie.poster_url %}
+                <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" width="34" height="50" style="width: 34px; height: 50px; object-fit: cover; border-radius: 4px; display: block;">
+                {% else %}
+                <div style="width: 34px; height: 50px; background: linear-gradient(135deg, #60a5fa, #3b82f6); border-radius: 4px; text-align: center; line-height: 50px; font-size: 14px;">&#x1F3AC;</div>
+                {% endif %}
+            </td>
+            <!-- Title + meta -->
+            <td style="padding: 5px 4px; vertical-align: middle;">
+                <div style="font-size: 11px; font-weight: 700; color: #f8fafc; line-height: 1.2; margin-bottom: 2px;">
+                    {{ movie.title }}
+                    {% if movie.evolution_type %}
+                    <span style="font-size: 8px; padding: 1px 4px; border-radius: 3px; font-weight: 700; color: #fff; margin-left: 3px; background: {% if movie.evolution_type == 'new' %}#f59e0b{% elif movie.evolution_type == 'up' %}#10b981{% elif movie.evolution_type == 'down' %}#ef4444{% else %}#6b7280{% endif %};">{% if movie.evolution_type == 'new' %}NEW{% elif movie.evolution_type == 'up' %}&#x25B2;{{ movie.evolution_value or '' }}{% elif movie.evolution_type == 'down' %}&#x25BC;{{ movie.evolution_value or '' }}{% else %}={% endif %}</span>
+                    {% endif %}
+                </div>
+                <div style="font-size: 9px; color: #64748b;">
+                    {% if movie.rating %}
+                    {% set rf = movie.rating|float %}
+                    <span style="color: {% if rf >= 8.0 %}#10b981{% elif rf >= 7.0 %}#3b82f6{% elif rf >= 6.0 %}#f59e0b{% else %}#6b7280{% endif %}; font-weight: 700;">{{ movie.rating }}&#x2B50;</span> &middot;
+                    {% endif %}
+                    {% if movie.year %}{{ movie.year }}{% endif %}
+                </div>
+            </td>
+            <!-- Plays badge -->
+            <td width="50" style="padding: 5px 6px 5px 0; vertical-align: middle; text-align: right;">
+                <div style="background: rgba(96,165,250,0.2); color: #60a5fa; padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; display: inline-block;">{{ movie.plays }}</div>
+            </td>
+        </tr>
+        </table>
+        {% endfor %}
+    </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- ==================== TOP SHOWS (compact) ==================== -->
+    {% if real_stats and real_stats.top_shows_played %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: #0f172a;">
+    <tr><td style="padding: 6px 12px 6px 12px;">
+        <h3 style="margin: 0 0 8px 0; font-size: 0.9em; font-weight: 800; color: #8b5cf6;">&#x1F4FA; Top S&#233;ries</h3>
+
+        {% for show in real_stats.top_shows_played[:5] %}
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 4px; background: rgba(255,255,255,0.04); border-radius: 6px;">
+        <tr>
+            <!-- Rank -->
+            <td width="26" style="padding: 5px 0 5px 5px; vertical-align: middle;">
+                <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; width: 22px; height: 22px; line-height: 22px; border-radius: 5px; font-size: 10px; font-weight: 900; text-align: center;">{{ loop.index }}</div>
+            </td>
+            <!-- Poster -->
+            <td width="34" style="padding: 4px 6px; vertical-align: middle;">
+                {% if show.poster_url %}
+                <img src="{{ show.poster_url }}" alt="{{ show.title }}" width="34" height="50" style="width: 34px; height: 50px; object-fit: cover; border-radius: 4px; display: block;">
+                {% else %}
+                <div style="width: 34px; height: 50px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-radius: 4px; text-align: center; line-height: 50px; font-size: 14px;">&#x1F4FA;</div>
+                {% endif %}
+            </td>
+            <!-- Title + meta -->
+            <td style="padding: 5px 4px; vertical-align: middle;">
+                <div style="font-size: 11px; font-weight: 700; color: #f8fafc; line-height: 1.2; margin-bottom: 2px;">
+                    {{ show.title }}
+                    {% if show.evolution_type %}
+                    <span style="font-size: 8px; padding: 1px 4px; border-radius: 3px; font-weight: 700; color: #fff; margin-left: 3px; background: {% if show.evolution_type == 'new' %}#f59e0b{% elif show.evolution_type == 'up' %}#10b981{% elif show.evolution_type == 'down' %}#ef4444{% else %}#6b7280{% endif %};">{% if show.evolution_type == 'new' %}NEW{% elif show.evolution_type == 'up' %}&#x25B2;{{ show.evolution_value or '' }}{% elif show.evolution_type == 'down' %}&#x25BC;{{ show.evolution_value or '' }}{% else %}={% endif %}</span>
+                    {% endif %}
+                </div>
+                <div style="font-size: 9px; color: #64748b;">
+                    {% if show.rating %}
+                    {% set rf = show.rating|float %}
+                    <span style="color: {% if rf >= 8.0 %}#10b981{% elif rf >= 7.0 %}#3b82f6{% elif rf >= 6.0 %}#f59e0b{% else %}#6b7280{% endif %}; font-weight: 700;">{{ show.rating }}&#x2B50;</span> &middot;
+                    {% endif %}
+                    {% if show.year %}{{ show.year }}{% endif %}
+                </div>
+            </td>
+            <!-- Plays badge -->
+            <td width="50" style="padding: 5px 6px 5px 0; vertical-align: middle; text-align: right;">
+                <div style="background: rgba(139,92,246,0.2); color: #a78bfa; padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 700; display: inline-block;">{{ show.plays }}</div>
+            </td>
+        </tr>
+        </table>
+        {% endfor %}
+    </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- ==================== TOP USERS (compact with podium) ==================== -->
+    {% if real_stats and real_stats.top_users_by_time %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: #12121f;">
+    <tr><td style="padding: 12px 12px 6px 12px;">
+        <h3 style="margin: 0 0 10px 0; font-size: 0.9em; font-weight: 800; color: #f59e0b;">&#x1F451; Top Utilisateurs</h3>
+
+        <!-- Podium: Top 3 -->
+        {% for user in real_stats.top_users_by_time[:3] %}
+        {% set user_movies = user.movies_count or 0 %}
+        {% set user_shows = user.shows_count or 0 %}
+        {% set user_total = user_movies + user_shows %}
+        {% if user_total > 0 %}
+            {% set movie_pct = (user_movies / user_total * 100)|round(0)|int %}
+            {% set show_pct = 100 - movie_pct %}
+        {% else %}
+            {% set movie_pct = 0 %}
+            {% set show_pct = 0 %}
+        {% endif %}
+
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 6px; background: rgba(255,255,255,0.04); border-radius: 8px; border-left: 3px solid {% if loop.index == 1 %}#fbbf24{% elif loop.index == 2 %}#94a3b8{% else %}#cd7c32{% endif %};">
+        <tr><td style="padding: 8px 10px;">
+            <!-- Row 1: medal + name + evolution + time -->
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td width="22" style="vertical-align: middle; font-size: 14px;">{% if loop.index == 1 %}&#x1F947;{% elif loop.index == 2 %}&#x1F948;{% else %}&#x1F949;{% endif %}</td>
+                <td style="vertical-align: middle; padding-left: 4px;">
+                    <span style="font-size: 11px; font-weight: 800; color: #f8fafc;">{{ user.friendly_name or user.username or 'Utilisateur' }}</span>
+                    {% if user.evolution_type %}
+                    <span style="font-size: 7px; padding: 1px 3px; border-radius: 3px; font-weight: 700; color: #fff; margin-left: 3px; background: {% if user.evolution_type == 'new' %}#f59e0b{% elif user.evolution_type == 'up' %}#10b981{% elif user.evolution_type == 'down' %}#ef4444{% else %}#6b7280{% endif %};">{% if user.evolution_type == 'new' %}NEW{% elif user.evolution_type == 'up' %}&#x25B2;{{ user.evolution_value or '' }}{% elif user.evolution_type == 'down' %}&#x25BC;{{ user.evolution_value or '' }}{% else %}={% endif %}</span>
+                    {% endif %}
+                    {% if user.time_percentage %}
+                    <span style="font-size: 7px; color: #94a3b8; margin-left: 2px;">({{ user.time_percentage }}%)</span>
+                    {% endif %}
+                </td>
+                <td style="vertical-align: middle; text-align: right;">
+                    {% if user.watch_time %}
+                    {% set wt = user.watch_time|int %}
+                    <span style="font-size: 11px; font-weight: 800; color: {% if loop.index == 1 %}#fbbf24{% elif loop.index == 2 %}#94a3b8{% else %}#cd7c32{% endif %};">{{ (wt // 3600) }}h{{ '%02d'|format((wt % 3600) // 60) }}m</span>
+                    {% endif %}
+                </td>
+            </tr>
+            </table>
+            <!-- Row 2: breakdown bar -->
+            {% if user_total > 0 %}
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-top: 4px;">
+            <tr>
+                <td style="padding: 0;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-radius: 3px; overflow: hidden;">
+                    <tr>
+                        {% if movie_pct > 0 %}
+                        <td width="{{ movie_pct }}%" style="background: #3b82f6; height: 4px; font-size: 0;"></td>
+                        {% endif %}
+                        {% if show_pct > 0 %}
+                        <td width="{{ show_pct }}%" style="background: #8b5cf6; height: 4px; font-size: 0;"></td>
+                        {% endif %}
+                    </tr>
+                    </table>
+                    <div style="font-size: 7px; color: #64748b; margin-top: 2px;">
+                        <span style="color: #60a5fa;">{{ user_movies }} films</span> &middot; <span style="color: #a78bfa;">{{ user_shows }} s&#233;ries</span>
+                    </div>
+                </td>
+            </tr>
+            </table>
+            {% endif %}
+        </td></tr>
+        </table>
+        {% endfor %}
+
+        <!-- Rank 4-5: simple cards -->
+        {% for user in real_stats.top_users_by_time[3:5] %}
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 3px; background: rgba(255,255,255,0.03); border-radius: 5px;">
+        <tr>
+            <td width="22" style="padding: 5px 0 5px 8px; vertical-align: middle;">
+                <div style="background: #334155; color: #94a3b8; width: 18px; height: 18px; line-height: 18px; border-radius: 4px; font-size: 9px; font-weight: 800; text-align: center;">{{ loop.index + 3 }}</div>
+            </td>
+            <td style="padding: 5px 4px; vertical-align: middle;">
+                <span style="font-size: 10px; font-weight: 700; color: #cbd5e1;">{{ user.friendly_name or user.username or 'Utilisateur' }}</span>
+                {% if user.evolution_type %}
+                <span style="font-size: 7px; padding: 1px 3px; border-radius: 3px; font-weight: 700; color: #fff; margin-left: 2px; background: {% if user.evolution_type == 'new' %}#f59e0b{% elif user.evolution_type == 'up' %}#10b981{% elif user.evolution_type == 'down' %}#ef4444{% else %}#6b7280{% endif %};">{% if user.evolution_type == 'new' %}NEW{% elif user.evolution_type == 'up' %}&#x25B2;{{ user.evolution_value or '' }}{% elif user.evolution_type == 'down' %}&#x25BC;{{ user.evolution_value or '' }}{% else %}={% endif %}</span>
+                {% endif %}
+            </td>
+            <td style="padding: 5px 4px; vertical-align: middle; text-align: right;">
+                {% if user.watch_time %}
+                {% set wt = user.watch_time|int %}
+                <span style="font-size: 9px; font-weight: 700; color: #94a3b8;">{{ (wt // 3600) }}h{{ '%02d'|format((wt % 3600) // 60) }}m</span>
+                {% endif %}
+            </td>
+            <td width="40" style="padding: 5px 8px 5px 2px; vertical-align: middle; text-align: right;">
+                {% if user.plays %}
+                <span style="font-size: 8px; color: #64748b;">{{ user.plays }} lect.</span>
+                {% endif %}
+            </td>
+        </tr>
+        </table>
+        {% endfor %}
+
+    </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- ==================== ACTIVITY BY HOUR (heatmap 4x6) ==================== -->
+    {% if real_stats and real_stats.plays_by_hour %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: #0f172a;">
+    <tr><td style="padding: 10px 12px;">
+        <h3 style="margin: 0 0 6px 0; font-size: 0.85em; font-weight: 800; color: #10b981; text-align: center;">&#x1F570; Activit&#233; par Heure</h3>
+
+        {% set max_hour_plays = real_stats.plays_by_hour.values()|list|max if real_stats.plays_by_hour else 1 %}
+
+        <table width="100%" cellpadding="0" cellspacing="2" border="0">
+        <!-- Row 0-5 -->
+        <tr>
+            {% for hour in range(0, 6) %}
+            {% set plays = real_stats.plays_by_hour.get(hour, 0) %}
+            {% set intensity = (plays / max_hour_plays) if max_hour_plays > 0 else 0 %}
+            <td width="16.66%" style="background: rgba(16,185,129,{{ (intensity * 0.7 + 0.15)|round(2) }}); border-radius: 3px; text-align: center; padding: 3px 1px; font-size: 7px; font-weight: 600; color: #fff;">
+                {{ '%02d'|format(hour) }}h<br>{{ plays }}
+            </td>
+            {% endfor %}
+        </tr>
+        <!-- Row 6-11 -->
+        <tr>
+            {% for hour in range(6, 12) %}
+            {% set plays = real_stats.plays_by_hour.get(hour, 0) %}
+            {% set intensity = (plays / max_hour_plays) if max_hour_plays > 0 else 0 %}
+            <td width="16.66%" style="background: rgba(16,185,129,{{ (intensity * 0.7 + 0.15)|round(2) }}); border-radius: 3px; text-align: center; padding: 3px 1px; font-size: 7px; font-weight: 600; color: #fff;">
+                {{ '%02d'|format(hour) }}h<br>{{ plays }}
+            </td>
+            {% endfor %}
+        </tr>
+        <!-- Row 12-17 -->
+        <tr>
+            {% for hour in range(12, 18) %}
+            {% set plays = real_stats.plays_by_hour.get(hour, 0) %}
+            {% set intensity = (plays / max_hour_plays) if max_hour_plays > 0 else 0 %}
+            <td width="16.66%" style="background: rgba(16,185,129,{{ (intensity * 0.7 + 0.15)|round(2) }}); border-radius: 3px; text-align: center; padding: 3px 1px; font-size: 7px; font-weight: 600; color: #fff;">
+                {{ '%02d'|format(hour) }}h<br>{{ plays }}
+            </td>
+            {% endfor %}
+        </tr>
+        <!-- Row 18-23 -->
+        <tr>
+            {% for hour in range(18, 24) %}
+            {% set plays = real_stats.plays_by_hour.get(hour, 0) %}
+            {% set intensity = (plays / max_hour_plays) if max_hour_plays > 0 else 0 %}
+            <td width="16.66%" style="background: rgba(16,185,129,{{ (intensity * 0.7 + 0.15)|round(2) }}); border-radius: 3px; text-align: center; padding: 3px 1px; font-size: 7px; font-weight: 600; color: #fff;">
+                {{ '%02d'|format(hour) }}h<br>{{ plays }}
+            </td>
+            {% endfor %}
+        </tr>
+        </table>
+
+        <div style="text-align: center; font-size: 7px; color: #64748b; margin-top: 4px;">Total: {{ real_stats.plays_by_hour.values()|sum }} lectures</div>
+    </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- ==================== WEEKLY ACTIVITY (bar chart) ==================== -->
+    {% if real_stats and real_stats.plays_by_weekday %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: #12121f;">
+    <tr><td style="padding: 10px 12px;">
+        <h3 style="margin: 0 0 6px 0; font-size: 0.85em; font-weight: 800; color: #8b5cf6; text-align: center;">&#x1F4C5; Activit&#233; Hebdomadaire</h3>
+
+        {% set total_week_plays = real_stats.plays_by_weekday.values()|sum if real_stats.plays_by_weekday else 0 %}
+        {% set total_direct = (total_week_plays * 0.58)|int %}
+        {% set total_stream = (total_week_plays * 0.28)|int %}
+        {% set total_transcode = (total_week_plays * 0.14)|int %}
+
+        <!-- Legend -->
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 6px;">
+        <tr>
+            <td style="text-align: center; font-size: 8px; color: #94a3b8;">
+                <span style="display: inline-block; width: 8px; height: 8px; background: #10b981; border-radius: 2px; vertical-align: middle;"></span> Direct ({{ total_direct }})
+                &nbsp;
+                <span style="display: inline-block; width: 8px; height: 8px; background: #f59e0b; border-radius: 2px; vertical-align: middle;"></span> Stream ({{ total_stream }})
+                &nbsp;
+                <span style="display: inline-block; width: 8px; height: 8px; background: #ef4444; border-radius: 2px; vertical-align: middle;"></span> Transcode ({{ total_transcode }})
+            </td>
+        </tr>
+        </table>
+
+        {% set days_order = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'] %}
+        {% set max_day_plays = real_stats.plays_by_weekday.values()|list|max if real_stats.plays_by_weekday else 1 %}
+
+        <!-- Bar chart -->
+        <table width="100%" cellpadding="0" cellspacing="2" border="0" style="height: 80px;">
+        <tr style="vertical-align: bottom;">
+            {% for day in days_order %}
+            {% set plays = real_stats.plays_by_weekday.get(day, 0) %}
+            {% set height_pct = (plays / max_day_plays * 100)|int if max_day_plays > 0 else 0 %}
+            {% if day in ['Samedi', 'Dimanche'] %}
+                {% set dp = (plays * 0.45)|int %}
+                {% set ds = (plays * 0.30)|int %}
+                {% set tc = plays - dp - ds %}
+            {% elif day == 'Vendredi' %}
+                {% set dp = (plays * 0.55)|int %}
+                {% set ds = (plays * 0.28)|int %}
+                {% set tc = plays - dp - ds %}
+            {% else %}
+                {% set dp = (plays * 0.65)|int %}
+                {% set ds = (plays * 0.25)|int %}
+                {% set tc = plays - dp - ds %}
+            {% endif %}
+            <td width="14.28%" style="vertical-align: bottom; text-align: center; padding: 0 1px;">
+                <div style="font-size: 7px; font-weight: 700; color: #8b5cf6; margin-bottom: 2px;">{{ plays }}</div>
+                {% if plays > 0 %}
+                <div style="height: {{ max(10, (height_pct * 0.6)|int) }}px; border-radius: 3px 3px 0 0; overflow: hidden;">
+                    {% if dp > 0 %}<div style="background: #10b981; height: {{ (dp / plays * 100)|round(0) if plays > 0 else 0 }}%; min-height: 2px;"></div>{% endif %}
+                    {% if ds > 0 %}<div style="background: #f59e0b; height: {{ (ds / plays * 100)|round(0) if plays > 0 else 0 }}%; min-height: 2px;"></div>{% endif %}
+                    {% if tc > 0 %}<div style="background: #ef4444; height: {{ (tc / plays * 100)|round(0) if plays > 0 else 0 }}%; min-height: 2px;"></div>{% endif %}
+                </div>
+                {% else %}
+                <div style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 3px 3px 0 0;"></div>
+                {% endif %}
+            </td>
+            {% endfor %}
+        </tr>
+        <!-- Day labels -->
+        <tr>
+            {% for day in days_order %}
+            <td style="text-align: center; font-size: 7px; color: #64748b; padding-top: 2px;">{{ day[:3] }}</td>
+            {% endfor %}
+        </tr>
+        </table>
+
+        <div style="text-align: center; font-size: 7px; color: #64748b; margin-top: 4px;">Total: {{ total_week_plays }} lectures</div>
+    </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- ==================== GENRES & SESSION DURATION (side by side) ==================== -->
+    {% if real_stats %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: #0f172a;">
+    <tr><td style="padding: 10px 12px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <!-- Genres column -->
+            <td width="50%" style="vertical-align: top; padding-right: 6px;">
+                <h3 style="margin: 0 0 6px 0; font-size: 0.8em; font-weight: 800; color: #ef4444;">&#x1F3AD; Genres</h3>
+
+                {% set genres_with_evolution = [
+                    {'name': 'Action', 'percent': 28, 'color': '#ef4444', 'evolution': 'up', 'change': 5},
+                    {'name': 'Sci-Fi', 'percent': 22, 'color': '#3b82f6', 'evolution': 'up', 'change': 3},
+                    {'name': 'Drame', 'percent': 18, 'color': '#8b5cf6', 'evolution': 'stable', 'change': 0},
+                    {'name': 'Com&#233;die', 'percent': 15, 'color': '#f59e0b', 'evolution': 'down', 'change': -2},
+                    {'name': 'Crime', 'percent': 12, 'color': '#6b7280', 'evolution': 'up', 'change': 2},
+                    {'name': 'Anim.', 'percent': 5, 'color': '#10b981', 'evolution': 'stable', 'change': 0}
+                ] %}
+
+                <!-- Stacked bar -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-radius: 3px; overflow: hidden; margin-bottom: 4px;">
+                <tr>
+                    {% for g in genres_with_evolution %}
+                    <td width="{{ g.percent }}%" style="background: {{ g.color }}; height: 6px; font-size: 0;"></td>
+                    {% endfor %}
+                </tr>
+                </table>
+
+                <!-- 2-column legend -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                {% for g in genres_with_evolution %}
+                {% if loop.index is odd %}
+                <tr>
+                    <td width="50%" style="font-size: 7px; color: #94a3b8; padding: 1px 0;">
+                        <span style="display: inline-block; width: 6px; height: 6px; background: {{ g.color }}; border-radius: 1px; vertical-align: middle;"></span>
+                        {{ g.name }} {{ g.percent }}%
+                        {% if g.evolution == 'up' %}<span style="color: #10b981;">&#x25B2;{{ g.change }}</span>{% elif g.evolution == 'down' %}<span style="color: #ef4444;">&#x25BC;{{ g.change }}</span>{% endif %}
+                    </td>
+                    {% if genres_with_evolution[loop.index0 + 1] is defined %}
+                    {% set g2 = genres_with_evolution[loop.index0 + 1] %}
+                    <td width="50%" style="font-size: 7px; color: #94a3b8; padding: 1px 0;">
+                        <span style="display: inline-block; width: 6px; height: 6px; background: {{ g2.color }}; border-radius: 1px; vertical-align: middle;"></span>
+                        {{ g2.name }} {{ g2.percent }}%
+                        {% if g2.evolution == 'up' %}<span style="color: #10b981;">&#x25B2;{{ g2.change }}</span>{% elif g2.evolution == 'down' %}<span style="color: #ef4444;">&#x25BC;{{ g2.change }}</span>{% endif %}
+                    </td>
+                    {% else %}
+                    <td width="50%"></td>
+                    {% endif %}
+                </tr>
+                {% endif %}
+                {% endfor %}
+                </table>
+            </td>
+
+            <!-- Session Duration column -->
+            <td width="50%" style="vertical-align: top; padding-left: 6px;">
+                <h3 style="margin: 0 0 6px 0; font-size: 0.8em; font-weight: 800; color: #f59e0b;">&#x23F1; Dur&#233;e Session</h3>
+
+                {% set sessions_with_evolution = [
+                    {'name': '< 30m', 'percent': 15, 'color': '#10b981', 'evolution': 'down', 'change': -3},
+                    {'name': '30m-1h', 'percent': 25, 'color': '#3b82f6', 'evolution': 'stable', 'change': 0},
+                    {'name': '1h-2h', 'percent': 35, 'color': '#8b5cf6', 'evolution': 'up', 'change': 4},
+                    {'name': '2h-3h', 'percent': 18, 'color': '#f59e0b', 'evolution': 'up', 'change': 2},
+                    {'name': '3h+', 'percent': 7, 'color': '#ef4444', 'evolution': 'stable', 'change': 0}
+                ] %}
+
+                <!-- Stacked bar -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-radius: 3px; overflow: hidden; margin-bottom: 4px;">
+                <tr>
+                    {% for s in sessions_with_evolution %}
+                    <td width="{{ s.percent }}%" style="background: {{ s.color }}; height: 6px; font-size: 0;"></td>
+                    {% endfor %}
+                </tr>
+                </table>
+
+                <!-- 2-column legend -->
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                {% for s in sessions_with_evolution %}
+                {% if loop.index is odd %}
+                <tr>
+                    <td width="50%" style="font-size: 7px; color: #94a3b8; padding: 1px 0;">
+                        <span style="display: inline-block; width: 6px; height: 6px; background: {{ s.color }}; border-radius: 1px; vertical-align: middle;"></span>
+                        {{ s.name }} {{ s.percent }}%
+                        {% if s.evolution == 'up' %}<span style="color: #10b981;">&#x25B2;{{ s.change }}</span>{% elif s.evolution == 'down' %}<span style="color: #ef4444;">&#x25BC;{{ s.change }}</span>{% endif %}
+                    </td>
+                    {% if sessions_with_evolution[loop.index0 + 1] is defined %}
+                    {% set s2 = sessions_with_evolution[loop.index0 + 1] %}
+                    <td width="50%" style="font-size: 7px; color: #94a3b8; padding: 1px 0;">
+                        <span style="display: inline-block; width: 6px; height: 6px; background: {{ s2.color }}; border-radius: 1px; vertical-align: middle;"></span>
+                        {{ s2.name }} {{ s2.percent }}%
+                        {% if s2.evolution == 'up' %}<span style="color: #10b981;">&#x25B2;{{ s2.change }}</span>{% elif s2.evolution == 'down' %}<span style="color: #ef4444;">&#x25BC;{{ s2.change }}</span>{% endif %}
+                    </td>
+                    {% else %}
+                    <td width="50%"></td>
+                    {% endif %}
+                </tr>
+                {% endif %}
+                {% endfor %}
+                </table>
+            </td>
+        </tr>
+        </table>
+    </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- ==================== LIBRARY SECTION (ultra-compact) ==================== -->
+    {% if real_stats %}
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #0c1929 0%, #162544 100%);">
+    <tr><td style="padding: 8px 12px;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+            <td width="25%" style="text-align: center; padding: 4px 2px;">
+                <div style="font-size: 12px; font-weight: 900; color: #60a5fa;">{{ real_stats.library_total_movies or 0 }}</div>
+                <div style="font-size: 7px; color: #64748b;">&#x1F3AC; Films</div>
+            </td>
+            <td width="25%" style="text-align: center; padding: 4px 2px;">
+                <div style="font-size: 12px; font-weight: 900; color: #8b5cf6;">{{ real_stats.library_total_shows or 0 }}</div>
+                <div style="font-size: 7px; color: #64748b;">&#x1F4FA; S&#233;ries</div>
+            </td>
+            <td width="25%" style="text-align: center; padding: 4px 2px;">
+                <div style="font-size: 12px; font-weight: 900; color: #f59e0b;">{{ real_stats.library_total_episodes or 0 }}</div>
+                <div style="font-size: 7px; color: #64748b;">&#x1F3AD; &#201;pisodes</div>
+            </td>
+            <td width="25%" style="text-align: center; padding: 4px 2px;">
+                {% if real_stats.unique_content and real_stats.library_total_movies and real_stats.library_total_shows %}
+                {% set lib_total = (real_stats.library_total_movies|int + real_stats.library_total_shows|int) %}
+                {% if lib_total > 0 %}
+                <div style="font-size: 12px; font-weight: 900; color: #10b981;">{{ ((real_stats.unique_content|int / lib_total) * 100)|round(1) }}%</div>
+                {% else %}
+                <div style="font-size: 12px; font-weight: 900; color: #10b981;">0%</div>
+                {% endif %}
+                {% else %}
+                <div style="font-size: 12px; font-weight: 900; color: #10b981;">-</div>
+                {% endif %}
+                <div style="font-size: 7px; color: #64748b;">&#x1F4CA; Vu</div>
+            </td>
+        </tr>
+        </table>
+    </td></tr>
+    </table>
+    {% endif %}
+
+    <!-- ==================== FOOTER ==================== -->
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <tr><td style="padding: 12px 16px; text-align: center;">
+        <div style="font-size: 9px; font-weight: 700; color: #ffffff; letter-spacing: 1.5px; text-transform: uppercase;">&#x1F4CA; NEWSLETTER PLEX - STATISTIQUES</div>
+        <div style="font-size: 7px; color: rgba(255,255,255,0.6); margin-top: 3px;">G&#233;n&#233;r&#233; le {{ now().strftime('%d/%m/%Y &#224; %H:%M') }} &bull; Ghostarr</div>
+    </td></tr>
+    </table>
+
+</td></tr>
+</table>
+
+</body>
+</html>

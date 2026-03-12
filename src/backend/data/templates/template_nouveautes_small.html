@@ -1,0 +1,268 @@
+<!-- Template Nouveautés Small - Newsletter Plex compacte -->
+<table cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 700px; margin: 0 auto; background: linear-gradient(180deg, #0a0a0a 0%, #1a1a1a 100%); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #e0e0e0;">
+
+    <!-- ========== HEADER ========== -->
+    <tr>
+        <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); padding: 20px 25px; text-align: center;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td style="text-align: center;">
+                        <div style="font-size: 0.75em; font-weight: 500; color: rgba(255,255,255,0.8); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 4px;">Newsletter Plex</div>
+                        <div style="font-size: 1.6em; font-weight: 800; color: #ffffff; letter-spacing: -0.5px;">&#127916; Nouveaut&eacute;s</div>
+                        <div style="font-size: 0.75em; color: rgba(255,255,255,0.7); margin-top: 6px;">Semaine {{ date.week }} &mdash; {{ now().strftime('%d %B %Y') }}</div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <!-- ========== FEATURED MOVIE ========== -->
+    {% if show_featured_movie and featured_movie %}
+    <tr>
+        <td style="padding: 20px;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #f8f8f8; border-radius: 10px; overflow: hidden;">
+                <tr>
+                    <td style="padding: 18px;">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <!-- Poster + Rating -->
+                                <td width="150" valign="top" style="width: 150px; padding-right: 18px;">
+                                    <div style="position: relative; display: inline-block;">
+                                        {% if featured_movie.poster_url %}
+                                        <img src="{{ featured_movie.poster_url }}" alt="{{ featured_movie.title }}" width="150" style="width: 150px; height: 225px; object-fit: cover; border-radius: 8px; display: block;">
+                                        {% else %}
+                                        <div style="width: 150px; height: 225px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 8px; display: table-cell; vertical-align: middle; text-align: center; font-size: 3em;">&#127916;</div>
+                                        {% endif %}
+                                        {% if featured_movie.rating %}
+                                        <div style="position: absolute; top: 8px; left: 8px; padding: 3px 8px; border-radius: 5px; font-size: 0.8em; font-weight: 700; color: #fff;
+                                            {% if featured_movie.rating >= 8 %}background: #22c55e;
+                                            {% elif featured_movie.rating >= 7 %}background: #3b82f6;
+                                            {% elif featured_movie.rating >= 6 %}background: #eab308;
+                                            {% else %}background: #ef4444;
+                                            {% endif %}">&#9733; {{ featured_movie.rating }}/10</div>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <!-- Info -->
+                                <td valign="top" style="color: #1a1a1a;">
+                                    <div style="font-size: 1.3em; font-weight: 800; color: #0a0a0a; margin-bottom: 4px; line-height: 1.2;">{{ featured_movie.title }}</div>
+                                    {% if featured_movie.tagline %}
+                                    <div style="font-size: 0.8em; font-style: italic; color: #666; margin-bottom: 8px;">{{ featured_movie.tagline }}</div>
+                                    {% endif %}
+                                    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 8px;">
+                                        <tr>
+                                            <td style="font-size: 0.78em; color: #555; padding-right: 12px;">&#128197; {{ featured_movie.year }}</td>
+                                            {% if featured_movie.duration %}
+                                            <td style="font-size: 0.78em; color: #555; padding-right: 12px;">&#9202; {{ format_duration(featured_movie.duration) }}</td>
+                                            {% endif %}
+                                            {% if featured_movie.content_rating %}
+                                            <td style="font-size: 0.78em; color: #555;">{{ featured_movie.content_rating }}</td>
+                                            {% endif %}
+                                        </tr>
+                                    </table>
+                                    {% if featured_movie.director %}
+                                    <div style="font-size: 0.78em; color: #444; margin-bottom: 4px;"><strong>R&eacute;alisateur :</strong> {{ featured_movie.director }}</div>
+                                    {% endif %}
+                                    {% if featured_movie.cast %}
+                                    <div style="font-size: 0.78em; color: #444; margin-bottom: 8px;"><strong>Casting :</strong> {{ format_cast_list(featured_movie.cast, 4) }}</div>
+                                    {% endif %}
+                                    {% if featured_movie.genres %}
+                                    <div style="margin-bottom: 6px;">
+                                        {% for genre in featured_movie.genres[:4] %}
+                                        <span style="display: inline-block; background: linear-gradient(135deg, #764ba2, #667eea); color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.7em; font-weight: 600; margin: 2px 2px 2px 0;">{{ genre }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                        <!-- Synopsis -->
+                        {% if featured_movie.summary %}
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid #e0e0e0;">
+                            <div style="font-size: 0.72em; font-weight: 700; color: #764ba2; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Synopsis</div>
+                            <div style="font-size: 0.82em; color: #333; line-height: 1.5;">{{ truncate_text(featured_movie.summary, 300) }}</div>
+                        </div>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    {% endif %}
+
+    <!-- ========== MOVIES SECTION ========== -->
+    {% if movies %}
+    <tr>
+        <td style="padding: 10px 20px 5px 20px;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td>
+                        <span style="font-size: 1.15em; font-weight: 700; color: #ffffff;">&#127916; Nouveaux Films</span>
+                        <span style="display: inline-block; background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; padding: 2px 10px; border-radius: 10px; font-size: 0.72em; font-weight: 700; margin-left: 8px; vertical-align: middle;">{{ movies|length }}</span>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    {% for movie in movies %}
+    <tr>
+        <td style="padding: 6px 20px;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #141414; border-radius: 8px; overflow: hidden;">
+                <tr>
+                    <td style="padding: 0;">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <!-- Poster -->
+                                <td width="100" valign="top" style="width: 100px;">
+                                    {% if movie.poster_url %}
+                                    <img src="{{ movie.poster_url }}" alt="{{ movie.title }}" width="100" style="width: 100px; height: 150px; object-fit: cover; border-radius: 8px 0 0 8px; display: block;">
+                                    {% else %}
+                                    <div style="width: 100px; height: 150px; background: linear-gradient(135deg, #3b82f6, #1d4ed8); border-radius: 8px 0 0 8px; text-align: center; line-height: 150px; font-size: 2em;">&#127916;</div>
+                                    {% endif %}
+                                </td>
+                                <!-- Info -->
+                                <td valign="top" style="padding: 10px 14px;">
+                                    <div style="font-size: 0.95em; font-weight: 700; color: #ffffff; margin-bottom: 4px; line-height: 1.2;">{{ movie.title }}</div>
+                                    <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom: 5px;">
+                                        <tr>
+                                            <td style="padding-right: 6px;">
+                                                <span style="display: inline-block; background: #2a2a2a; color: #aaa; padding: 1px 6px; border-radius: 4px; font-size: 0.7em;">{{ movie.year }}</span>
+                                            </td>
+                                            {% if movie.duration %}
+                                            <td style="padding-right: 6px;">
+                                                <span style="display: inline-block; background: #2a2a2a; color: #aaa; padding: 1px 6px; border-radius: 4px; font-size: 0.7em;">{{ format_duration(movie.duration) }}</span>
+                                            </td>
+                                            {% endif %}
+                                            {% if movie.rating %}
+                                            <td>
+                                                <span style="display: inline-block; padding: 1px 6px; border-radius: 4px; font-size: 0.7em; font-weight: 700; color: #fff;
+                                                    {% if movie.rating >= 8 %}background: #22c55e;
+                                                    {% elif movie.rating >= 7 %}background: #3b82f6;
+                                                    {% elif movie.rating >= 6 %}background: #eab308;
+                                                    {% else %}background: #ef4444;
+                                                    {% endif %}">&#9733; {{ movie.rating }}</span>
+                                            </td>
+                                            {% endif %}
+                                        </tr>
+                                    </table>
+                                    {% if movie.director %}
+                                    <div style="font-size: 0.72em; color: #888; margin-bottom: 2px;">&#127916; {{ movie.director }}</div>
+                                    {% endif %}
+                                    {% if movie.cast %}
+                                    <div style="font-size: 0.72em; color: #777; margin-bottom: 4px;">{{ format_cast_list(movie.cast, 3) }}</div>
+                                    {% endif %}
+                                    {% if movie.genres %}
+                                    <div style="margin-bottom: 4px;">
+                                        {% for genre in movie.genres[:3] %}
+                                        <span style="display: inline-block; background: #2a2a2a; color: #999; padding: 1px 6px; border-radius: 8px; font-size: 0.65em; margin: 1px 1px 1px 0;">{{ genre }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    {% endif %}
+                                    {% if movie.summary %}
+                                    <div style="font-size: 0.72em; color: #666; line-height: 1.4;">{{ truncate_text(movie.summary, 120) }}</div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+
+    <!-- ========== SHOWS SECTION ========== -->
+    {% if shows_grouped %}
+    <tr>
+        <td style="padding: 18px 20px 5px 20px;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                    <td>
+                        <span style="font-size: 1.15em; font-weight: 700; color: #ffffff;">&#128250; Nouvelles S&eacute;ries</span>
+                        <span style="display: inline-block; background: linear-gradient(135deg, #764ba2, #667eea); color: #fff; padding: 2px 10px; border-radius: 10px; font-size: 0.72em; font-weight: 700; margin-left: 8px; vertical-align: middle;">{{ shows_grouped|length }} s&eacute;rie{% if shows_grouped|length > 1 %}s{% endif %} &middot; {{ shows|length }} &eacute;p.</span>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    {% for series_title, episodes in shows_grouped.items() %}
+    <tr>
+        <td style="padding: 6px 20px;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #141414; border-radius: 8px; overflow: hidden;">
+                <tr>
+                    <td style="padding: 0;">
+                        <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                                <!-- Poster -->
+                                <td width="80" valign="top" style="width: 80px;">
+                                    {% if episodes[0].poster_url %}
+                                    <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" width="80" style="width: 80px; height: 120px; object-fit: cover; border-radius: 8px 0 0 8px; display: block;">
+                                    {% else %}
+                                    <div style="width: 80px; height: 120px; background: linear-gradient(135deg, #764ba2, #667eea); border-radius: 8px 0 0 8px; text-align: center; line-height: 120px; font-size: 1.8em;">&#128250;</div>
+                                    {% endif %}
+                                </td>
+                                <!-- Info -->
+                                <td valign="top" style="padding: 10px 14px;">
+                                    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                                        <tr>
+                                            <td>
+                                                <span style="font-size: 0.95em; font-weight: 700; color: #ffffff;">{{ series_title }}</span>
+                                                <span style="display: inline-block; background: linear-gradient(135deg, #764ba2, #667eea); color: #fff; padding: 1px 7px; border-radius: 8px; font-size: 0.65em; font-weight: 600; margin-left: 6px; vertical-align: middle;">{{ episodes|length }} &eacute;p.</span>
+                                            </td>
+                                            {% if episodes[0].rating %}
+                                            <td width="50" style="text-align: right;">
+                                                <span style="font-size: 0.75em; font-weight: 700;
+                                                    {% if episodes[0].rating >= 8 %}color: #22c55e;
+                                                    {% elif episodes[0].rating >= 7 %}color: #3b82f6;
+                                                    {% elif episodes[0].rating >= 6 %}color: #eab308;
+                                                    {% else %}color: #ef4444;
+                                                    {% endif %}">&#9733; {{ episodes[0].rating }}</span>
+                                            </td>
+                                            {% endif %}
+                                        </tr>
+                                    </table>
+                                    <!-- Episode list (max 3) -->
+                                    <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top: 6px;">
+                                        {% for episode in episodes[:3] %}
+                                        <tr>
+                                            <td style="padding: 3px 0 3px 8px; border-left: 2px solid #764ba2;">
+                                                <span style="font-size: 0.72em; font-weight: 600; color: #b388ff;">S{{ "%02d"|format(episode.season_number or 0) }}E{{ "%02d"|format(episode.episode_number or 0) }}</span>
+                                                {% if episode.title %}
+                                                <span style="font-size: 0.72em; color: #888;"> &mdash; {{ truncate_text(episode.title, 40) }}</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </table>
+                                    {% if episodes|length > 3 %}
+                                    <div style="font-size: 0.68em; color: #666; font-style: italic; margin-top: 4px; padding-left: 10px;">... et {{ episodes|length - 3 }} autre{% if episodes|length - 3 > 1 %}s{% endif %}</div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    {% endfor %}
+    {% endif %}
+
+    <!-- ========== FOOTER ========== -->
+    <tr>
+        <td style="padding: 20px 0 0 0;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); padding: 18px 25px;">
+                <tr>
+                    <td style="text-align: center; padding: 18px 25px;">
+                        <div style="font-size: 0.8em; font-weight: 700; color: rgba(255,255,255,0.9); letter-spacing: 2px;">&#127916; NEWSLETTER PLEX - NOUVEAUT&Eacute;S</div>
+                        <div style="font-size: 0.68em; color: rgba(255,255,255,0.5); margin-top: 6px;">G&eacute;n&eacute;r&eacute; le {{ now().strftime('%d/%m/%Y &agrave; %H:%M') }}</div>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+</table>

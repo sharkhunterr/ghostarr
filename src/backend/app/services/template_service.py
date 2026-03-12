@@ -74,6 +74,8 @@ class TemplateService:
             self._env.globals["number_format"] = self._filter_number_format
             self._env.globals["zfill"] = self._filter_zfill
             self._env.globals["format_cast_list"] = self._format_cast_list
+            self._env.globals["format_genres"] = self._format_genres
+            self._env.globals["get_week_number"] = lambda: datetime.now().isocalendar()[1]
             self._env.globals["strip_html"] = self._filter_strip_html
             self._env.globals["clean_description"] = self._filter_strip_html
 
@@ -96,6 +98,15 @@ class TemplateService:
                     names.append(str(member))
             return ", ".join(names)
         return str(cast)
+
+    @staticmethod
+    def _format_genres(genres: list | None, limit: int = 3) -> str:
+        """Format a genres list to a comma-separated string."""
+        if not genres:
+            return ""
+        if isinstance(genres, list):
+            return ", ".join(str(g) for g in genres[:limit])
+        return str(genres)
 
     @staticmethod
     def _filter_format_date(value: datetime | str, format: str = "%d %B %Y") -> str:
@@ -395,24 +406,46 @@ class TemplateService:
                 {
                     "name": "The Legend of Zelda: Breath of the Wild",
                     "platform": "Nintendo Switch",
+                    "platform_slug": "switch",
                     "cover_url": None,
+                    "summary": "Explorez un monde ouvert immense dans cette aventure épique.",
                 },
                 {
                     "name": "Super Mario Odyssey",
                     "platform": "Nintendo Switch",
+                    "platform_slug": "switch",
                     "cover_url": None,
+                    "summary": "Rejoignez Mario dans une aventure autour du monde.",
+                },
+                {
+                    "name": "God of War Ragnarök",
+                    "platform": "PlayStation 5",
+                    "platform_slug": "ps5",
+                    "cover_url": None,
+                    "summary": "Kratos et Atreus affrontent le Ragnarök nordique.",
                 },
             ],
             "books": [
                 {
                     "name": "Batman: Year One",
-                    "series_title": "Batman",
-                    "thumbnail": None,
+                    "series_name": "Batman",
+                    "number": 1,
+                    "page_count": 136,
+                    "thumbnail_url": None,
                 },
                 {
                     "name": "Spider-Man: Blue",
-                    "series_title": "Spider-Man",
-                    "thumbnail": None,
+                    "series_name": "Spider-Man",
+                    "number": 1,
+                    "page_count": 152,
+                    "thumbnail_url": None,
+                },
+                {
+                    "name": "Saga Vol. 1",
+                    "series_name": "Saga",
+                    "number": 1,
+                    "page_count": 160,
+                    "thumbnail_url": None,
                 },
             ],
             "audiobooks": [
@@ -420,8 +453,73 @@ class TemplateService:
                     "title": "Dune",
                     "author": "Frank Herbert",
                     "narrator": "Scott Brick",
-                    "cover": None,
+                    "series": "Dune",
+                    "series_sequence": "1",
+                    "description": "Un chef-d'oeuvre de la science-fiction.",
+                    "cover_url": None,
                     "duration": 75600,
+                    "genres": ["Science-Fiction", "Aventure"],
+                },
+                {
+                    "title": "Le Seigneur des Anneaux",
+                    "author": "J.R.R. Tolkien",
+                    "narrator": "Thierry Janssen",
+                    "series": "Le Seigneur des Anneaux",
+                    "series_sequence": "1",
+                    "description": "L'épopée fantastique la plus célèbre de tous les temps.",
+                    "cover_url": None,
+                    "duration": 64800,
+                    "genres": ["Fantaisie", "Aventure"],
+                },
+            ],
+            "tv_programs": [
+                {
+                    "id": "prog1",
+                    "title": "Film du Vendredi : Inception",
+                    "start_time": datetime.now().replace(hour=20, minute=30),
+                    "end_time": datetime.now().replace(hour=23, minute=0),
+                    "duration": 150,
+                    "channel_id": "ch1",
+                    "channel_name": "Cinema HD",
+                    "description": "Un voleur qui s'infiltre dans les rêves des autres pour voler leurs secrets.",
+                    "thumbnail_url": "https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
+                    "type": "movie",
+                },
+                {
+                    "id": "prog2",
+                    "title": "Breaking Bad - S05E16",
+                    "start_time": datetime.now().replace(hour=21, minute=0),
+                    "end_time": datetime.now().replace(hour=22, minute=0),
+                    "duration": 60,
+                    "channel_id": "ch2",
+                    "channel_name": "Séries+",
+                    "description": "Le dernier épisode de la série épique de Vince Gilligan.",
+                    "thumbnail_url": "https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg",
+                    "type": "episode",
+                },
+                {
+                    "id": "prog3",
+                    "title": "Journal du Soir",
+                    "start_time": datetime.now().replace(hour=20, minute=0),
+                    "end_time": datetime.now().replace(hour=20, minute=30),
+                    "duration": 30,
+                    "channel_id": "ch3",
+                    "channel_name": "Info 24",
+                    "description": "Le journal télévisé du soir avec les dernières actualités.",
+                    "thumbnail_url": "",
+                    "type": "program",
+                },
+                {
+                    "id": "prog4",
+                    "title": "Interstellar",
+                    "start_time": datetime.now().replace(hour=20, minute=45),
+                    "end_time": datetime.now().replace(hour=23, minute=30),
+                    "duration": 169,
+                    "channel_id": "ch4",
+                    "channel_name": "Sci-Fi Channel",
+                    "description": "Un groupe d'explorateurs utilise une brèche spatiotemporelle.",
+                    "thumbnail_url": "https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
+                    "type": "movie",
                 },
             ],
             "programming": [
