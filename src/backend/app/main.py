@@ -48,6 +48,48 @@ async def seed_default_templates():
             "tags": ["films", "series", "statistiques"],
             "is_default": False,
         },
+        {
+            "name": "Nouveautés Small (Plex)",
+            "description": "Template compact pour les nouveautés Plex (films et séries)",
+            "file_path": "template_nouveautes_small.html",
+            "tags": ["plex", "films", "series", "compact"],
+            "is_default": False,
+        },
+        {
+            "name": "Nouveautés Complet",
+            "description": "Template complet avec toutes les nouveautés (Plex, ROMM, Komga, Audiobookshelf)",
+            "file_path": "template_nouveautes_complet.html",
+            "tags": ["plex", "romm", "komga", "audiobookshelf", "complet"],
+            "is_default": False,
+        },
+        {
+            "name": "Statistiques Small",
+            "description": "Template compact pour les statistiques et analytics",
+            "file_path": "template_statistiques_small.html",
+            "tags": ["statistiques", "analytics", "compact"],
+            "is_default": False,
+        },
+        {
+            "name": "Tunarr (Programme TV)",
+            "description": "Programme TV avec les chaînes et émissions Tunarr",
+            "file_path": "template_tunarr.html",
+            "tags": ["tunarr", "tv", "programme"],
+            "is_default": False,
+        },
+        {
+            "name": "Simple Mixte",
+            "description": "Résumé hebdomadaire mixte avec nouveautés et statistiques",
+            "file_path": "template_simple_mixe.html",
+            "tags": ["mixte", "nouveautes", "statistiques", "hebdomadaire"],
+            "is_default": False,
+        },
+        {
+            "name": "Complet Small",
+            "description": "Template tout-en-un compact : médias, stats et programme TV",
+            "file_path": "template_complet_small.html",
+            "tags": ["complet", "compact", "medias", "statistiques", "tunarr"],
+            "is_default": False,
+        },
     ]
 
     async with AsyncSessionLocal() as db:
@@ -85,6 +127,17 @@ async def lifespan(app: FastAPI):
     config_path.mkdir(parents=True, exist_ok=True)
     templates_path = Path(settings.templates_dir)
     templates_path.mkdir(parents=True, exist_ok=True)
+
+    # Copy built-in templates to user templates directory if not already present
+    import shutil
+
+    builtin_templates_dir = Path(__file__).parent.parent / "data" / "templates"
+    if builtin_templates_dir.exists():
+        for src_file in builtin_templates_dir.glob("*.html"):
+            dest_file = templates_path / src_file.name
+            if not dest_file.exists():
+                shutil.copy2(src_file, dest_file)
+                logger.info(f"Copied built-in template: {src_file.name}")
 
     # Create database tables (in production, use Alembic migrations)
     if settings.app_env == "development":
