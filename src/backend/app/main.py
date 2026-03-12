@@ -29,6 +29,7 @@ logger = get_logger(__name__)
 async def seed_default_templates():
     """Seed all templates found in the templates directory into the database with labels."""
     from sqlalchemy import select
+    from sqlalchemy.orm import selectinload
 
     from app.database import AsyncSessionLocal
     from app.models.label import Label
@@ -51,85 +52,92 @@ async def seed_default_templates():
         "Programme TV": "#14b8a6",
         "Complet": "#ec4899",
         "Nouveautés": "#84cc16",
+        # Content-type labels
+        "Films": "#3b82f6",
+        "Séries": "#8b5cf6",
+        "Jeux": "#10b981",
+        "Livres": "#f59e0b",
+        "Livres Audio": "#06b6d4",
     }
 
     # Template -> labels mapping (by filename without template_ prefix and .html suffix)
     TEMPLATE_LABELS = {
-        "airport": ["Fun"],
-        "alien": ["Sci-Fi"],
-        "anime": ["Fun"],
-        "apple": ["Minimal"],
-        "art_deco": ["Rétro"],
-        "bento": ["Minimal"],
-        "blog": ["Minimal"],
-        "blueprint": ["Sci-Fi"],
-        "bobine_cinema": ["Cinéma", "Rétro"],
-        "bookclub": ["Fun"],
-        "brutalist": ["Minimal"],
-        "casino": ["Fun"],
-        "cinema_tickets": ["Cinéma"],
-        "comic": ["Fun"],
-        "complet_small": ["Complet", "Statistiques", "Nouveautés"],
-        "cyberpunk": ["Sci-Fi"],
-        "dark_minimal": ["Minimal"],
-        "disco": ["Rétro", "Fun"],
-        "fanart": ["Fun"],
-        "film_noir": ["Cinéma", "Rétro"],
-        "gaming": ["Fun"],
-        "glassmorphism": ["Minimal"],
-        "gradient_mesh": ["Minimal"],
-        "halloween": ["Festif"],
-        "harry_potter": ["Fun"],
-        "horror": ["Cinéma"],
-        "instagram": ["Streaming"],
-        "iphone": ["Minimal"],
-        "jellyfin": ["Streaming"],
-        "journal_papier": ["Rétro"],
-        "magazine": ["Minimal"],
-        "magazine_jv": ["Fun"],
-        "maintenance": ["Minimal"],
-        "minimalist": ["Minimal"],
-        "minority_report": ["Sci-Fi"],
-        "mixe": ["Complet"],
-        "monochrome": ["Minimal"],
-        "mosaique": ["Fun"],
-        "multimedia_complet": ["Complet", "Nouveautés"],
-        "nasa": ["Sci-Fi"],
-        "neon": ["Sci-Fi"],
-        "neon_retro": ["Rétro", "Sci-Fi"],
-        "netflix": ["Streaming"],
-        "netflix_preview": ["Streaming"],
-        "netflix_top10": ["Streaming"],
-        "noel": ["Festif"],
-        "noel_calendrier": ["Festif"],
-        "noel_carte": ["Festif"],
-        "notion": ["Minimal"],
-        "nouveautes_complet": ["Nouveautés", "Complet"],
-        "nouveautes_small": ["Nouveautés"],
-        "pastel": ["Minimal"],
-        "people": ["Fun"],
-        "plex": ["Streaming"],
-        "polaroid": ["Rétro"],
-        "programme_tv": ["Programme TV"],
-        "radio": ["Rétro"],
-        "revue_presse": ["Rétro"],
-        "scrapbook": ["Fun"],
-        "simple_mixe": ["Complet", "Statistiques"],
-        "spotify": ["Streaming"],
-        "star_wars": ["Sci-Fi"],
-        "statistiques_small": ["Statistiques"],
-        "stats_dashboard": ["Statistiques"],
-        "steampunk": ["Rétro", "Sci-Fi"],
-        "summer": ["Festif"],
-        "swiss": ["Minimal"],
-        "terminal": ["Sci-Fi"],
-        "tuiles": ["Minimal"],
-        "tunarr": ["Programme TV"],
-        "tv_guide": ["Programme TV"],
-        "twitch": ["Streaming"],
-        "vhs_videoclub": ["Cinéma", "Rétro"],
-        "western": ["Rétro"],
-        "youtube": ["Streaming"],
+        "airport": ["Fun", "Films", "Séries", "Jeux", "Livres"],
+        "alien": ["Sci-Fi", "Films", "Séries", "Jeux"],
+        "anime": ["Fun", "Films", "Séries", "Jeux"],
+        "apple": ["Minimal", "Films", "Séries", "Jeux", "Livres"],
+        "art_deco": ["Rétro", "Films", "Séries"],
+        "bento": ["Minimal", "Films", "Séries", "Jeux", "Livres"],
+        "blog": ["Minimal", "Films", "Séries"],
+        "blueprint": ["Sci-Fi", "Films", "Séries", "Jeux", "Livres"],
+        "bobine_cinema": ["Cinéma", "Rétro", "Films", "Séries", "Jeux"],
+        "bookclub": ["Fun", "Livres", "Livres Audio"],
+        "brutalist": ["Minimal", "Films", "Séries", "Jeux"],
+        "casino": ["Fun", "Films", "Séries", "Jeux"],
+        "cinema_tickets": ["Cinéma", "Films", "Séries"],
+        "comic": ["Fun", "Films", "Séries", "Jeux"],
+        "complet_small": ["Complet", "Statistiques", "Nouveautés", "Films", "Séries", "Jeux", "Livres", "Livres Audio"],
+        "cyberpunk": ["Sci-Fi", "Films", "Séries", "Jeux"],
+        "dark_minimal": ["Minimal", "Films", "Séries", "Jeux", "Livres"],
+        "disco": ["Rétro", "Fun", "Films", "Séries", "Jeux"],
+        "fanart": ["Fun", "Films", "Séries", "Jeux"],
+        "film_noir": ["Cinéma", "Rétro", "Films", "Séries", "Jeux", "Livres"],
+        "gaming": ["Fun", "Jeux"],
+        "glassmorphism": ["Minimal", "Films", "Séries", "Jeux", "Livres"],
+        "gradient_mesh": ["Minimal", "Films", "Séries", "Jeux", "Livres"],
+        "halloween": ["Festif", "Films", "Séries"],
+        "harry_potter": ["Fun", "Films", "Séries", "Jeux", "Livres"],
+        "horror": ["Cinéma", "Films", "Séries", "Jeux", "Livres"],
+        "instagram": ["Streaming", "Films", "Séries"],
+        "iphone": ["Minimal", "Films", "Séries", "Jeux"],
+        "jellyfin": ["Streaming", "Films", "Séries", "Jeux", "Livres"],
+        "journal_papier": ["Rétro", "Films", "Séries", "Jeux"],
+        "magazine": ["Minimal", "Films", "Séries", "Jeux"],
+        "magazine_jv": ["Fun", "Films", "Séries", "Jeux"],
+        "maintenance": ["Minimal", "Films", "Séries"],
+        "minimalist": ["Minimal", "Films", "Séries", "Jeux", "Livres", "Livres Audio"],
+        "minority_report": ["Sci-Fi", "Films", "Séries", "Jeux"],
+        "mixe": ["Complet", "Films", "Séries"],
+        "monochrome": ["Minimal", "Films", "Séries", "Jeux", "Livres"],
+        "mosaique": ["Fun", "Films", "Séries", "Jeux", "Livres"],
+        "multimedia_complet": ["Complet", "Nouveautés", "Films", "Séries", "Jeux", "Livres", "Livres Audio"],
+        "nasa": ["Sci-Fi", "Films", "Séries"],
+        "neon": ["Sci-Fi", "Films", "Séries", "Jeux", "Livres"],
+        "neon_retro": ["Rétro", "Sci-Fi", "Films", "Séries"],
+        "netflix": ["Streaming", "Films", "Séries", "Jeux"],
+        "netflix_preview": ["Streaming", "Films", "Séries"],
+        "netflix_top10": ["Streaming", "Films", "Séries"],
+        "noel": ["Festif", "Films", "Séries", "Jeux", "Livres", "Livres Audio"],
+        "noel_calendrier": ["Festif", "Films", "Séries", "Jeux", "Livres"],
+        "noel_carte": ["Festif", "Films", "Séries", "Jeux", "Livres"],
+        "notion": ["Minimal", "Films", "Séries", "Jeux", "Livres"],
+        "nouveautes_complet": ["Nouveautés", "Complet", "Films", "Séries", "Jeux", "Livres", "Livres Audio"],
+        "nouveautes_small": ["Nouveautés", "Films", "Séries"],
+        "pastel": ["Minimal", "Films", "Séries", "Jeux", "Livres"],
+        "people": ["Fun", "Films", "Séries", "Jeux"],
+        "plex": ["Streaming", "Films", "Séries", "Jeux", "Livres"],
+        "polaroid": ["Rétro", "Films", "Séries", "Jeux", "Livres"],
+        "posters": ["Minimal", "Films", "Séries", "Jeux", "Livres", "Livres Audio"],
+        "programme_tv": ["Programme TV", "Films"],
+        "radio": ["Rétro", "Films", "Séries", "Jeux"],
+        "revue_presse": ["Rétro", "Films", "Séries"],
+        "scrapbook": ["Fun", "Films", "Séries", "Jeux", "Livres"],
+        "simple_mixe": ["Complet", "Statistiques", "Films", "Séries"],
+        "spotify": ["Streaming", "Films", "Séries", "Jeux"],
+        "star_wars": ["Sci-Fi", "Films", "Séries", "Jeux"],
+        "statistiques_small": ["Statistiques", "Films"],
+        "stats_dashboard": ["Statistiques", "Films", "Séries"],
+        "steampunk": ["Rétro", "Sci-Fi", "Films", "Séries"],
+        "summer": ["Festif", "Films", "Séries"],
+        "swiss": ["Minimal", "Films", "Séries", "Jeux", "Livres"],
+        "terminal": ["Sci-Fi", "Films", "Séries", "Jeux"],
+        "tuiles": ["Minimal", "Films", "Séries", "Jeux", "Livres"],
+        "tunarr": ["Programme TV", "Films"],
+        "tv_guide": ["Programme TV", "Films", "Séries", "Jeux", "Livres"],
+        "twitch": ["Streaming", "Films", "Séries", "Jeux"],
+        "vhs_videoclub": ["Cinéma", "Rétro", "Films", "Séries", "Jeux"],
+        "western": ["Rétro", "Films", "Séries"],
+        "youtube": ["Streaming", "Films", "Séries", "Jeux"],
     }
 
     async with AsyncSessionLocal() as db:
@@ -150,15 +158,16 @@ async def seed_default_templates():
         for template_file in sorted(templates_path.glob("*.html")):
             file_name = template_file.name
             result = await db.execute(
-                select(Template).where(Template.file_path == file_name)
+                select(Template).options(selectinload(Template.labels)).where(Template.file_path == file_name)
             )
             existing = result.scalar_one_or_none()
 
+            # Derive template key from filename
+            template_key = file_name.replace("template_", "").replace(".html", "")
+
             if not existing:
                 # Generate a readable name from the filename
-                name = file_name.replace("template_", "").replace(".html", "")
-                template_key = name  # Keep the key for label lookup
-                name = name.replace("_", " ").title()
+                name = template_key.replace("_", " ").title()
 
                 template = Template(
                     name=name,
@@ -176,6 +185,16 @@ async def seed_default_templates():
                         template.labels.append(label_cache[label_name])
 
                 logger.info(f"Seeded template: {name} (labels: {label_names})")
+            else:
+                # Sync labels for existing templates: add missing labels
+                label_names = TEMPLATE_LABELS.get(template_key, [])
+                existing_label_names = {lbl.name for lbl in existing.labels}
+                for label_name in label_names:
+                    if label_name not in existing_label_names and label_name in label_cache:
+                        existing.labels.append(label_cache[label_name])
+                added = [n for n in label_names if n not in existing_label_names and n in label_cache]
+                if added:
+                    logger.info(f"Updated template labels: {existing.name} (+{added})")
 
         await db.commit()
 

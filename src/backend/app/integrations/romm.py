@@ -27,6 +27,7 @@ class GameItem(BaseModel):
     background_url: str | None = None
     summary: str | None = None
     igdb_id: int | None = None
+    release_year: int | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None
 
@@ -180,6 +181,23 @@ class ROMMIntegration(BaseIntegration[GameItem]):
                     elif bg:
                         background_url = f"{self.url}{bg}"
 
+                # Extract release year from IGDB metadata
+                # ROMM may expose this at top level or nested in igdb_metadata
+                release_year = None
+                first_release_date = game.get("first_release_date") or game.get("release_date")
+                if not first_release_date:
+                    igdb_meta = game.get("igdb_metadata") or game.get("moby_metadata") or {}
+                    if isinstance(igdb_meta, dict):
+                        first_release_date = igdb_meta.get("first_release_date")
+                if first_release_date:
+                    try:
+                        if isinstance(first_release_date, (int, float)):
+                            release_year = datetime.fromtimestamp(first_release_date).year
+                        elif isinstance(first_release_date, str):
+                            release_year = int(first_release_date[:4])
+                    except (ValueError, TypeError):
+                        pass
+
                 game_item = GameItem(
                     id=game.get("id", 0),
                     name=game.get("name") or game.get("file_name") or "Unknown",
@@ -191,6 +209,7 @@ class ROMMIntegration(BaseIntegration[GameItem]):
                     background_url=background_url,
                     summary=game.get("summary"),
                     igdb_id=game.get("igdb_id"),
+                    release_year=release_year,
                     created_at=game_date,
                 )
                 items.append(game_item)

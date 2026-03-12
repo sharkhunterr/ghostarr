@@ -60,7 +60,7 @@ export function StatisticsConfig({ config, onChange }: StatisticsConfigProps) {
               id="stats-days"
               type="number"
               min={1}
-              max={30}
+              max={365}
               value={config.days}
               onChange={(e) =>
                 updateConfig('days', parseInt(e.target.value) || 7)

@@ -24,6 +24,7 @@ class AudiobookItem(BaseModel):
     description: str | None = None
     cover_url: str | None = None
     duration: float = 0  # seconds
+    published_year: str | None = None
     added_at: datetime | None = None
     genres: list[str] = []
 
@@ -112,6 +113,7 @@ class AudiobookshelfIntegration(BaseIntegration[AudiobookItem]):
                         description=metadata.get("description"),
                         cover_url=f"{self.url}/api/items/{item.get('id')}/cover" if item.get("id") else None,
                         duration=media.get("duration", 0),
+                        published_year=metadata.get("publishedYear"),
                         added_at=datetime.fromtimestamp(added_at / 1000) if added_at else None,
                         genres=metadata.get("genres", []),
                     )

@@ -23,6 +23,9 @@ class BookItem(BaseModel):
     page_count: int = 0
     size_bytes: int = 0
     thumbnail_url: str | None = None
+    summary: str | None = None
+    authors: str | None = None
+    release_date: str | None = None
     created: datetime | None = None
     last_modified: datetime | None = None
     metadata: dict[str, Any] = {}
@@ -93,6 +96,29 @@ class KomgaIntegration(BaseIntegration[BookItem]):
                 series_id = book.get("seriesId", "")
                 series_name = book.get("seriesTitle", "")
 
+                # Extract metadata
+                book_metadata = book.get("metadata", {})
+                summary = book_metadata.get("summary", "")
+                release_date = book_metadata.get("releaseDate")
+
+                # Extract authors (Komga stores as list of {name, role})
+                authors_list = book_metadata.get("authors", [])
+                authors_str = None
+                if authors_list:
+                    writer_names = [a.get("name") for a in authors_list if a.get("role", "").lower() == "writer" and a.get("name")]
+                    if not writer_names:
+                        writer_names = [a.get("name") for a in authors_list if a.get("name")]
+                    if writer_names:
+                        authors_str = ", ".join(writer_names[:3])
+
+                # Parse created date
+                created_date = None
+                if created_str:
+                    try:
+                        created_date = datetime.fromisoformat(created_str.replace("Z", "+00:00")).replace(tzinfo=None)
+                    except (ValueError, TypeError):
+                        pass
+
                 book_item = BookItem(
                     id=book.get("id", ""),
                     name=book.get("name", "Unknown"),
@@ -102,7 +128,11 @@ class KomgaIntegration(BaseIntegration[BookItem]):
                     page_count=book.get("media", {}).get("pagesCount", 0),
                     size_bytes=book.get("sizeBytes", 0),
                     thumbnail_url=f"{self.url}/api/v1/books/{book.get('id')}/thumbnail",
-                    metadata=book.get("metadata", {}),
+                    summary=summary or None,
+                    authors=authors_str,
+                    release_date=release_date,
+                    created=created_date,
+                    metadata=book_metadata,
                 )
                 items.append(book_item)
 

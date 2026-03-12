@@ -10,6 +10,21 @@
             <div style="font-size: 0.6em; font-weight: 500; letter-spacing: 2px; margin-bottom: 5px; opacity: 0.85; text-transform: uppercase;">Newsletter</div>
             <h1 style="margin: 0; font-size: 1.8em; font-weight: 900; letter-spacing: -1px; line-height: 1.1;">🎬 Toutes les Nouveaut&eacute;s</h1>
             <div style="font-size: 0.75em; margin-top: 8px; opacity: 0.9;">Semaine {{ date.week }} &bull; {{ now().strftime('%d %B %Y') }}</div>
+
+            <!-- Summary counts -->
+            {% set counts = [] %}
+            {% if movies %}{% if counts.append('🎬 ' ~ len(movies) ~ ' film' ~ ('s' if len(movies) > 1 else '')) %}{% endif %}{% endif %}
+            {% if shows %}{% if counts.append('📺 ' ~ len(shows_grouped) ~ ' série' ~ ('s' if len(shows_grouped) > 1 else '')) %}{% endif %}{% endif %}
+            {% if games %}{% if counts.append('🎮 ' ~ len(games) ~ ' jeu' ~ ('x' if len(games) > 1 else '')) %}{% endif %}{% endif %}
+            {% if books %}{% if counts.append('📚 ' ~ len(books) ~ ' livre' ~ ('s' if len(books) > 1 else '')) %}{% endif %}{% endif %}
+            {% if audiobooks %}{% if counts.append('🎧 ' ~ len(audiobooks) ~ ' livre' ~ ('s' if len(audiobooks) > 1 else '') ~ ' audio') %}{% endif %}{% endif %}
+            {% if counts %}
+            <div style="margin-top: 14px; display: inline-block;">
+                {% for c in counts %}
+                <span style="background: rgba(255,255,255,0.18); backdrop-filter: blur(8px); padding: 5px 12px; border-radius: 12px; font-size: 0.7em; font-weight: 600; margin: 0 3px; display: inline-block;">{{ c }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
     </div>
 
@@ -182,15 +197,18 @@
         <div style="background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); padding: 15px;">
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
-                    <td style="width: 80px; vertical-align: top; padding-right: 15px;">
-                        <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 80px; height: auto; border-radius: 8px;">
+                    <td style="width: 100px; vertical-align: top; padding-right: 15px;">
+                        <img src="{{ episodes[0].poster_url }}" alt="{{ series_title }}" style="width: 100px; height: auto; border-radius: 8px;">
                     </td>
                     <td style="vertical-align: top;">
                         <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: #ffffff;">{{ series_title }}</h3>
 
-                        <div style="margin-bottom: 10px;">
-                            <span style="background: #8b5cf6; color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: bold;">
-                                {{ len(episodes) }} &Eacute;PISODES
+                        <div style="margin-bottom: 10px; font-size: 12px; color: #a0a0a0;">
+                            {% if episodes[0].year %}
+                            <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px;">&#128197; {{ episodes[0].year }}</span>
+                            {% endif %}
+                            <span style="background: #8b5cf6; color: white; padding: 4px 8px; border-radius: 6px; font-weight: 600; margin-left: 4px;">
+                                {{ len(episodes) }} &eacute;pisode{{ 's' if len(episodes) > 1 else '' }}
                             </span>
                             {% if episodes[0].rating %}
                             {% set rating_float = episodes[0].rating|float %}
@@ -203,16 +221,15 @@
                             {% else %}
                                 {% set rating_color = "#ef4444" %}
                             {% endif %}
-                            <span style="background: {{ rating_color }}; color: white; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: bold; margin-left: 5px;">
-                                {{ episodes[0].rating }} &#11088;
-                            </span>
+                            <span style="background: {{ rating_color }}; color: white; padding: 4px 8px; border-radius: 6px; font-weight: 600; margin-left: 4px;">&#11088; {{ episodes[0].rating }}</span>
                             {% endif %}
                         </div>
 
-                        {% if episodes[0].year or episodes[0].genres %}
-                        <div style="margin-bottom: 10px; font-size: 12px; color: #a0a0a0;">
-                            {% if episodes[0].year %}&#128197; {{ episodes[0].year }}{% endif %}
-                            {% if episodes[0].genres %} &bull; &#127917; {{ format_genres(episodes[0].genres, 2) }}{% endif %}
+                        {% if episodes[0].genres %}
+                        <div style="margin-bottom: 10px;">
+                            {% for genre in episodes[0].genres[:3] %}
+                            <span style="background: linear-gradient(135deg, rgba(139,92,246,0.2), rgba(124,58,237,0.2)); color: #c4b5fd; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; margin-right: 4px; display: inline-block;">{{ genre }}</span>
+                            {% endfor %}
                         </div>
                         {% endif %}
 
@@ -246,19 +263,22 @@
         <div style="background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); padding: 15px;">
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
-                    <td style="width: 80px; vertical-align: top; padding-right: 15px;">
+                    <td style="width: 100px; vertical-align: top; padding-right: 15px;">
                         {% if game.cover_url %}
-                        <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 80px; height: auto; border-radius: 8px;">
+                        <img src="{{ game.cover_url }}" alt="{{ game.name }}" style="width: 100px; max-height: 140px; object-fit: cover; border-radius: 8px;">
                         {% else %}
-                        <div style="width: 80px; height: 100px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 8px; text-align: center; line-height: 100px; font-size: 32px;">&#127918;</div>
+                        <div style="width: 100px; height: 130px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 8px; text-align: center; line-height: 130px; font-size: 32px;">&#127918;</div>
                         {% endif %}
                     </td>
                     <td style="vertical-align: top;">
                         <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: #ffffff;">{{ game.name }}</h3>
 
-                        <div style="margin-bottom: 10px;">
+                        <div style="margin-bottom: 10px; font-size: 12px; color: #a0a0a0;">
+                            {% if game.release_year %}
+                            <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px;">&#128197; {{ game.release_year }}</span>
+                            {% endif %}
                             {% if game.platform %}
-                            <span style="background: linear-gradient(135deg, rgba(52,211,153,0.2), rgba(16,185,129,0.2)); color: #6ee7b7; padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 600; display: inline-block;">{{ game.platform }}</span>
+                            <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; margin-left: 4px;">&#127918; {{ game.platform }}</span>
                             {% endif %}
                         </div>
 
@@ -278,32 +298,43 @@
     <div style="padding: 30px 20px; background: rgba(255,255,255,0.02);">
         <div style="text-align: center; margin-bottom: 25px;">
             <h2 style="margin: 0 0 10px 0; font-size: 28px; font-weight: 700; color: #ffffff;">&#128218; Nouvelles BD / Comics</h2>
-            <div style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1a1a1a; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; display: inline-block;">{{ len(books) }} titre{{ 's' if len(books) > 1 else '' }}</div>
+            <div style="background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #1a1a1a; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; display: inline-block;">{{ len(books) }} livre{{ 's' if len(books) > 1 else '' }}</div>
         </div>
 
         {% for book in books %}
         <div style="background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); padding: 15px;">
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
-                    <td style="width: 60px; vertical-align: top; padding-right: 15px;">
+                    <td style="width: 100px; vertical-align: top; padding-right: 15px;">
                         {% if book.thumbnail_url %}
-                        <img src="{{ book.thumbnail_url }}" alt="{{ book.name }}" style="width: 60px; height: auto; border-radius: 6px;">
+                        <img src="{{ book.thumbnail_url }}" alt="{{ book.name }}" style="width: 100px; max-height: 140px; object-fit: cover; border-radius: 8px;">
                         {% else %}
-                        <div style="width: 60px; height: 80px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 6px; text-align: center; line-height: 80px; font-size: 28px;">&#128218;</div>
+                        <div style="width: 100px; height: 130px; background: linear-gradient(135deg, #f59e0b, #d97706); border-radius: 8px; text-align: center; line-height: 130px; font-size: 32px;">&#128218;</div>
                         {% endif %}
                     </td>
                     <td style="vertical-align: top;">
-                        <h3 style="margin: 0 0 6px 0; font-size: 16px; font-weight: 600; color: #ffffff;">{{ book.name }}</h3>
+                        <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: #ffffff;">{{ book.name }}</h3>
 
-                        {% if book.series_name %}
-                        <div style="margin-bottom: 8px; font-size: 12px; color: #fbbf24; font-weight: 600;">{{ book.series_name }}{% if book.number %} &mdash; #{{ book.number }}{% endif %}</div>
+                        {% if book.authors %}
+                        <div style="margin-bottom: 6px; font-size: 13px; color: #fbbf24; font-weight: 600;">{{ book.authors }}</div>
                         {% endif %}
 
-                        <div style="margin-bottom: 6px;">
+                        {% if book.series_name %}
+                        <div style="margin-bottom: 8px; font-size: 12px; color: #a0a0a0;">{{ book.series_name }}{% if book.number %} &mdash; #{{ book.number }}{% endif %}</div>
+                        {% endif %}
+
+                        <div style="margin-bottom: 10px; font-size: 12px; color: #a0a0a0;">
+                            {% if book.release_date %}
+                            <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px;">&#128197; {{ book.release_date }}</span>
+                            {% endif %}
                             {% if book.page_count %}
-                            <span style="background: linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.2)); color: #fcd34d; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; display: inline-block;">{{ book.page_count }} pages</span>
+                            <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; margin-left: 4px;">&#128214; {{ book.page_count }} pages</span>
                             {% endif %}
                         </div>
+
+                        {% if book.summary %}
+                        <p style="margin: 0; font-size: 12px; line-height: 1.4; color: #b0b0b0;">{{ truncate_text(book.summary|strip_html, 150) }}</p>
+                        {% endif %}
                     </td>
                 </tr>
             </table>
@@ -317,22 +348,22 @@
     <div style="padding: 30px 20px; background: rgba(255,255,255,0.01);">
         <div style="text-align: center; margin-bottom: 25px;">
             <h2 style="margin: 0 0 10px 0; font-size: 28px; font-weight: 700; color: #ffffff;">&#127911; Nouveaux Livres Audio</h2>
-            <div style="background: linear-gradient(135deg, #22d3ee, #06b6d4); color: #1a1a1a; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; display: inline-block;">{{ len(audiobooks) }} livre{{ 's' if len(audiobooks) > 1 else '' }}</div>
+            <div style="background: linear-gradient(135deg, #22d3ee, #06b6d4); color: #1a1a1a; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 700; display: inline-block;">{{ len(audiobooks) }} livre{{ 's' if len(audiobooks) > 1 else '' }} audio</div>
         </div>
 
         {% for audiobook in audiobooks %}
         <div style="background: rgba(255,255,255,0.03); border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); padding: 15px;">
             <table style="width: 100%; border-collapse: collapse;">
                 <tr>
-                    <td style="width: 80px; vertical-align: top; padding-right: 15px;">
+                    <td style="width: 100px; vertical-align: top; padding-right: 15px;">
                         {% if audiobook.cover_url %}
-                        <img src="{{ audiobook.cover_url }}" alt="{{ audiobook.title }}" style="width: 80px; height: auto; border-radius: 8px;">
+                        <img src="{{ audiobook.cover_url }}" alt="{{ audiobook.title }}" style="width: 100px; max-height: 140px; object-fit: cover; border-radius: 8px;">
                         {% else %}
-                        <div style="width: 80px; height: 100px; background: linear-gradient(135deg, #06b6d4, #0891b2); border-radius: 8px; text-align: center; line-height: 100px; font-size: 32px;">&#127911;</div>
+                        <div style="width: 100px; height: 130px; background: linear-gradient(135deg, #06b6d4, #0891b2); border-radius: 8px; text-align: center; line-height: 130px; font-size: 32px;">&#127911;</div>
                         {% endif %}
                     </td>
                     <td style="vertical-align: top;">
-                        <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 600; color: #ffffff;">{{ audiobook.title }}</h3>
+                        <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 600; color: #ffffff;">{{ audiobook.title }}</h3>
 
                         {% if audiobook.author %}
                         <div style="margin-bottom: 6px; font-size: 13px; color: #22d3ee; font-weight: 600;">{{ audiobook.author }}</div>
@@ -344,12 +375,15 @@
                         </div>
                         {% endif %}
 
-                        <div style="margin-bottom: 10px;">
+                        <div style="margin-bottom: 10px; font-size: 12px; color: #a0a0a0;">
+                            {% if audiobook.published_year %}
+                            <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px;">&#128197; {{ audiobook.published_year }}</span>
+                            {% endif %}
                             {% if audiobook.duration %}
-                            <span style="background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(6,182,212,0.2)); color: #67e8f9; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; display: inline-block;">&#9201; {{ format_duration(audiobook.duration) }}</span>
+                            <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; margin-left: 4px;">&#9201; {{ format_duration(audiobook.duration) }}</span>
                             {% endif %}
                             {% if audiobook.series %}
-                            <span style="background: linear-gradient(135deg, rgba(34,211,238,0.2), rgba(6,182,212,0.2)); color: #67e8f9; padding: 4px 8px; border-radius: 8px; font-size: 11px; font-weight: 600; display: inline-block; margin-left: 4px;">{{ audiobook.series }}{% if audiobook.series_sequence %} #{{ audiobook.series_sequence }}{% endif %}</span>
+                            <span style="background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; margin-left: 4px;">&#128218; {{ audiobook.series }}{% if audiobook.series_sequence %} #{{ audiobook.series_sequence }}{% endif %}</span>
                             {% endif %}
                         </div>
 
