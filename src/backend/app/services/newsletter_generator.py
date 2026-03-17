@@ -330,6 +330,176 @@ class NewsletterGenerator:
         image_data = base64.b64encode(image_bytes).decode("utf-8")
         return f"data:{content_type};base64,{image_data}"
 
+    async def _composite_posters(self) -> None:
+        """Composite badges onto poster images and upload to Ghost.
+
+        This burns rating, year, duration, platform badges directly into the
+        poster images using Pillow, then uploads to Ghost. The result is a
+        simple <img> tag that works in all email clients.
+
+        Only runs for templates that use composited posters (posters_email).
+        """
+        from app.services.image_compositor import composite_poster
+        from app.services.template_service import TemplateService
+
+        ghost = await self._get_ghost_integration()
+        if not ghost:
+            logger.warning("Ghost not configured, skipping poster compositing")
+            return
+
+        def _fmt_duration(seconds: float | int | None) -> str:
+            return TemplateService._filter_format_duration(seconds)
+
+        async def _fetch_and_composite(
+            image_url: str | None,
+            title: str,
+            badges_top_right: list[dict] | None = None,
+            badges_top_left: list[dict] | None = None,
+            badges_bottom: list[dict] | None = None,
+            placeholder_emoji: str = "🎬",
+            placeholder_color: tuple[int, int, int] = (100, 100, 100),
+        ) -> str | None:
+            """Fetch image, composite badges, upload to Ghost."""
+            image_bytes = None
+            if image_url:
+                try:
+                    import httpx
+                    async with httpx.AsyncClient(timeout=httpx.Timeout(30)) as client:
+                        resp = await client.get(image_url)
+                        resp.raise_for_status()
+                        image_bytes = resp.content
+                except Exception as e:
+                    logger.warning(f"Failed to fetch image for compositing: {e}")
+
+            composited = composite_poster(
+                image_bytes=image_bytes,
+                title=title,
+                badges_top_right=badges_top_right,
+                badges_top_left=badges_top_left,
+                badges_bottom=badges_bottom,
+                placeholder_emoji=placeholder_emoji,
+                placeholder_color=placeholder_color,
+            )
+
+            # Upload composited image to Ghost
+            filename = f"poster_{hash(title) & 0xFFFFFFFF:08x}.jpg"
+            ghost_url = await ghost.upload_image(composited, filename, "image/jpeg")
+            if ghost_url:
+                return ghost_url
+            logger.warning(f"Failed to upload composited poster for {title}")
+            return None
+
+        def _rating_color(rating: float) -> tuple[int, int, int]:
+            if rating >= 8.0:
+                return (16, 185, 129)
+            elif rating >= 7.0:
+                return (59, 130, 246)
+            elif rating >= 6.0:
+                return (245, 158, 11)
+            return (239, 68, 68)
+
+        # Composite movie posters
+        for movie in self.movies:
+            poster_url = movie.get("poster_url")
+            badges_tr = []
+            badges_bottom = []
+            if movie.get("vote_average") or movie.get("rating"):
+                r = float(movie.get("vote_average") or movie.get("rating"))
+                badges_tr.append({"text": f"{r:.1f}", "color": _rating_color(r)})
+            if movie.get("year"):
+                badges_bottom.append({"text": str(movie["year"])})
+            runtime = movie.get("runtime")
+            if runtime:
+                badges_bottom.append({"text": _fmt_duration(runtime * 60)})
+
+            url = await _fetch_and_composite(
+                poster_url, movie.get("title", ""),
+                badges_top_right=badges_tr, badges_bottom=badges_bottom,
+                placeholder_color=(59, 130, 246),
+            )
+            if url:
+                movie["composited_poster_url"] = url
+
+        # Composite series posters (group by show first)
+        from collections import defaultdict
+        shows: dict[str, list[dict]] = defaultdict(list)
+        for ep in self.series:
+            shows[ep.get("grandparent_title") or ep.get("title", "")].append(ep)
+
+        for show_name, episodes in shows.items():
+            first = episodes[0]
+            poster_url = first.get("show_poster_url") or first.get("poster_url")
+            badges_tr = [{"text": f"{len(episodes)} ép.", "color": (139, 92, 246)}]
+            badges_tl = []
+            rating = first.get("show_vote_average") or first.get("vote_average")
+            if rating:
+                r = float(rating)
+                badges_tl.append({"text": f"{r:.1f}", "color": _rating_color(r)})
+            badges_bottom = []
+            year = first.get("show_year") or first.get("year")
+            if year:
+                badges_bottom.append({"text": str(year)})
+
+            url = await _fetch_and_composite(
+                poster_url, show_name,
+                badges_top_right=badges_tr, badges_top_left=badges_tl,
+                badges_bottom=badges_bottom,
+                placeholder_color=(139, 92, 246),
+            )
+            if url:
+                for ep in episodes:
+                    ep["composited_poster_url"] = url
+
+        # Composite game posters
+        for game in self.games:
+            badges_bottom = []
+            if game.get("platform"):
+                badges_bottom.append({"text": game["platform"]})
+            if game.get("release_year"):
+                badges_bottom.append({"text": str(game["release_year"])})
+
+            url = await _fetch_and_composite(
+                game.get("cover_url"), game.get("name", ""),
+                badges_bottom=badges_bottom,
+                placeholder_emoji="🎮", placeholder_color=(16, 185, 129),
+            )
+            if url:
+                game["composited_poster_url"] = url
+
+        # Composite book posters
+        for book in self.books:
+            badges_bottom = []
+            if book.get("page_count"):
+                badges_bottom.append({"text": f"{book['page_count']}p"})
+            if book.get("release_date"):
+                badges_bottom.append({"text": str(book["release_date"])})
+
+            url = await _fetch_and_composite(
+                book.get("thumbnail_url"), book.get("name", ""),
+                badges_bottom=badges_bottom,
+                placeholder_emoji="📚", placeholder_color=(245, 158, 11),
+            )
+            if url:
+                book["composited_poster_url"] = url
+
+        # Composite audiobook posters
+        for ab in self.audiobooks:
+            badges_bottom = []
+            if ab.get("duration"):
+                badges_bottom.append({"text": _fmt_duration(ab["duration"])})
+            if ab.get("published_year"):
+                badges_bottom.append({"text": str(ab["published_year"])})
+
+            url = await _fetch_and_composite(
+                ab.get("cover_url"), ab.get("title", ""),
+                badges_bottom=badges_bottom,
+                placeholder_emoji="🎧", placeholder_color=(6, 182, 212),
+            )
+            if url:
+                ab["composited_poster_url"] = url
+
+        logger.info("Poster compositing completed")
+
     async def _fetch_tautulli(self) -> None:
         """Fetch media from Tautulli."""
         if not self.config.tautulli.enabled:
@@ -811,6 +981,11 @@ class NewsletterGenerator:
             template = await self.db.get(Template, self.config.template_id)
             if not template:
                 raise GenerationError("render_template", "Template not found")
+
+            # Composite posters if using the posters_email template
+            if "posters_email" in (template.file_path or ""):
+                logger.info("Compositing poster images for email template...")
+                await self._composite_posters()
 
             # Normalize movies and series for template compatibility
             normalized_movies = [self._normalize_movie(m) for m in self.movies]
