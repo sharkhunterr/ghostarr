@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.7.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.6.3...v1.7.0) (2026-03-17)
+
+
+### Features
+
+* Add colored labels to all built-in templates on seed ([bbce9d6](https://github.com/sharkhunterr/ghostarr/-/commit/bbce9d65227811f19966ea4c774fed9147a3be2d))
+* Add email-compatible posters template and sync labels on startup ([d76101f](https://github.com/sharkhunterr/ghostarr/-/commit/d76101f2dec54715ca386bbb8edf9102eded8bb8))
+* Add Pillow image compositing for email-compatible poster badges ([961cc79](https://github.com/sharkhunterr/ghostarr/-/commit/961cc79c91b261c809838fbc98abbf2ed95ac763))
+* Improve templates, add content-type labels, and new posters template ([558cc6f](https://github.com/sharkhunterr/ghostarr/-/commit/558cc6f81e0d5dcc1622fd5d2dedcb66038b7c4c))
+
+
+### Bug Fixes
+
+* Upload images to Ghost for email compatibility instead of base64 ([314d71f](https://github.com/sharkhunterr/ghostarr/-/commit/314d71f7fcecf9f793ef24105921e3827602f809))
+
 ### [1.6.3](https://github.com/sharkhunterr/ghostarr/-/compare/v1.6.2...v1.6.3) (2026-03-12)
 
 
