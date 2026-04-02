@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.8.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.7.0...v1.8.0) (2026-04-02)
+
+
+### Features
+
+* Add Radarr, Sonarr, Overseerr integrations and improved featured film ([e7a3d3b](https://github.com/sharkhunterr/ghostarr/-/commit/e7a3d3b5beed0f85b650f05df2fcd623a9a2df41))
+
 ## [1.7.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.6.3...v1.7.0) (2026-03-17)
 
 
