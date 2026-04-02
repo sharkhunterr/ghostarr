@@ -76,6 +76,7 @@
     },
     "tabs": {
       "media": "Médias",
+      "upcoming": "À venir",
       "tvPrograms": "Programme TV",
       "maintenance": "Maintenance"
     },
@@ -119,7 +120,13 @@
       "audiobookshelf": "Livres audio",
       "audiobookshelfDesc": "Livres audio récemment ajoutés",
       "tunarr": "Programme TV",
-      "tunarrDesc": "Programme TV via Tunarr"
+      "tunarrDesc": "Programme TV via Tunarr",
+      "radarr": "Films à venir",
+      "radarrDesc": "Films à venir disponibles en téléchargement via Radarr",
+      "sonarr": "Séries à venir",
+      "sonarrDesc": "Épisodes à venir via Sonarr",
+      "overseerr": "Demandes média",
+      "overseerrDesc": "Demandes de films et séries via Overseerr"
     },
     "statistics": {
       "title": "Statistiques",
@@ -511,6 +518,18 @@
       "tunarr": {
         "name": "Tunarr",
         "description": "Programmation TV"
+      },
+      "radarr": {
+        "name": "Radarr",
+        "description": "Gestionnaire de films à venir"
+      },
+      "sonarr": {
+        "name": "Sonarr",
+        "description": "Gestionnaire de séries TV"
+      },
+      "overseerr": {
+        "name": "Overseerr",
+        "description": "Gestion des demandes de médias"
       }
     },
     "logs": {
@@ -692,6 +711,9 @@
       "fetch_komga": "Récupération des BD",
       "fetch_audiobookshelf": "Récupération des livres audio",
       "fetch_tunarr": "Récupération du programme TV",
+      "fetch_radarr": "Récupération des films à venir",
+      "fetch_sonarr": "Récupération des séries à venir",
+      "fetch_overseerr": "Récupération des demandes",
       "fetch_statistics": "Récupération des statistiques",
       "render_template": "Génération du template",
       "publish_ghost": "Publication sur Ghost"

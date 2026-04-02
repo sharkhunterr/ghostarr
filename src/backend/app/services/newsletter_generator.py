@@ -11,7 +11,10 @@ from app.core.logging import get_logger
 from app.integrations.audiobookshelf import AudiobookshelfIntegration
 from app.integrations.ghost import GhostIntegration
 from app.integrations.komga import KomgaIntegration
+from app.integrations.overseerr import OverseerrIntegration
+from app.integrations.radarr import RadarrIntegration
 from app.integrations.romm import ROMMIntegration
+from app.integrations.sonarr import SonarrIntegration
 from app.integrations.tautulli import TautulliIntegration
 from app.integrations.tmdb import TMDBIntegration
 from app.integrations.tunarr import TunarrIntegration
@@ -77,6 +80,9 @@ class NewsletterGenerator:
         self.books: list[dict[str, Any]] = []
         self.audiobooks: list[dict[str, Any]] = []
         self.tv_programs: list[dict[str, Any]] = []
+        self.upcoming_movies: list[dict[str, Any]] = []
+        self.upcoming_series: list[dict[str, Any]] = []
+        self.media_requests: list[dict[str, Any]] = []
         self.statistics: dict[str, Any] = {}
 
         # Service URLs (populated during fetch)
@@ -167,6 +173,18 @@ class NewsletterGenerator:
             if self._is_cancelled():
                 return await self._handle_cancellation()
 
+            await self._fetch_radarr()
+            if self._is_cancelled():
+                return await self._handle_cancellation()
+
+            await self._fetch_sonarr()
+            if self._is_cancelled():
+                return await self._handle_cancellation()
+
+            await self._fetch_overseerr()
+            if self._is_cancelled():
+                return await self._handle_cancellation()
+
             await self._fetch_statistics()
             if self._is_cancelled():
                 return await self._handle_cancellation()
@@ -236,6 +254,15 @@ class NewsletterGenerator:
         if self.config.tunarr.enabled:
             steps.append("fetch_tunarr")
 
+        if self.config.radarr.enabled:
+            steps.append("fetch_radarr")
+
+        if self.config.sonarr.enabled:
+            steps.append("fetch_sonarr")
+
+        if self.config.overseerr.enabled:
+            steps.append("fetch_overseerr")
+
         if self.config.statistics.enabled:
             steps.append("fetch_statistics")
 
@@ -253,6 +280,9 @@ class NewsletterGenerator:
             + len(self.books)
             + len(self.audiobooks)
             + len(self.tv_programs)
+            + len(self.upcoming_movies)
+            + len(self.upcoming_series)
+            + len(self.media_requests)
         )
 
     def _is_cancelled(self) -> bool:
@@ -779,6 +809,124 @@ class NewsletterGenerator:
             logger.error(f"Tunarr fetch failed: {e}")
             await self.tracker.complete_step("fetch_tunarr", "Fetch failed, continuing", 0)
 
+    async def _fetch_radarr(self) -> None:
+        """Fetch upcoming movies from Radarr."""
+        if not self.config.radarr.enabled:
+            await self.tracker.skip_step("fetch_radarr", "Disabled")
+            return
+
+        await self.tracker.start_step("fetch_radarr", "Fetching upcoming movies from Radarr...")
+
+        try:
+            url, api_key = await get_service_credentials(self.db, "radarr")
+            if not url or not api_key:
+                await self.tracker.skip_step("fetch_radarr", "Not configured")
+                return
+
+            integration = RadarrIntegration(url=url, api_key=api_key)
+            items = await integration.fetch_data(
+                days=self.config.radarr.days,
+                max_items=self.config.radarr.max_items,
+            )
+            await integration.close()
+
+            all_upcoming = [item.model_dump() for item in items]
+
+            # Deduplicate: remove movies already present in Tautulli data
+            existing_titles = {m.get("title", "").lower() for m in self.movies}
+            existing_tmdb = {m.get("tmdb_id") for m in self.movies if m.get("tmdb_id")}
+            self.upcoming_movies = [
+                m for m in all_upcoming
+                if m.get("title", "").lower() not in existing_titles
+                and (not m.get("tmdb_id") or m["tmdb_id"] not in existing_tmdb)
+            ]
+
+            await self.tracker.complete_step(
+                "fetch_radarr",
+                f"Found {len(self.upcoming_movies)} upcoming movies",
+                len(self.upcoming_movies),
+            )
+
+        except Exception as e:
+            logger.error(f"Radarr fetch failed: {e}")
+            await self.tracker.complete_step("fetch_radarr", "Fetch failed, continuing", 0)
+
+    async def _fetch_sonarr(self) -> None:
+        """Fetch upcoming series from Sonarr."""
+        if not self.config.sonarr.enabled:
+            await self.tracker.skip_step("fetch_sonarr", "Disabled")
+            return
+
+        await self.tracker.start_step("fetch_sonarr", "Fetching upcoming series from Sonarr...")
+
+        try:
+            url, api_key = await get_service_credentials(self.db, "sonarr")
+            if not url or not api_key:
+                await self.tracker.skip_step("fetch_sonarr", "Not configured")
+                return
+
+            integration = SonarrIntegration(url=url, api_key=api_key)
+            items = await integration.fetch_data(
+                days=self.config.sonarr.days,
+                max_items=self.config.sonarr.max_items,
+            )
+            await integration.close()
+
+            all_upcoming = [item.model_dump() for item in items]
+
+            # Deduplicate: remove series already present in Tautulli data
+            existing_shows = {
+                (e.get("grandparent_title") or e.get("title", "")).lower()
+                for e in self.series
+            }
+            self.upcoming_series = [
+                s for s in all_upcoming
+                if s.get("title", "").lower() not in existing_shows
+            ]
+
+            await self.tracker.complete_step(
+                "fetch_sonarr",
+                f"Found {len(self.upcoming_series)} upcoming series",
+                len(self.upcoming_series),
+            )
+
+        except Exception as e:
+            logger.error(f"Sonarr fetch failed: {e}")
+            await self.tracker.complete_step("fetch_sonarr", "Fetch failed, continuing", 0)
+
+    async def _fetch_overseerr(self) -> None:
+        """Fetch media requests from Overseerr."""
+        if not self.config.overseerr.enabled:
+            await self.tracker.skip_step("fetch_overseerr", "Disabled")
+            return
+
+        await self.tracker.start_step("fetch_overseerr", "Fetching requests from Overseerr...")
+
+        try:
+            url, api_key = await get_service_credentials(self.db, "overseerr")
+            if not url or not api_key:
+                await self.tracker.skip_step("fetch_overseerr", "Not configured")
+                return
+
+            integration = OverseerrIntegration(url=url, api_key=api_key)
+            items = await integration.fetch_data(
+                days=self.config.overseerr.days,
+                max_items=self.config.overseerr.max_items,
+            )
+            await integration.close()
+
+            self.media_requests = [item.model_dump() for item in items]
+
+            await self.tracker.complete_step(
+                "fetch_overseerr",
+                f"Found {len(self.media_requests)} requests",
+                len(self.media_requests),
+            )
+
+        except Exception as e:
+            logger.error(f"Overseerr fetch failed: {e}")
+            await self.tracker.complete_step("fetch_overseerr", "Fetch failed, continuing", 0)
+
     async def _fetch_statistics(self) -> None:
         """Fetch statistics from Tautulli."""
         if not self.config.statistics.enabled:
@@ -972,6 +1120,80 @@ class NewsletterGenerator:
         }
         return unit_map.get(unit.lower(), "heures")
 
+    def _select_featured_movie(self, movies: list[dict[str, Any]]) -> dict[str, Any] | None:
+        """Select the best featured movie using a weighted scoring algorithm.
+
+        Factors considered:
+        - Rating (vote_average): higher is better, but not the only factor
+        - Vote count: more votes = more popular/reliable rating
+        - Release recency: newer movies are more interesting as featured
+        - Backdrop availability: essential for a good featured section
+        - Poster quality: must have a poster
+        """
+        if not movies:
+            return None
+
+        import math
+        from datetime import datetime
+
+        now = datetime.utcnow()
+        scored: list[tuple[float, dict]] = []
+
+        for movie in movies:
+            if not movie.get("poster_url"):
+                continue
+
+            score = 0.0
+
+            # Rating score (0-10 scale, weight: 30%)
+            rating = float(movie.get("rating") or movie.get("vote_average") or 0)
+            score += (rating / 10.0) * 30
+
+            # Vote count / popularity score (weight: 25%)
+            # Use log scale since vote counts can vary wildly
+            vote_count = int(movie.get("vote_count") or 0)
+            if vote_count > 0:
+                # log10(1000) ≈ 3, log10(10000) ≈ 4 -> normalize to 0-1 range
+                popularity = min(1.0, math.log10(max(vote_count, 1)) / 4.5)
+                score += popularity * 25
+
+            # Recency score (weight: 25%)
+            # More recent releases score higher
+            year = movie.get("year")
+            if year:
+                try:
+                    years_old = now.year - int(year)
+                    recency = max(0, 1.0 - (years_old / 5.0))  # 0-5 years scale
+                    score += recency * 25
+                except (ValueError, TypeError):
+                    pass
+
+            # Backdrop bonus (weight: 10%)
+            if movie.get("backdrop_url"):
+                score += 10
+
+            # Rich metadata bonus (weight: 10%)
+            # Movies with genres, summary, tagline are better featured candidates
+            if movie.get("genres"):
+                score += 3
+            if movie.get("summary") and len(str(movie["summary"])) > 50:
+                score += 4
+            if movie.get("tagline"):
+                score += 3
+
+            scored.append((score, movie))
+
+        if not scored:
+            # Fallback to first movie with poster
+            for m in movies:
+                if m.get("poster_url"):
+                    return m
+            return movies[0] if movies else None
+
+        # Sort by score descending, pick the best
+        scored.sort(key=lambda x: x[0], reverse=True)
+        return scored[0][1]
+
     async def _render_template(self) -> str:
         """Render the newsletter template."""
         await self.tracker.start_step("render_template", "Rendering newsletter...")
@@ -997,12 +1219,13 @@ class NewsletterGenerator:
             # Group episodes by show
             shows_grouped = self._group_episodes_by_show(normalized_series)
 
-            # Prepare featured movie (first movie with good data)
+            # Select featured movie using a scoring algorithm that considers
+            # multiple factors: rating, vote count (popularity), recency, and backdrop
             featured_movie = None
             show_featured_movie = False
-            if normalized_movies:
-                featured_movie = normalized_movies[0]
-                show_featured_movie = bool(featured_movie.get("poster_url"))
+            if normalized_movies and self.config.tautulli.featured_item:
+                featured_movie = self._select_featured_movie(normalized_movies)
+                show_featured_movie = bool(featured_movie and featured_movie.get("poster_url"))
 
             # Prepare real_stats from statistics - pass full statistics object
             # The TautulliStatistics model now has all the fields expected by template_mixe.html
@@ -1065,6 +1288,9 @@ class NewsletterGenerator:
                 "books": self.books,
                 "audiobooks": self.audiobooks,
                 "tv_programs": self.tv_programs,
+                "upcoming_movies": self.upcoming_movies,
+                "upcoming_series": self.upcoming_series,
+                "media_requests": self.media_requests,
                 "maintenance": self.config.maintenance.model_dump() if self.config.maintenance.enabled else None,
                 # Flattened maintenance variables for templates that expect individual keys
                 "include_maintenance": self.config.maintenance.enabled,

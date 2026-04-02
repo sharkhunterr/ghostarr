@@ -76,6 +76,7 @@
     },
     "tabs": {
       "media": "Media",
+      "upcoming": "Upcoming",
       "tvPrograms": "TV Programs",
       "maintenance": "Maintenance"
     },
@@ -119,7 +120,13 @@
       "audiobookshelf": "Audiobooks",
       "audiobookshelfDesc": "Recently added audiobooks",
       "tunarr": "TV Schedule",
-      "tunarrDesc": "TV programming via Tunarr"
+      "tunarrDesc": "TV programming via Tunarr",
+      "radarr": "Upcoming Movies",
+      "radarrDesc": "Upcoming movies available for download via Radarr",
+      "sonarr": "Upcoming Series",
+      "sonarrDesc": "Upcoming episodes via Sonarr",
+      "overseerr": "Media Requests",
+      "overseerrDesc": "Movie and TV show requests via Overseerr"
     },
     "statistics": {
       "title": "Statistics",
@@ -511,6 +518,18 @@
       "tunarr": {
         "name": "Tunarr",
         "description": "TV programming"
+      },
+      "radarr": {
+        "name": "Radarr",
+        "description": "Upcoming movies manager"
+      },
+      "sonarr": {
+        "name": "Sonarr",
+        "description": "TV series manager"
+      },
+      "overseerr": {
+        "name": "Overseerr",
+        "description": "Media request management"
       }
     },
     "logs": {
@@ -692,6 +711,9 @@
       "fetch_komga": "Fetching comics",
       "fetch_audiobookshelf": "Fetching audiobooks",
       "fetch_tunarr": "Fetching TV schedule",
+      "fetch_radarr": "Fetching upcoming movies",
+      "fetch_sonarr": "Fetching upcoming series",
+      "fetch_overseerr": "Fetching media requests",
       "fetch_statistics": "Fetching statistics",
       "render_template": "Rendering template",
       "publish_ghost": "Publishing to Ghost"

@@ -46,6 +46,21 @@ const SERVICES = [
     nameKey: "settings.services.tunarr.name",
     descKey: "settings.services.tunarr.description",
   },
+  {
+    id: "radarr",
+    nameKey: "settings.services.radarr.name",
+    descKey: "settings.services.radarr.description",
+  },
+  {
+    id: "sonarr",
+    nameKey: "settings.services.sonarr.name",
+    descKey: "settings.services.sonarr.description",
+  },
+  {
+    id: "overseerr",
+    nameKey: "settings.services.overseerr.name",
+    descKey: "settings.services.overseerr.description",
+  },
 ];
 
 type TabId = "general" | "services" | "logs";

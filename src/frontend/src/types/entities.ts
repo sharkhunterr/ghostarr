@@ -159,6 +159,9 @@ export interface GenerationConfig {
   komga: ContentSourceConfig;
   audiobookshelf: ContentSourceConfig;
   tunarr: TunarrConfig;
+  radarr: ContentSourceConfig;
+  sonarr: ContentSourceConfig;
+  overseerr: ContentSourceConfig;
   statistics: StatisticsConfig;
   maintenance: MaintenanceConfig;
   max_total_items: number;

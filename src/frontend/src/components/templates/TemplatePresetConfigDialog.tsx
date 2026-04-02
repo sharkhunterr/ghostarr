@@ -86,6 +86,21 @@ const defaultConfig: Omit<GenerationConfig, 'template_id'> = {
     channels: [],
     display_format: 'list',
   },
+  radarr: {
+    enabled: false,
+    days: 30,
+    max_items: 10,
+  },
+  sonarr: {
+    enabled: false,
+    days: 30,
+    max_items: 10,
+  },
+  overseerr: {
+    enabled: false,
+    days: 30,
+    max_items: 10,
+  },
   statistics: {
     enabled: true,
     days: 7,
@@ -253,9 +268,12 @@ export function TemplatePresetConfigDialog({
 
               {/* Content sources tabs */}
               <Tabs defaultValue="media" className="w-full">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-4">
                   <TabsTrigger value="media">
                     {t('dashboard.tabs.media')}
+                  </TabsTrigger>
+                  <TabsTrigger value="upcoming">
+                    {t('dashboard.tabs.upcoming')}
                   </TabsTrigger>
                   <TabsTrigger value="tvPrograms">
                     {t('dashboard.tabs.tvPrograms')}
@@ -331,6 +349,14 @@ export function TemplatePresetConfigDialog({
                     onChange={(value) => updateConfig('audiobookshelf', value)}
                   />
 
+                  {/* Media Requests */}
+                  <ContentSourceConfig
+                    title={t('dashboard.sources.overseerr')}
+                    description={t('dashboard.sources.overseerrDesc')}
+                    config={config.overseerr}
+                    onChange={(value) => updateConfig('overseerr', value)}
+                  />
+
                   {/* Max items - only for media */}
                   <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                     <div className="space-y-0.5">
@@ -350,6 +376,21 @@ export function TemplatePresetConfigDialog({
                       className="w-20"
                     />
                   </div>
+                </TabsContent>
+
+                <TabsContent value="upcoming" className="space-y-4 pt-4">
+                  <ContentSourceConfig
+                    title={t('dashboard.sources.radarr')}
+                    description={t('dashboard.sources.radarrDesc')}
+                    config={config.radarr}
+                    onChange={(value) => updateConfig('radarr', value)}
+                  />
+                  <ContentSourceConfig
+                    title={t('dashboard.sources.sonarr')}
+                    description={t('dashboard.sources.sonarrDesc')}
+                    config={config.sonarr}
+                    onChange={(value) => updateConfig('sonarr', value)}
+                  />
                 </TabsContent>
 
                 <TabsContent value="tvPrograms" className="space-y-4 pt-4">

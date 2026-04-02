@@ -75,6 +75,7 @@ async def seed_default_templates():
         "brutalist": ["Minimal", "Films", "Séries", "Jeux"],
         "casino": ["Fun", "Films", "Séries", "Jeux"],
         "cinema_tickets": ["Cinéma", "Films", "Séries"],
+        "complet": ["Complet", "Nouveautés", "Films", "Séries", "Jeux", "Livres", "Livres Audio"],
         "comic": ["Fun", "Films", "Séries", "Jeux"],
         "complet_small": ["Complet", "Statistiques", "Nouveautés", "Films", "Séries", "Jeux", "Livres", "Livres Audio"],
         "cyberpunk": ["Sci-Fi", "Films", "Séries", "Jeux"],

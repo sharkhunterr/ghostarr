@@ -81,6 +81,9 @@ class GenerationConfig(BaseModel):
     komga: ContentSourceConfig = Field(default_factory=ContentSourceConfig)
     audiobookshelf: ContentSourceConfig = Field(default_factory=ContentSourceConfig)
     tunarr: TunarrConfig = Field(default_factory=TunarrConfig)
+    radarr: ContentSourceConfig = Field(default_factory=ContentSourceConfig)
+    sonarr: ContentSourceConfig = Field(default_factory=ContentSourceConfig)
+    overseerr: ContentSourceConfig = Field(default_factory=ContentSourceConfig)
 
     # Statistics
     statistics: StatisticsConfig = Field(default_factory=StatisticsConfig)

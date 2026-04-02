@@ -24,6 +24,9 @@ const URL_PLACEHOLDERS: Record<string, string> = {
   komga: "http://192.168.1.x:25600",
   audiobookshelf: "http://192.168.1.x:13378",
   tunarr: "http://192.168.1.x:8000",
+  radarr: "http://192.168.1.x:7878",
+  sonarr: "http://192.168.1.x:8989",
+  overseerr: "http://192.168.1.x:5055",
 };
 
 // Services that have URL help text (keys in translation file)

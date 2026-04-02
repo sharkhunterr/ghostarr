@@ -30,6 +30,9 @@ SETTING_KEYS = {
     "services.komga": {"url": str, "api_key_encrypted": str},
     "services.audiobookshelf": {"url": str, "api_key_encrypted": str},
     "services.tunarr": {"url": str, "api_key_encrypted": str},
+    "services.radarr": {"url": str, "api_key_encrypted": str},
+    "services.sonarr": {"url": str, "api_key_encrypted": str},
+    "services.overseerr": {"url": str, "api_key_encrypted": str},
     # Retention settings
     "retention.history_days": int,
     "retention.logs_days": int,

@@ -34,7 +34,7 @@ from app.services.crypto_service import crypto_service
 logger = get_logger(__name__)
 router = APIRouter()
 
-SERVICES = ["tautulli", "tmdb", "ghost", "romm", "komga", "audiobookshelf", "tunarr"]
+SERVICES = ["tautulli", "tmdb", "ghost", "romm", "komga", "audiobookshelf", "tunarr", "radarr", "sonarr", "overseerr"]
 
 # Services that don't require URL (have default API endpoint)
 SERVICES_WITHOUT_URL = ["tmdb"]
