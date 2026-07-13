@@ -1,6 +1,88 @@
 # GitHub Releases - Ghostarr
 
-> Release notes for GitHub releases
+> Release notes for GitHub releases. The first `# vX.Y.Z` block is
+> consumed by the GitLab CI `release:gitlab` / `release:github` jobs
+> as the description posted to the GitLab and GitHub release pages.
+> Edit this file BEFORE running `npm run release:full`.
+
+---
+
+# v1.9.0
+
+## 👻 Ghostarr v1.9.0 - Upcoming Media Templates
+
+Two brand-new email templates dedicated to what's coming next on your
+media server — perfect for weekly "here's what to look forward to"
+newsletters that were previously mixed into the generic complete
+template.
+
+### ✨ What's New
+
+**🎬 New "À Venir" (Upcoming) Template — Full Detail**
+
+- New `template_a_venir.html` — dedicated newsletter for
+  `upcoming_movies` and `upcoming_series`, split off from
+  `template_complet` so it can carry its own identity.
+- Light theme: `#ffffff` outer container, `max-width: 100%` for a
+  wider render than the dark 700 px full template.
+- Sky-blue → indigo header gradient (`#0ea5e9` → `#3b82f6` →
+  `#6366f1`) to visually distinguish it from Nouveautés templates
+  (purple gradients) and Maintenance (orange).
+- All section chrome inverted to work on the light background —
+  card fills, title colours, secondary greys — no need to toggle
+  anything.
+
+**🖼️ New "À Venir Posters" Template — Poster Grid Preview**
+
+- New `template_a_venir_posters.html` — poster-grid variant of the
+  above for a quick visual "coming soon" glance.
+- Compact 130 × 195 tiles with rating badge (top-right, colored by
+  score : green ≥ 8, blue ≥ 7, orange ≥ 6, red below) and release
+  date badge (top-left, sky-blue for movies via `digital_release`,
+  indigo for series via `next_air_date`, fallback to year).
+- Studio (movies) or episode count + network (series) as compact
+  bottom badges. Title shown below each tile.
+- Runtime intentionally omitted — this is a preview at a glance,
+  not a full spec sheet.
+
+**🏷️ New "À Venir" Built-in Label**
+
+- New brand label `À Venir` (#0ea5e9) added to `BUILTIN_LABELS`,
+  matching the sky-blue accent of both new templates.
+- Both templates are automatically tagged with it on first boot
+  (`À Venir + Complet + Films + Séries` for the full one,
+  `À Venir + Minimal + Films + Séries` for the poster grid).
+
+### 🔧 Under the Hood
+
+- Both templates use the existing `upcoming_movies` /
+  `upcoming_series` data model — no scheduler / generator changes,
+  no new integrations to configure.
+- Templates are picked up by the boot-time template seeder via
+  glob (no explicit list to update), and the Dockerfile already
+  copies `data/templates/*` into `builtin-templates/`, so upgrade
+  is transparent.
+
+### 🐳 Docker Quick Start
+
+```yaml
+services:
+  ghostarr:
+    image: sharkhunterr/ghostarr:latest
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config:/config
+    environment:
+      - TZ=Europe/Paris
+      - APP_SECRET_KEY=your-secret-key-minimum-32-characters
+```
+
+### 🔗 Links
+
+- [🐳 Docker Hub](https://hub.docker.com/r/sharkhunterr/ghostarr)
+- [📖 Documentation](https://github.com/sharkhunterr/ghostarr/tree/master/docs)
+- [🐛 Report Issues](https://github.com/sharkhunterr/ghostarr/issues)
 
 ---
 
