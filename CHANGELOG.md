@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.9.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.8.0...v1.9.0) (2026-07-13)
+
+
+### Features
+
+* **templates:** add template_a_venir for upcoming media newsletter ([37b58fe](https://github.com/sharkhunterr/ghostarr/-/commit/37b58fec406409475ee1d8b6c5b63568e1b2bed1)), closes [#0a0a0](https://github.com/sharkhunterr/ghostarr/-/issues/0a0a0) [#1a1a1](https://github.com/sharkhunterr/ghostarr/-/issues/1a1a1) [#0ea5e9](https://github.com/sharkhunterr/ghostarr/-/issues/0ea5e9) [#3b82f6](https://github.com/sharkhunterr/ghostarr/-/issues/3b82f6) [#6366f1](https://github.com/sharkhunterr/ghostarr/-/issues/6366f1) [#1a202](https://github.com/sharkhunterr/ghostarr/-/issues/1a202) [#f8](https://github.com/sharkhunterr/ghostarr/-/issues/f8) [#e2e8f0](https://github.com/sharkhunterr/ghostarr/-/issues/e2e8f0) [#1a202](https://github.com/sharkhunterr/ghostarr/-/issues/1a202) [#e0e0e0](https://github.com/sharkhunterr/ghostarr/-/issues/e0e0e0) [#4a5568](https://github.com/sharkhunterr/ghostarr/-/issues/4a5568) [#0ea5e9](https://github.com/sharkhunterr/ghostarr/-/issues/0ea5e9)
+* **templates:** add template_a_venir_posters — poster grid variant ([5de041d](https://github.com/sharkhunterr/ghostarr/-/commit/5de041d8ef9d786c1d16c9d29d972b1676d29cb6))
+
 ## [1.8.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.7.0...v1.8.0) (2026-04-02)
 
 
