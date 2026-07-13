@@ -64,6 +64,7 @@ async def seed_default_templates():
     # Template -> labels mapping (by filename without template_ prefix and .html suffix)
     TEMPLATE_LABELS = {
         "a_venir": ["À Venir", "Complet", "Films", "Séries"],
+        "a_venir_posters": ["À Venir", "Minimal", "Films", "Séries"],
         "airport": ["Fun", "Films", "Séries", "Jeux", "Livres"],
         "alien": ["Sci-Fi", "Films", "Séries", "Jeux"],
         "anime": ["Fun", "Films", "Séries", "Jeux"],
