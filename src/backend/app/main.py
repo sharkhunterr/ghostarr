@@ -52,6 +52,7 @@ async def seed_default_templates():
         "Programme TV": "#14b8a6",
         "Complet": "#ec4899",
         "Nouveautés": "#84cc16",
+        "À Venir": "#0ea5e9",
         # Content-type labels
         "Films": "#3b82f6",
         "Séries": "#8b5cf6",
@@ -62,6 +63,7 @@ async def seed_default_templates():
 
     # Template -> labels mapping (by filename without template_ prefix and .html suffix)
     TEMPLATE_LABELS = {
+        "a_venir": ["À Venir", "Complet", "Films", "Séries"],
         "airport": ["Fun", "Films", "Séries", "Jeux", "Livres"],
         "alien": ["Sci-Fi", "Films", "Séries", "Jeux"],
         "anime": ["Fun", "Films", "Séries", "Jeux"],
