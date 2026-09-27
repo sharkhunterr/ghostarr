@@ -7,6 +7,27 @@
 
 ---
 
+# v1.10.2
+
+## 👻 Ghostarr v1.10.2 - Maintenance Labels & CI Lint
+
+### 🐛 Fixed
+
+**Maintenance type always shown as "maintenance"**
+
+- Outage, network, update, improvement and security notices were all
+  labelled as a generic maintenance in the newsletter.
+- The maintenance type is now read correctly, so each notice shows its
+  own label.
+
+**CI: backend validation fails with ruff 0.16**
+
+- The latest ruff release flagged a few enum declarations, an unused
+  variable and two style issues, failing the backend validation job.
+- The code now passes the current ruff rules.
+
+---
+
 # v1.10.1
 
 ## 👻 Ghostarr v1.10.1 - Startup Fix & New Book Sources
