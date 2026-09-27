@@ -12,6 +12,15 @@ from app.integrations.base import BaseIntegration
 logger = get_logger(__name__)
 
 
+def _safe_opt_int(val: Any) -> int | None:
+    if val is None or val == "":
+        return None
+    try:
+        return int(val)
+    except (ValueError, TypeError):
+        return None
+
+
 class MediaItem(BaseModel):
     """Media item from Tautulli."""
 
@@ -181,37 +190,44 @@ class TautulliIntegration(BaseIntegration[MediaItem]):
             data = response.get("response", {}).get("data", {})
             recently_added = data.get("recently_added", [])
 
+            # Tautulli collapses a batch of episodes into a single
+            # ``season`` (or even ``show``) entry titled "Season N". Treating
+            # those as movies put bare "Season 1" / "Season 2" cards in the
+            # films section; expand them into their real episodes instead.
+            entries: list[dict[str, Any]] = []
             for item in recently_added:
-                added_at_raw = item.get("added_at", 0)
-                # Convert to int if it's a string
-                try:
-                    added_at = int(added_at_raw) if added_at_raw else 0
-                except (ValueError, TypeError):
-                    added_at = 0
+                raw_type = item.get("media_type")
+                if raw_type in ("movie", "episode"):
+                    entries.append(item)
+                elif raw_type == "season":
+                    entries.extend(await self._children(item.get("rating_key"), "episode"))
+                elif raw_type == "show":
+                    for season in await self._children(item.get("rating_key"), "season"):
+                        entries.extend(await self._children(season.get("rating_key"), "episode"))
+                # music / photo / clip entries are not newsletter material
 
+            seen: set[str] = set()
+            for item in entries:
+                rating_key = str(item.get("rating_key", ""))
+                if rating_key in seen:
+                    continue
+                seen.add(rating_key)
+
+                added_at = _safe_opt_int(item.get("added_at")) or 0
                 if added_at < since_timestamp:
                     continue
 
-                # Parse optional integer fields safely
-                def safe_int(val: Any) -> int | None:
-                    if val is None or val == "":
-                        return None
-                    try:
-                        return int(val)
-                    except (ValueError, TypeError):
-                        return None
-
                 media_item = MediaItem(
                     title=item.get("title", "Unknown"),
-                    year=safe_int(item.get("year")),
+                    year=_safe_opt_int(item.get("year")),
                     media_type="episode" if item.get("media_type") == "episode" else "movie",
-                    rating_key=str(item.get("rating_key", "")),
+                    rating_key=rating_key,
                     thumb=item.get("thumb"),
                     art=item.get("art"),
                     added_at=datetime.fromtimestamp(added_at) if added_at else None,
                     grandparent_title=item.get("grandparent_title"),
-                    parent_media_index=safe_int(item.get("parent_media_index")),
-                    media_index=safe_int(item.get("media_index")),
+                    parent_media_index=_safe_opt_int(item.get("parent_media_index")),
+                    media_index=_safe_opt_int(item.get("media_index")),
                 )
                 items.append(media_item)
 
@@ -222,6 +238,26 @@ class TautulliIntegration(BaseIntegration[MediaItem]):
             logger.error(f"Failed to fetch Tautulli data: {e}")
 
         return items
+
+    async def _children(self, rating_key: Any, media_type: str) -> list[dict[str, Any]]:
+        """Children of a season/show, filtered to ``media_type``. Empty on error."""
+        if not rating_key:
+            return []
+        try:
+            response = await self._request(
+                "GET",
+                "/api/v2",
+                params={
+                    "apikey": self.api_key,
+                    "cmd": "get_children_metadata",
+                    "rating_key": str(rating_key),
+                },
+            )
+        except Exception as e:
+            logger.warning(f"Tautulli children lookup failed for {rating_key}: {e}")
+            return []
+        children = response.get("response", {}).get("data", {}).get("children_list", []) or []
+        return [c for c in children if c.get("media_type") == media_type]
 
     async def fetch_statistics(self, days: int = 7, include_comparison: bool = False) -> TautulliStatistics:
         """Fetch comprehensive viewing statistics from Tautulli.
