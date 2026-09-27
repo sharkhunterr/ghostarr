@@ -24,6 +24,15 @@ changes that shipped in v1.10.0 without release notes.
 - The dependency is now `sqlalchemy[asyncio]`, which brings `greenlet`
   back. The container starts and reports healthy again.
 
+**Schedules not loaded: 'Job' object has no attribute 'next_run_time'**
+
+- On startup, schedules are registered before the scheduler runs, when
+  their next run time is not known yet. Reading it raised an error for
+  every schedule.
+- The next run time is now read safely, then computed and saved for
+  every active schedule once the scheduler has started, so the UI shows
+  the right date.
+
 ### 📦 Shipped in v1.10.0
 
 **Tautulli seasons shown as movies in the newsletter**

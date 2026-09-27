@@ -20,6 +20,7 @@ from app.services.scheduler_service import (
     get_cron_description,
     get_job_next_run,
     get_next_runs,
+    job_next_run,
     remove_schedule_job,
     validate_cron_expression,
 )
@@ -105,7 +106,7 @@ async def create_schedule(
     if schedule.is_active:
         job = add_schedule_job(schedule)
         if job:
-            schedule.next_run_at = job.next_run_time
+            schedule.next_run_at = job_next_run(job)
             await db.commit()
 
     return ScheduleResponse.model_validate(schedule)
@@ -163,7 +164,7 @@ async def update_schedule(
         if schedule.is_active:
             job = add_schedule_job(schedule)
             if job:
-                schedule.next_run_at = job.next_run_time
+                schedule.next_run_at = job_next_run(job)
                 await db.commit()
         else:
             schedule.next_run_at = None
@@ -202,7 +203,7 @@ async def toggle_schedule(schedule_id: str, db: AsyncSession = Depends(get_db)):
     if schedule.is_active:
         job = add_schedule_job(schedule)
         if job:
-            schedule.next_run_at = job.next_run_time
+            schedule.next_run_at = job_next_run(job)
     else:
         remove_schedule_job(schedule_id)
         schedule.next_run_at = None

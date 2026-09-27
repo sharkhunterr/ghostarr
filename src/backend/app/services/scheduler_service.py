@@ -24,6 +24,16 @@ logger = get_logger(__name__)
 _scheduler: AsyncIOScheduler | None = None
 
 
+def job_next_run(job: Job | None) -> datetime | None:
+    """Next fire time of a job, or None.
+
+    A job added before the scheduler starts is still "pending" and has no
+    ``next_run_time`` attribute yet in APScheduler 3.x — reading it raises
+    AttributeError.
+    """
+    return getattr(job, "next_run_time", None) if job else None
+
+
 def get_scheduler() -> AsyncIOScheduler:
     """Get the global scheduler instance."""
     global _scheduler
@@ -82,6 +92,11 @@ async def start_scheduler() -> None:
     scheduler.start()
     logger.info("Scheduler started")
 
+    # Jobs were added while the scheduler was stopped, so their next run is
+    # only known now — persist it so the UI shows the right date.
+    async with AsyncSessionLocal() as db:
+        await refresh_next_run_times(db)
+
 
 async def stop_scheduler() -> None:
     """Stop the scheduler gracefully."""
@@ -112,6 +127,16 @@ async def load_schedules_from_db(db: AsyncSession) -> None:
             logger.error(f"Failed to load schedule {schedule.id}: {e}")
 
 
+async def refresh_next_run_times(db: AsyncSession) -> None:
+    """Store each active schedule's next fire time from the running scheduler."""
+    result = await db.execute(select(Schedule).where(Schedule.is_active))
+    for schedule in result.scalars().all():
+        next_run = get_job_next_run(schedule.id)
+        if next_run is not None:
+            schedule.next_run_at = next_run
+    await db.commit()
+
+
 def add_schedule_job(schedule: Schedule) -> Job | None:
     """Add a schedule as an APScheduler job."""
     scheduler = get_scheduler()
@@ -137,7 +162,11 @@ def add_schedule_job(schedule: Schedule) -> Job | None:
             replace_existing=True,
         )
 
-        logger.info(f"Added job for schedule {schedule.id}, next run: {job.next_run_time}")
+        next_run = job_next_run(job)
+        logger.info(
+            f"Added job for schedule {schedule.id}, next run: "
+            f"{next_run or 'computed when the scheduler starts'}"
+        )
         return job
 
     except Exception as e:
@@ -194,7 +223,7 @@ def get_job_next_run(schedule_id: str) -> datetime | None:
 
     try:
         job = scheduler.get_job(job_id)
-        return job.next_run_time if job else None
+        return job_next_run(job)
     except Exception:
         return None
 
@@ -241,7 +270,7 @@ async def execute_scheduled_generation(schedule_id: str) -> None:
             # Update next run time
             job = get_scheduler().get_job(f"schedule_{schedule_id}")
             if job:
-                schedule.next_run_at = job.next_run_time
+                schedule.next_run_at = job_next_run(job)
 
             await db.commit()
 
@@ -298,7 +327,7 @@ async def execute_scheduled_deletion(schedule_id: str) -> None:
             # Update next run time
             job = get_scheduler().get_job(f"schedule_{schedule_id}")
             if job:
-                schedule.next_run_at = job.next_run_time
+                schedule.next_run_at = job_next_run(job)
 
             await db.commit()
 
