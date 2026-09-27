@@ -7,6 +7,45 @@
 
 ---
 
+# v1.10.1
+
+## 👻 Ghostarr v1.10.1 - Startup Fix & New Book Sources
+
+Hotfix for v1.10.0, whose Docker image could not start, plus the
+changes that shipped in v1.10.0 without release notes.
+
+### 🐛 Fixed
+
+**Backend no longer starts: missing greenlet module (SQLAlchemy 2.1)**
+
+- Fresh image builds pulled SQLAlchemy 2.1, which no longer installs
+  `greenlet`. The backend crashed at import time and every page showed
+  "An error occurred" (HTTP 502 on the whole API).
+- The dependency is now `sqlalchemy[asyncio]`, which brings `greenlet`
+  back. The container starts and reports healthy again.
+
+### 📦 Shipped in v1.10.0
+
+**Tautulli seasons shown as movies in the newsletter**
+
+- Tautulli groups episodes added together into a single "season" (or
+  "show") entry. These used to land in the Movies section as bare
+  "Season 1" / "Season 2" cards.
+- Seasons and shows are now expanded into their real episodes and appear
+  in the TV section with the series name and season/episode numbers.
+
+**BookOrbit and Grimmory as book / audiobook sources**
+
+- Two new services alongside Komga and Audiobookshelf, signed in with a
+  username and password (neither offers API keys).
+- Each source has two library pickers: libraries feeding the Books
+  section and libraries feeding the Audiobooks section. A title counts
+  as an audiobook when it has an audio file.
+- Items join the existing Books and Audiobooks sections; covers are
+  re-hosted on Ghost so they display in emails.
+
+---
+
 # v1.9.0
 
 ## 👻 Ghostarr v1.9.0 - Upcoming Media Templates
