@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.10.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.9.1...v1.10.0) (2026-09-27)
+
+
+### Features
+
+* **books:** add BookOrbit and Grimmory as book / audiobook sources ([f04e3f1](https://github.com/sharkhunterr/ghostarr/-/commit/f04e3f1556c18f6b06b426a04eaf81be4e59416a))
+
+
+### Bug Fixes
+
+* **tautulli:** expand recently-added seasons/shows into episodes ([f73f4f6](https://github.com/sharkhunterr/ghostarr/-/commit/f73f4f6a2286cc0611a837d257af0ceef90c8be8))
+
 ### [1.9.1](https://github.com/sharkhunterr/ghostarr/-/compare/v1.9.0...v1.9.1) (2026-07-13)
 
 ## [1.9.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.8.0...v1.9.0) (2026-07-13)
