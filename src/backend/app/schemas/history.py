@@ -1,14 +1,14 @@
 """History schemas."""
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
 from app.models.history import GenerationStatus, GenerationType
 
 
-class ProgressStepStatus(str, Enum):
+class ProgressStepStatus(StrEnum):
     """Status of a progress step."""
 
     PENDING = "pending"
@@ -84,7 +84,7 @@ class HistoryFilter(BaseModel):
     end_date: datetime | None = None
 
 
-class HistoryExportFormat(str, Enum):
+class HistoryExportFormat(StrEnum):
     """Export format options."""
 
     JSON = "json"

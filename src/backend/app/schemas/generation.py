@@ -1,12 +1,12 @@
 """Generation configuration schemas."""
 
 from datetime import datetime
-from enum import Enum
+from enum import StrEnum
 
 from pydantic import BaseModel, Field
 
 
-class PublicationMode(str, Enum):
+class PublicationMode(StrEnum):
     """Newsletter publication mode."""
 
     DRAFT = "draft"
@@ -15,7 +15,7 @@ class PublicationMode(str, Enum):
     EMAIL_PUBLISH = "email+publish"
 
 
-class MaintenanceType(str, Enum):
+class MaintenanceType(StrEnum):
     """Type of maintenance notice."""
 
     SCHEDULED = "scheduled"

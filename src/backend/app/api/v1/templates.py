@@ -130,7 +130,7 @@ async def scan_and_import_templates(db: AsyncSession = Depends(get_db)):
 
         try:
             # Parse JSON file
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 data = json.load(f)
 
             # Validate it has required fields

@@ -127,8 +127,6 @@ class OverseerrIntegration(BaseIntegration[OverseerrRequest]):
                     if status == 3:
                         continue
 
-                    # Get media info from embedded data
-                    media_info = media.get("mediaInfo", {})
                     tmdb_id = media.get("tmdbId")
 
                     # Fetch detailed media info from Overseerr
