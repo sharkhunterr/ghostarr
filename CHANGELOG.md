@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.1](https://github.com/sharkhunterr/ghostarr/-/compare/v1.10.0...v1.10.1) (2026-09-27)
+
+
+### Bug Fixes
+
+* **deps:** require sqlalchemy[asyncio] so greenlet is installed ([ffadc99](https://github.com/sharkhunterr/ghostarr/-/commit/ffadc99e522307b61e390edd91c5f2a81d575f2d))
+* **scheduler:** read next_run_time safely and persist it after startup ([fe2ad4c](https://github.com/sharkhunterr/ghostarr/-/commit/fe2ad4ca425871b9964f6703a075038c2a6ab5e2))
+
 ## [1.10.0](https://github.com/sharkhunterr/ghostarr/-/compare/v1.9.1...v1.10.0) (2026-09-27)
 
 
