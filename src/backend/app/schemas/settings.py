@@ -42,6 +42,8 @@ class AllServicesStatus(BaseModel):
     romm: ServiceTestResult | None = None
     komga: ServiceTestResult | None = None
     audiobookshelf: ServiceTestResult | None = None
+    bookorbit: ServiceTestResult | None = None
+    grimmory: ServiceTestResult | None = None
     tunarr: ServiceTestResult | None = None
 
 

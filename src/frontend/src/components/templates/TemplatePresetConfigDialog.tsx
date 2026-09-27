@@ -42,10 +42,11 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { ContentSourceConfig } from '@/components/dashboard/ContentSourceConfig';
+import { DEFAULT_BOOK_SERVER } from '@/components/dashboard/bookServerDefaults';
 import { MaintenanceConfig } from '@/components/dashboard/MaintenanceConfig';
 import { StatisticsConfig } from '@/components/dashboard/StatisticsConfig';
 import { useUpdateTemplate } from '@/api/templates';
-import type { Template, GenerationConfig, PublicationMode } from '@/types';
+import type { BookServerConfig, Template, GenerationConfig, PublicationMode } from '@/types';
 
 interface TemplatePresetConfigDialogProps {
   open: boolean;
@@ -78,6 +79,20 @@ const defaultConfig: Omit<GenerationConfig, 'template_id'> = {
     enabled: false,
     days: 7,
     max_items: 5,
+  },
+  bookorbit: {
+    enabled: false,
+    days: 7,
+    max_items: 5,
+    book_library_ids: [],
+    audiobook_library_ids: [],
+  },
+  grimmory: {
+    enabled: false,
+    days: 7,
+    max_items: 5,
+    book_library_ids: [],
+    audiobook_library_ids: [],
   },
   tunarr: {
     enabled: false,
@@ -298,6 +313,8 @@ export function TemplatePresetConfigDialog({
                         config.romm.enabled ||
                         config.komga.enabled ||
                         config.audiobookshelf.enabled ||
+                        (config.bookorbit?.enabled ?? false) ||
+                        (config.grimmory?.enabled ?? false) ||
                         config.statistics.enabled
                       }
                       onCheckedChange={(checked) => {
@@ -305,6 +322,8 @@ export function TemplatePresetConfigDialog({
                         updateConfig('romm', { ...config.romm, enabled: checked });
                         updateConfig('komga', { ...config.komga, enabled: checked });
                         updateConfig('audiobookshelf', { ...config.audiobookshelf, enabled: checked });
+                        updateConfig('bookorbit', { ...(config.bookorbit ?? DEFAULT_BOOK_SERVER), enabled: checked });
+                        updateConfig('grimmory', { ...(config.grimmory ?? DEFAULT_BOOK_SERVER), enabled: checked });
                         updateConfig('statistics', { ...config.statistics, enabled: checked });
                       }}
                     />
@@ -347,6 +366,24 @@ export function TemplatePresetConfigDialog({
                     description={t('dashboard.sources.audiobookshelfDesc')}
                     config={config.audiobookshelf}
                     onChange={(value) => updateConfig('audiobookshelf', value)}
+                  />
+
+                  {/* Books & audiobooks (BookOrbit) */}
+                  <ContentSourceConfig
+                    title={t('dashboard.sources.bookorbit')}
+                    description={t('dashboard.sources.bookorbitDesc')}
+                    config={config.bookorbit ?? DEFAULT_BOOK_SERVER}
+                    onChange={(value) => updateConfig('bookorbit', value as BookServerConfig)}
+                    bookServer="bookorbit"
+                  />
+
+                  {/* Books & audiobooks (Grimmory) */}
+                  <ContentSourceConfig
+                    title={t('dashboard.sources.grimmory')}
+                    description={t('dashboard.sources.grimmoryDesc')}
+                    config={config.grimmory ?? DEFAULT_BOOK_SERVER}
+                    onChange={(value) => updateConfig('grimmory', value as BookServerConfig)}
+                    bookServer="grimmory"
                   />
 
                   {/* Media Requests */}

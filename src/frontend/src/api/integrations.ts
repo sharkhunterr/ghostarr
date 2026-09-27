@@ -16,6 +16,14 @@ export interface GhostNewsletter {
   description: string | null;
 }
 
+export type BookServer = "bookorbit" | "grimmory";
+
+export interface BookServerLibrary {
+  id: string;
+  name: string;
+  type: string | null;
+}
+
 const TUNARR_CHANNELS_KEY = ["integrations", "tunarr", "channels"];
 const GHOST_NEWSLETTERS_KEY = ["integrations", "ghost", "newsletters"];
 
@@ -45,5 +53,20 @@ export function useGhostNewsletters() {
     },
     staleTime: 5 * 60 * 1000,
     retry: false,
+  });
+}
+
+export function useBookServerLibraries(service: BookServer, enabled: boolean = true) {
+  return useQuery({
+    queryKey: ["integrations", service, "libraries"],
+    queryFn: async () => {
+      const { data } = await apiClient.get<BookServerLibrary[]>(
+        `/integrations/${service}/libraries`
+      );
+      return data;
+    },
+    enabled,
+    staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
 }

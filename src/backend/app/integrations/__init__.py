@@ -2,7 +2,9 @@
 
 from app.integrations.audiobookshelf import AudiobookshelfIntegration
 from app.integrations.base import BaseIntegration
+from app.integrations.bookorbit import BookOrbitIntegration
 from app.integrations.ghost import GhostIntegration
+from app.integrations.grimmory import GrimmoryIntegration
 from app.integrations.komga import KomgaIntegration
 from app.integrations.overseerr import OverseerrIntegration
 from app.integrations.radarr import RadarrIntegration
@@ -20,6 +22,8 @@ __all__ = [
     "ROMMIntegration",
     "KomgaIntegration",
     "AudiobookshelfIntegration",
+    "BookOrbitIntegration",
+    "GrimmoryIntegration",
     "TunarrIntegration",
     "RadarrIntegration",
     "SonarrIntegration",
@@ -42,6 +46,8 @@ def get_integration(
         "romm": ROMMIntegration,
         "komga": KomgaIntegration,
         "audiobookshelf": AudiobookshelfIntegration,
+        "bookorbit": BookOrbitIntegration,
+        "grimmory": GrimmoryIntegration,
         "tunarr": TunarrIntegration,
         "radarr": RadarrIntegration,
         "sonarr": SonarrIntegration,
@@ -54,5 +60,7 @@ def get_integration(
     # ROMM supports username/password authentication
     if service == "romm":
         return ROMMIntegration(url=url, api_key=api_key, username=username, password=password)
+    if service in ("bookorbit", "grimmory"):
+        return integrations[service](url=url, api_key=api_key, username=username, password=password)
 
     return integrations[service](url=url, api_key=api_key)

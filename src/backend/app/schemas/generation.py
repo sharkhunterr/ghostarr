@@ -48,6 +48,17 @@ class TunarrConfig(ContentSourceConfig):
     display_format: str = Field(default="grid", description="Display format: grid or list")
 
 
+class BookServerConfig(ContentSourceConfig):
+    """Book server (BookOrbit, Grimmory) — which libraries feed which section."""
+
+    book_library_ids: list[str] = Field(
+        default_factory=list, description="Libraries feeding the books section"
+    )
+    audiobook_library_ids: list[str] = Field(
+        default_factory=list, description="Libraries feeding the audiobooks section"
+    )
+
+
 class StatisticsConfig(BaseModel):
     """Statistics section configuration."""
 
@@ -80,6 +91,8 @@ class GenerationConfig(BaseModel):
     romm: ContentSourceConfig = Field(default_factory=ContentSourceConfig)
     komga: ContentSourceConfig = Field(default_factory=ContentSourceConfig)
     audiobookshelf: ContentSourceConfig = Field(default_factory=ContentSourceConfig)
+    bookorbit: BookServerConfig = Field(default_factory=BookServerConfig)
+    grimmory: BookServerConfig = Field(default_factory=BookServerConfig)
     tunarr: TunarrConfig = Field(default_factory=TunarrConfig)
     radarr: ContentSourceConfig = Field(default_factory=ContentSourceConfig)
     sonarr: ContentSourceConfig = Field(default_factory=ContentSourceConfig)

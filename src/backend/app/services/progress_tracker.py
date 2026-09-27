@@ -31,6 +31,8 @@ GENERATION_STEPS = [
     GenerationStep("fetch_romm", "Fetching games from ROMM", 10),
     GenerationStep("fetch_komga", "Fetching books from Komga", 10),
     GenerationStep("fetch_audiobookshelf", "Fetching audiobooks", 10),
+    GenerationStep("fetch_bookorbit", "Fetching books from BookOrbit", 10),
+    GenerationStep("fetch_grimmory", "Fetching books from Grimmory", 10),
     GenerationStep("fetch_tunarr", "Fetching TV programming", 10),
     GenerationStep("fetch_radarr", "Fetching upcoming movies from Radarr", 10),
     GenerationStep("fetch_sonarr", "Fetching upcoming series from Sonarr", 10),

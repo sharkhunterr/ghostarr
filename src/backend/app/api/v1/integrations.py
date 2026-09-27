@@ -5,7 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logging import get_logger
 from app.database import get_db
+from app.integrations.bookorbit import BookOrbitIntegration
 from app.integrations.ghost import GhostIntegration
+from app.integrations.grimmory import GrimmoryIntegration
 from app.integrations.tunarr import TunarrIntegration
 from app.models.setting import Setting
 from app.services.crypto_service import crypto_service
@@ -84,3 +86,33 @@ async def get_tunarr_channels(db: AsyncSession = Depends(get_db)):
     except Exception as e:
         logger.error(f"Failed to fetch Tunarr channels: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+_BOOK_SERVERS = {"bookorbit": BookOrbitIntegration, "grimmory": GrimmoryIntegration}
+
+
+@router.get("/{service}/libraries", response_model=list[dict])
+async def get_book_server_libraries(service: str, db: AsyncSession = Depends(get_db)):
+    """Libraries on a book server (BookOrbit, Grimmory), for the section pickers."""
+    integration_cls = _BOOK_SERVERS.get(service)
+    if integration_cls is None:
+        raise HTTPException(status_code=404, detail=f"Unknown book server: {service}")
+
+    setting = await db.get(Setting, f"services.{service}")
+    config = setting.value if setting else {}
+    url = config.get("url", "")
+    username = config.get("username", "")
+    password_encrypted = config.get("password_encrypted", "")
+    password = crypto_service.decrypt(password_encrypted) if password_encrypted else ""
+
+    if not url or not username or not password:
+        raise HTTPException(status_code=400, detail=f"{service} not configured")
+
+    integration = integration_cls(url=url, username=username, password=password)
+    try:
+        return await integration.get_libraries()
+    except Exception as e:
+        logger.error(f"Failed to fetch {service} libraries: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        await integration.close()

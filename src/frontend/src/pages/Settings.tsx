@@ -42,6 +42,16 @@ const SERVICES = [
     descKey: "settings.services.audiobookshelf.description",
   },
   {
+    id: "bookorbit",
+    nameKey: "settings.services.bookorbit.name",
+    descKey: "settings.services.bookorbit.description",
+  },
+  {
+    id: "grimmory",
+    nameKey: "settings.services.grimmory.name",
+    descKey: "settings.services.grimmory.description",
+  },
+  {
     id: "tunarr",
     nameKey: "settings.services.tunarr.name",
     descKey: "settings.services.tunarr.description",

@@ -108,7 +108,12 @@
       "featuredItem": "Mettre en avant un élément",
       "channels": "Chaînes",
       "channelsHelp": "Sélectionnez les chaînes à inclure",
-      "channelsNotConfigured": "Tunarr n'est pas configuré ou aucune chaîne disponible"
+      "channelsNotConfigured": "Tunarr n'est pas configuré ou aucune chaîne disponible",
+      "bookLibraries": "Bibliothèques pour la section Livres",
+      "audiobookLibraries": "Bibliothèques pour la section Livres audio",
+      "librariesHelp": "Cochez les bibliothèques à inclure",
+      "librariesNotConfigured": "Service non configuré ou injoignable",
+      "librariesNoneSelected": "Sélectionnez au moins une bibliothèque"
     },
     "sources": {
       "tautulli": "Films & Séries",
@@ -126,7 +131,11 @@
       "sonarr": "Séries à venir",
       "sonarrDesc": "Épisodes à venir via Sonarr",
       "overseerr": "Demandes média",
-      "overseerrDesc": "Demandes de films et séries via Overseerr"
+      "overseerrDesc": "Demandes de films et séries via Overseerr",
+      "bookorbit": "Livres (BookOrbit)",
+      "bookorbitDesc": "Livres et livres audio récemment ajoutés via BookOrbit",
+      "grimmory": "Livres (Grimmory)",
+      "grimmoryDesc": "Livres et livres audio récemment ajoutés via Grimmory"
     },
     "statistics": {
       "title": "Statistiques",
@@ -530,6 +539,14 @@
       "overseerr": {
         "name": "Overseerr",
         "description": "Gestion des demandes de médias"
+      },
+      "bookorbit": {
+        "name": "BookOrbit",
+        "description": "Bibliothèque de livres, BD et livres audio (connexion par identifiant / mot de passe)"
+      },
+      "grimmory": {
+        "name": "Grimmory",
+        "description": "Bibliothèque de livres, BD et livres audio, successeur de BookLore (connexion par identifiant / mot de passe)"
       }
     },
     "logs": {

@@ -29,6 +29,8 @@ SETTING_KEYS = {
     "services.romm": {"url": str, "api_key_encrypted": str},
     "services.komga": {"url": str, "api_key_encrypted": str},
     "services.audiobookshelf": {"url": str, "api_key_encrypted": str},
+    "services.bookorbit": {"url": str, "username": str, "password_encrypted": str},
+    "services.grimmory": {"url": str, "username": str, "password_encrypted": str},
     "services.tunarr": {"url": str, "api_key_encrypted": str},
     "services.radarr": {"url": str, "api_key_encrypted": str},
     "services.sonarr": {"url": str, "api_key_encrypted": str},

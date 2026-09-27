@@ -34,13 +34,13 @@ from app.services.crypto_service import crypto_service
 logger = get_logger(__name__)
 router = APIRouter()
 
-SERVICES = ["tautulli", "tmdb", "ghost", "romm", "komga", "audiobookshelf", "tunarr", "radarr", "sonarr", "overseerr"]
+SERVICES = ["tautulli", "tmdb", "ghost", "romm", "komga", "audiobookshelf", "bookorbit", "grimmory", "tunarr", "radarr", "sonarr", "overseerr"]
 
 # Services that don't require URL (have default API endpoint)
 SERVICES_WITHOUT_URL = ["tmdb"]
 
 # Services that support username/password authentication
-SERVICES_WITH_BASIC_AUTH = ["romm"]
+SERVICES_WITH_BASIC_AUTH = ["romm", "bookorbit", "grimmory"]
 
 # Services that can work without authentication (API key is optional)
 SERVICES_WITHOUT_AUTH = ["tunarr"]

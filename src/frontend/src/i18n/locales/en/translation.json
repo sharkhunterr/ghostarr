@@ -108,7 +108,12 @@
       "featuredItem": "Feature an item",
       "channels": "Channels",
       "channelsHelp": "Select channels to include",
-      "channelsNotConfigured": "Tunarr is not configured or no channels available"
+      "channelsNotConfigured": "Tunarr is not configured or no channels available",
+      "bookLibraries": "Libraries for the Books section",
+      "audiobookLibraries": "Libraries for the Audiobooks section",
+      "librariesHelp": "Tick the libraries to include",
+      "librariesNotConfigured": "Service not configured or unreachable",
+      "librariesNoneSelected": "Select at least one library"
     },
     "sources": {
       "tautulli": "Movies & TV Shows",
@@ -126,7 +131,11 @@
       "sonarr": "Upcoming Series",
       "sonarrDesc": "Upcoming episodes via Sonarr",
       "overseerr": "Media Requests",
-      "overseerrDesc": "Movie and TV show requests via Overseerr"
+      "overseerrDesc": "Movie and TV show requests via Overseerr",
+      "bookorbit": "Books (BookOrbit)",
+      "bookorbitDesc": "Recently added books and audiobooks via BookOrbit",
+      "grimmory": "Books (Grimmory)",
+      "grimmoryDesc": "Recently added books and audiobooks via Grimmory"
     },
     "statistics": {
       "title": "Statistics",
@@ -530,6 +539,14 @@
       "overseerr": {
         "name": "Overseerr",
         "description": "Media request management"
+      },
+      "bookorbit": {
+        "name": "BookOrbit",
+        "description": "Books, comics and audiobooks library (username / password sign-in)"
+      },
+      "grimmory": {
+        "name": "Grimmory",
+        "description": "Books, comics and audiobooks library, BookLore successor (username / password sign-in)"
       }
     },
     "logs": {

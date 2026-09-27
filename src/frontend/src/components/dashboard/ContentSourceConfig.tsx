@@ -10,8 +10,13 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useTunarrChannels } from '@/api/integrations';
-import type { ContentSourceConfig as ContentSourceConfigType, TautulliConfig, TunarrConfig } from '@/types';
+import { useBookServerLibraries, useTunarrChannels, type BookServer } from '@/api/integrations';
+import type {
+  BookServerConfig,
+  ContentSourceConfig as ContentSourceConfigType,
+  TautulliConfig,
+  TunarrConfig,
+} from '@/types';
 
 interface TunarrChannelSelectorProps {
   selectedChannels: string[];
@@ -145,13 +150,86 @@ function TunarrChannelSelector({ selectedChannels, onChannelsChange }: TunarrCha
   );
 }
 
+interface BookServerLibrarySelectorProps {
+  service: BookServer;
+  label: string;
+  idPrefix: string;
+  selected: string[];
+  onChange: (ids: string[]) => void;
+}
+
+function BookServerLibrarySelector({ service, label, idPrefix, selected, onChange }: BookServerLibrarySelectorProps) {
+  const { t } = useTranslation();
+  const { data: libraries, isLoading, error } = useBookServerLibraries(service);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-2">
+        <Label>{label}</Label>
+        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin" />
+          {t('common.loading')}
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !libraries) {
+    return (
+      <div className="space-y-2">
+        <Label>{label}</Label>
+        <p className="text-xs text-muted-foreground">{t('dashboard.config.librariesNotConfigured')}</p>
+      </div>
+    );
+  }
+
+  const toggle = (id: string, checked: boolean) =>
+    onChange(checked ? [...selected, id] : selected.filter((x) => x !== id));
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <Label>{label}</Label>
+        <div className="flex gap-2 text-xs">
+          <button type="button" onClick={() => onChange(libraries.map((l) => l.id))} className="text-primary hover:underline">
+            {t('common.all')}
+          </button>
+          <span className="text-muted-foreground">/</span>
+          <button type="button" onClick={() => onChange([])} className="text-primary hover:underline">
+            {t('common.none')}
+          </button>
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        {t('dashboard.config.librariesHelp')} ({selected.length}/{libraries.length})
+      </p>
+      <div className="space-y-1 rounded-md border p-2">
+        {libraries.map((library) => (
+          <div key={library.id} className="flex items-center space-x-2">
+            <Checkbox
+              id={`${idPrefix}-${library.id}`}
+              checked={selected.includes(library.id)}
+              onCheckedChange={(checked) => toggle(library.id, checked as boolean)}
+            />
+            <Label htmlFor={`${idPrefix}-${library.id}`} className="text-sm font-normal cursor-pointer">
+              {library.name}
+            </Label>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 interface ContentSourceConfigProps {
   title: string;
   description: string;
-  config: ContentSourceConfigType | TautulliConfig | TunarrConfig;
-  onChange: (config: ContentSourceConfigType | TautulliConfig | TunarrConfig) => void;
+  config: ContentSourceConfigType | TautulliConfig | TunarrConfig | BookServerConfig;
+  onChange: (config: ContentSourceConfigType | TautulliConfig | TunarrConfig | BookServerConfig) => void;
   showFeatured?: boolean;
   showChannels?: boolean;
+  /** Book server whose libraries feed the Books / Audiobooks sections. */
+  bookServer?: BookServer;
 }
 
 export function ContentSourceConfig({
@@ -161,6 +239,7 @@ export function ContentSourceConfig({
   onChange,
   showFeatured,
   showChannels,
+  bookServer,
 }: ContentSourceConfigProps) {
   const { t } = useTranslation();
 
@@ -244,6 +323,30 @@ export function ContentSourceConfig({
                 updateConfig('channels', channels)
               }
             />
+          )}
+
+          {/* Libraries (book servers) — one picker per newsletter section */}
+          {bookServer && 'book_library_ids' in config && (
+            <>
+              <BookServerLibrarySelector
+                service={bookServer}
+                label={t('dashboard.config.bookLibraries')}
+                idPrefix={`${title}-books`}
+                selected={(config as BookServerConfig).book_library_ids}
+                onChange={(ids) => updateConfig('book_library_ids', ids)}
+              />
+              <BookServerLibrarySelector
+                service={bookServer}
+                label={t('dashboard.config.audiobookLibraries')}
+                idPrefix={`${title}-audiobooks`}
+                selected={(config as BookServerConfig).audiobook_library_ids}
+                onChange={(ids) => updateConfig('audiobook_library_ids', ids)}
+              />
+              {(config as BookServerConfig).book_library_ids.length === 0 &&
+                (config as BookServerConfig).audiobook_library_ids.length === 0 && (
+                  <p className="text-xs text-amber-500">{t('dashboard.config.librariesNoneSelected')}</p>
+                )}
+            </>
           )}
         </CardContent>
       )}

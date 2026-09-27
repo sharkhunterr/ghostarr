@@ -33,6 +33,7 @@ import {
 } from '@/components/ui/tabs';
 import { CronInput } from './CronInput';
 import { ContentSourceConfig } from './ContentSourceConfig';
+import { DEFAULT_BOOK_SERVER } from './bookServerDefaults';
 import { MaintenanceConfig } from './MaintenanceConfig';
 import { StatisticsConfig } from './StatisticsConfig';
 import { TemplateSelect } from '@/components/templates';
@@ -44,7 +45,7 @@ import {
   type ScheduleCreateData,
   type ScheduleUpdateData,
 } from '@/api/schedules';
-import type { Schedule, GenerationConfig, DeletionConfig, PublicationMode, ScheduleType, Template } from '@/types';
+import type { BookServerConfig, Schedule, GenerationConfig, DeletionConfig, PublicationMode, ScheduleType, Template } from '@/types';
 
 interface ScheduleFormProps {
   open: boolean;
@@ -84,6 +85,20 @@ const defaultConfig: GenerationConfig = {
     enabled: false,
     days: 7,
     max_items: 5,
+  },
+  bookorbit: {
+    enabled: false,
+    days: 7,
+    max_items: 5,
+    book_library_ids: [],
+    audiobook_library_ids: [],
+  },
+  grimmory: {
+    enabled: false,
+    days: 7,
+    max_items: 5,
+    book_library_ids: [],
+    audiobook_library_ids: [],
   },
   tunarr: {
     enabled: false,
@@ -463,6 +478,8 @@ export function ScheduleForm({
                           config.romm.enabled ||
                           config.komga.enabled ||
                           config.audiobookshelf.enabled ||
+                          (config.bookorbit?.enabled ?? false) ||
+                          (config.grimmory?.enabled ?? false) ||
                           config.statistics.enabled
                         }
                         onCheckedChange={(checked) => {
@@ -470,6 +487,8 @@ export function ScheduleForm({
                           updateConfig('romm', { ...config.romm, enabled: checked });
                           updateConfig('komga', { ...config.komga, enabled: checked });
                           updateConfig('audiobookshelf', { ...config.audiobookshelf, enabled: checked });
+                          updateConfig('bookorbit', { ...(config.bookorbit ?? DEFAULT_BOOK_SERVER), enabled: checked });
+                          updateConfig('grimmory', { ...(config.grimmory ?? DEFAULT_BOOK_SERVER), enabled: checked });
                           updateConfig('statistics', { ...config.statistics, enabled: checked });
                         }}
                       />
@@ -512,6 +531,24 @@ export function ScheduleForm({
                       description={t('dashboard.sources.audiobookshelfDesc')}
                       config={config.audiobookshelf}
                       onChange={(value) => updateConfig('audiobookshelf', value)}
+                    />
+
+                    {/* Books & audiobooks (BookOrbit) */}
+                    <ContentSourceConfig
+                      title={t('dashboard.sources.bookorbit')}
+                      description={t('dashboard.sources.bookorbitDesc')}
+                      config={config.bookorbit ?? DEFAULT_BOOK_SERVER}
+                      onChange={(value) => updateConfig('bookorbit', value as BookServerConfig)}
+                      bookServer="bookorbit"
+                    />
+
+                    {/* Books & audiobooks (Grimmory) */}
+                    <ContentSourceConfig
+                      title={t('dashboard.sources.grimmory')}
+                      description={t('dashboard.sources.grimmoryDesc')}
+                      config={config.grimmory ?? DEFAULT_BOOK_SERVER}
+                      onChange={(value) => updateConfig('grimmory', value as BookServerConfig)}
+                      bookServer="grimmory"
                     />
 
                     {/* Media Requests */}

@@ -23,6 +23,8 @@ const URL_PLACEHOLDERS: Record<string, string> = {
   romm: "http://192.168.1.x:8080",
   komga: "http://192.168.1.x:25600",
   audiobookshelf: "http://192.168.1.x:13378",
+  bookorbit: "http://192.168.1.x:3000",
+  grimmory: "http://192.168.1.x:6060",
   tunarr: "http://192.168.1.x:8000",
   radarr: "http://192.168.1.x:7878",
   sonarr: "http://192.168.1.x:8989",
@@ -36,7 +38,10 @@ const SERVICES_WITH_URL_HELP = ["tautulli", "ghost"];
 const SERVICES_WITHOUT_URL = ["tmdb"];
 
 // Services that support username/password authentication
-const SERVICES_WITH_BASIC_AUTH = ["romm"];
+const SERVICES_WITH_BASIC_AUTH = ["romm", "bookorbit", "grimmory"];
+
+// Services that only authenticate with username/password (no API key)
+const SERVICES_WITHOUT_API_KEY = ["bookorbit", "grimmory"];
 
 export function ServiceCard({
   service,
@@ -205,13 +210,16 @@ export function ServiceCard({
               </div>
             </div>
 
-            <div className="text-xs text-muted-foreground">
-              {t("settings.services.basicAuthHelp")}
-            </div>
+            {!SERVICES_WITHOUT_API_KEY.includes(service) && (
+              <div className="text-xs text-muted-foreground">
+                {t("settings.services.basicAuthHelp")}
+              </div>
+            )}
           </>
         )}
 
-        {/* API Key field - shown for all services, optional for services with basic auth */}
+        {/* API Key field - optional for services with basic auth, absent when the service has none */}
+        {!SERVICES_WITHOUT_API_KEY.includes(service) && (
         <div>
           <label className="text-sm font-medium">
             {t("settings.services.apiKey")}
@@ -242,6 +250,7 @@ export function ServiceCard({
             </button>
           </div>
         </div>
+        )}
       </div>
 
       <div className="flex gap-2">

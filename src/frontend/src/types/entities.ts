@@ -149,6 +149,12 @@ export interface MaintenanceConfig {
   start_datetime: string | null;
 }
 
+/** Book server (BookOrbit, Grimmory): which libraries feed which section. */
+export interface BookServerConfig extends ContentSourceConfig {
+  book_library_ids: string[];
+  audiobook_library_ids: string[];
+}
+
 export interface GenerationConfig {
   template_id: UUID;
   title: string;
@@ -158,6 +164,8 @@ export interface GenerationConfig {
   romm: ContentSourceConfig;
   komga: ContentSourceConfig;
   audiobookshelf: ContentSourceConfig;
+  bookorbit?: BookServerConfig;
+  grimmory?: BookServerConfig;
   tunarr: TunarrConfig;
   radarr: ContentSourceConfig;
   sonarr: ContentSourceConfig;

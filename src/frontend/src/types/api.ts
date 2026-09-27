@@ -146,6 +146,8 @@ export interface AllServicesStatus {
   romm?: ServiceTestResult;
   komga?: ServiceTestResult;
   audiobookshelf?: ServiceTestResult;
+  bookorbit?: ServiceTestResult;
+  grimmory?: ServiceTestResult;
   tunarr?: ServiceTestResult;
 }
 

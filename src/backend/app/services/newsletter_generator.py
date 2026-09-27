@@ -9,7 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.exceptions import GenerationCancelledException, GenerationError
 from app.core.logging import get_logger
 from app.integrations.audiobookshelf import AudiobookshelfIntegration
+from app.integrations.bookorbit import BookOrbitIntegration
 from app.integrations.ghost import GhostIntegration
+from app.integrations.grimmory import GrimmoryIntegration
 from app.integrations.komga import KomgaIntegration
 from app.integrations.overseerr import OverseerrIntegration
 from app.integrations.radarr import RadarrIntegration
@@ -169,6 +171,14 @@ class NewsletterGenerator:
             if self._is_cancelled():
                 return await self._handle_cancellation()
 
+            await self._fetch_book_server("bookorbit", "BookOrbit", BookOrbitIntegration)
+            if self._is_cancelled():
+                return await self._handle_cancellation()
+
+            await self._fetch_book_server("grimmory", "Grimmory", GrimmoryIntegration)
+            if self._is_cancelled():
+                return await self._handle_cancellation()
+
             await self._fetch_tunarr()
             if self._is_cancelled():
                 return await self._handle_cancellation()
@@ -250,6 +260,12 @@ class NewsletterGenerator:
 
         if self.config.audiobookshelf.enabled:
             steps.append("fetch_audiobookshelf")
+
+        if self.config.bookorbit.enabled:
+            steps.append("fetch_bookorbit")
+
+        if self.config.grimmory.enabled:
+            steps.append("fetch_grimmory")
 
         if self.config.tunarr.enabled:
             steps.append("fetch_tunarr")
@@ -774,6 +790,68 @@ class NewsletterGenerator:
         except Exception as e:
             logger.error(f"Audiobookshelf fetch failed: {e}")
             await self.tracker.complete_step("fetch_audiobookshelf", "Fetch failed, continuing", 0)
+
+    async def _fetch_book_server(self, service: str, label: str, integration_cls: Any) -> None:
+        """Fetch books and audiobooks from a book server (BookOrbit, Grimmory).
+
+        Runs after Komga / Audiobookshelf and appends to their lists, so the
+        existing Books and Audiobooks template sections show every source.
+        """
+        step = f"fetch_{service}"
+        cfg = getattr(self.config, service)
+        if not cfg.enabled:
+            await self.tracker.skip_step(step, "Disabled")
+            return
+        if not cfg.book_library_ids and not cfg.audiobook_library_ids:
+            await self.tracker.skip_step(step, "No library selected")
+            return
+
+        await self.tracker.start_step(step, f"Fetching books from {label}...")
+
+        try:
+            creds = await get_service_credentials_full(self.db, service)
+            if not creds["url"] or not creds["username"] or not creds["password"]:
+                await self.tracker.skip_step(step, "Not configured")
+                return
+
+            integration = integration_cls(
+                url=creds["url"], username=creds["username"], password=creds["password"]
+            )
+            books, audiobooks = await integration.fetch_books_and_audiobooks(
+                days=cfg.days,
+                max_items=cfg.max_items,
+                book_library_ids=cfg.book_library_ids,
+                audiobook_library_ids=cfg.audiobook_library_ids,
+            )
+
+            # Re-host covers on Ghost: these servers need a bearer token.
+            for idx, item in enumerate(books):
+                book_dict = item.model_dump()
+                if book_dict.get("thumbnail_url"):
+                    book_dict["thumbnail_url"] = await self._upload_image_to_ghost(
+                        integration, book_dict["thumbnail_url"], f"{service}-book-{idx}.jpg"
+                    )
+                self.books.append(book_dict)
+
+            for idx, item in enumerate(audiobooks):
+                ab_dict = item.model_dump()
+                if ab_dict.get("cover_url"):
+                    ab_dict["cover_url"] = await self._upload_image_to_ghost(
+                        integration, ab_dict["cover_url"], f"{service}-audiobook-{idx}.jpg"
+                    )
+                self.audiobooks.append(ab_dict)
+
+            await integration.close()
+
+            await self.tracker.complete_step(
+                step,
+                f"Found {len(books)} books, {len(audiobooks)} audiobooks",
+                len(books) + len(audiobooks),
+            )
+
+        except Exception as e:
+            logger.error(f"{label} fetch failed: {e}")
+            await self.tracker.complete_step(step, "Fetch failed, continuing", 0)
 
     async def _fetch_tunarr(self) -> None:
         """Fetch TV programming from Tunarr."""
