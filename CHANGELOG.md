@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.10.2](https://github.com/sharkhunterr/ghostarr/-/compare/v1.10.1...v1.10.2) (2026-09-27)
+
+
+### Bug Fixes
+
+* **backend:** pass ruff 0.16 lint and fix maintenance type labels ([b01c159](https://github.com/sharkhunterr/ghostarr/-/commit/b01c159b96f79bb28ffe09afd585f2a8c6619e9c))
+* **release:** publish only the current notes block, leave GitLab release to CI ([e2c8ff3](https://github.com/sharkhunterr/ghostarr/-/commit/e2c8ff343d594a83e63351d97f67c53ed113ff8d))
+
 ### [1.10.1](https://github.com/sharkhunterr/ghostarr/-/compare/v1.10.0...v1.10.1) (2026-09-27)
 
 
