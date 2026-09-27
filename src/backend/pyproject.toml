@@ -8,7 +8,7 @@ authors = [{ name = "Ghostarr Team" }]
 dependencies = [
     "fastapi>=0.109.0",
     "uvicorn[standard]>=0.27.0",
-    "sqlalchemy>=2.0.25",
+    "sqlalchemy[asyncio]>=2.0.25",
     "alembic>=1.13.1",
     "aiosqlite>=0.19.0",
     "pydantic>=2.6.0",
