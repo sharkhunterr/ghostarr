@@ -56,7 +56,9 @@ function exec(command, description) {
   }
 }
 
-// Read release notes from GITHUB_RELEASES.md
+// Read release notes from GITHUB_RELEASES.md: the first "# vX.Y.Z" block,
+// without its "# vX.Y.Z" line and "---" separators — same extraction as the
+// GitLab CI release job, so local and CI releases carry identical notes.
 function getLatestReleaseNotes() {
   const releasesFile = path.join(__dirname, '..', 'GITHUB_RELEASES.md');
 
@@ -65,16 +67,20 @@ function getLatestReleaseNotes() {
     return '';
   }
 
-  const content = fs.readFileSync(releasesFile, 'utf8');
-
-  // Extract the first release section (most recent)
-  const releaseMatch = content.match(/##\s+\[?v?[\d.]+\]?[^\n]*\n([\s\S]*?)(?=\n##|\n---|\Z)/);
-
-  if (releaseMatch) {
-    return releaseMatch[0].trim();
+  const lines = fs.readFileSync(releasesFile, 'utf8').split('\n');
+  const start = lines.findIndex((line) => /^# v\d/.test(line));
+  if (start === -1) {
+    console.warn('⚠️  No "# vX.Y.Z" block in GITHUB_RELEASES.md, release will have no description');
+    return '';
   }
 
-  return content.trim();
+  const block = [];
+  for (const line of lines.slice(start + 1)) {
+    if (/^# v\d/.test(line)) break;
+    if (line.trim() === '---') continue;
+    block.push(line);
+  }
+  return block.join('\n').trim();
 }
 
 // Get current version from package.json
@@ -159,17 +165,10 @@ async function main() {
     fs.writeFileSync(releaseNotesFile, releaseNotes);
 
     if (options.gitlab && gitlabUrl) {
-      console.log('\n📋 Creating GitLab release...');
-      try {
-        // Check if glab is installed
-        execSync('which glab', { stdio: 'ignore' });
-
-        const glabCmd = `glab release create ${tag} --notes-file "${releaseNotesFile}" --name "Release ${tag}"`;
-        exec(glabCmd, 'Creating GitLab release');
-      } catch {
-        console.warn('⚠️  glab CLI not found. Skipping GitLab release creation.');
-        console.log('   Install with: brew install glab (macOS) or https://gitlab.com/gitlab-org/cli');
-      }
+      // The tag push triggers the GitLab CI \`release:gitlab\` job, which
+      // creates the release. Creating it here as well made that job fail
+      // with "409 Release already exists".
+      console.log('\n📋 GitLab release will be created by GitLab CI');
     }
 
     if (options.github) {

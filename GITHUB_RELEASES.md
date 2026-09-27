@@ -26,6 +26,14 @@
   variable and two style issues, failing the backend validation job.
 - The code now passes the current ruff rules.
 
+**Release pages showing the whole release-notes file**
+
+- The release script published every past release note instead of the
+  current version's block, and competed with the CI release job, which
+  then failed.
+- Only the current version's notes are published now, and the release is
+  created once, by the CI.
+
 ---
 
 # v1.10.1
